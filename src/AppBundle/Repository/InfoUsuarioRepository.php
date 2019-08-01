@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+
 /**
  * InfoUsuarioRepository
  *
@@ -11,8 +12,8 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * 
-     * Metodo encargado de retornar todos los usuarios según el estado.
+     * Documentación para la función 'getUsuariosCriterio'
+     * Método encargado de retornar todos los usuarios según los parámetros recibidos.
      * 
      * @author Kevin Baque
      * @version 1.0 16-07-2019
@@ -20,32 +21,70 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
      * @return array  $arrayUsuarios
      * 
      */    
-    public function getUsuarios($arrayParametros)
+    public function getUsuariosCriterio($arrayParametros)
     {
-        $strEstado     = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
-        $arrayUsuarios = array();
-        $objRsmBuilder = new ResultSetMappingBuilder($this->_em);
-        $objQuery      = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strTipoRol         = $arrayParametros['strTipoRol'] ? $arrayParametros['strTipoRol']:'';
+        $strIdentificacion  = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
+        $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
+        $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'';
+        $arrayUsuarios      = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
+        $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect = "SELECT IU.NOMBRES,IU.APELLIDOS,ATR.DESCRIPCION_TIPO_ROL ";
-            $strFrom   = "FROM INFO_USUARIO IU
-                            JOIN ADMI_TIPO_ROL ATR ON IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL ";
-            $strWhere  = "WHERE IU.ESTADO=:ESTADO";
+            $strSelect      = "SELECT IU.NOMBRES,IU.APELLIDOS ";
+            $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
+            $strFrom        = "FROM INFO_USUARIO IU ";
+            $strWhere       = "WHERE IU.ESTADO=:ESTADO ";
             $objQuery->setParameter("ESTADO", $strEstado);
+            $objQueryCount->setParameter("ESTADO", $strEstado);
+            if(!empty($strNombres))
+            {
+                $strWhere .= " AND lower(IU.NOMBRES) like lower(:NOMBRES)";
+                $objQuery->setParameter("NOMBRES", '%' . trim($strNombres) . '%');
+                $objQueryCount->setParameter("NOMBRES", '%' . trim($strNombres) . '%');
+            }
+            if(!empty($strApellidos))
+            {
+                $strWhere .= " AND lower(IU.APELLIDOS) like lower(:APELLIDOS)";
+                $objQuery->setParameter("APELLIDOS", '%' . trim($strApellidos) . '%');
+                $objQueryCount->setParameter("APELLIDOS", '%' . trim($strApellidos) . '%');
+            }
+            if(!empty($strIdentificacion))
+            {
+                $strWhere .= " AND IU.IDENTIFICACION =:IDENTIFICACION";
+                $objQuery->setParameter("IDENTIFICACION", $strIdentificacion);
+                $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacion);
+            }
+            if(!empty($strTipoRol))
+            {
+                $strSelect .= " ,ATR.DESCRIPCION_TIPO_ROL ";
+                $strFrom   .= " ,ADMI_TIPO_ROL ATR ";
+                $strWhere  .= " AND IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL
+                                AND ATR.DESCRIPCION_TIPO_ROL = :DESCRIPCION_TIPO_ROL";
+                $objQuery->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
+                $objQueryCount->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
+                $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
+            }
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');
             $objRsmBuilder->addScalarResult('APELLIDOS', 'APELLIDOS', 'string');
-            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
-
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+            $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
+            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
+            $objQueryCount->setSQL($strSqlCount);
+            $arrayUsuarios['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arrayUsuarios['resultados'] = $objQuery->getResult();
         }
         catch(\Exception $e)
         {
-            error_log('getUsuarios -> '.$e->getMessage());
-            throw($e);
+            $strMensajeError = $ex->getMessage();
         }
+        $arrayUsuarios['error'] = $strMensajeError;
         return $arrayUsuarios;
     }
 }

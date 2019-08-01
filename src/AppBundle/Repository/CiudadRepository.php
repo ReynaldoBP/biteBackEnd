@@ -13,7 +13,7 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * 
-     * Metodo encargado de retornar todos los paises según los parametros enviados.
+     * Método encargado de retornar todos los paises según los parámetros enviados.
      * 
      * @author Kevin Baque
      * @version 1.0 16-07-2019
@@ -23,29 +23,36 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getCiudad($arrayParametros)
     {
-        $strEstado     = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
-        $arrayCiudad   = array();
-        $objRsmBuilder = new ResultSetMappingBuilder($this->_em);
-        $objQuery      = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
+        $arrayCiudad     = array();
+        $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
+        $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strMensajeError = '';
+        $strSelect       = '';
+        $strFrom         = '';
+        $strWhere        = '';
         try
         {
-            $strSelect = "SELECT ciudad.CiudadNombre,ciudad.PaisCodigo,ciudad.ESTADO ";
-            $strFrom   = "FROM Ciudad ciudad ";
-            $strWhere  = "WHERE ciudad.ESTADO=:ESTADO";
-            $objQuery->setParameter("ESTADO", $strEstado);
-            $objRsmBuilder->addScalarResult('CiudadNombre', 'CiudadNombre', 'string');
-            $objRsmBuilder->addScalarResult('PaisCodigo', 'PaisCodigo', 'string');
+            $strSelect = "SELECT ciudad.CIUDAD_NOMBRE,ciudad.PAIS_CODIGO,ciudad.ESTADO ";
+            $strFrom   = "FROM ADMI_CIUDAD ciudad ";
+            if(!empty($strEstado))
+            {
+                $strWhere  = "WHERE ciudad.ESTADO=:ESTADO";
+                $objQuery->setParameter("ESTADO", $strEstado);
+            }
+            $objRsmBuilder->addScalarResult('CIUDAD_NOMBRE', 'CIUDAD_NOMBRE', 'string');
+            $objRsmBuilder->addScalarResult('PAIS_CODIGO', 'PAIS_CODIGO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
             $strSql  = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
-            $arrayCiudad['resultados'] = $objQuery->getResult();
+            $arrayCiudad['ciudad'] = $objQuery->getResult();
         }
         catch(\Exception $e)
         {
-            error_log('getCiudad -> '.$e->getMessage());
-            throw($e);
+            $strMensajeError = $ex->getMessage();
         }
+        $arrayCiudad['error'] = $strMensajeError;
         return $arrayCiudad;
     }
 }

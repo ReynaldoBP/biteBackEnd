@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AdmiTipoRol
  *
- * @ORM\Table(name="admi_tipo_rol")
+ * @ORM\Table(name="ADMI_TIPO_ROL")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiTipoRolRepository")
  */
 class AdmiTipoRol
@@ -63,10 +63,6 @@ class AdmiTipoRol
      */
     private $FE_MODIFICACION;
 
-    /**
-     * @ORM\OneToMany(targetEntity="InfoUsuario", mappedBy="TIPOROLID")
-     */
-    private $usuario_id;
 
     /**
      * Get id
@@ -221,13 +217,6 @@ class AdmiTipoRol
     {
         return $this->FE_MODIFICACION;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->usuario_id = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set DESCRIPCIONTIPOROL
@@ -347,39 +336,5 @@ class AdmiTipoRol
     public function getFEMODIFICACION()
     {
         return $this->FE_MODIFICACION;
-    }
-
-    /**
-     * Add usuarioId
-     *
-     * @param \AppBundle\Entity\InfoUsuario $usuarioId
-     *
-     * @return AdmiTipoRol
-     */
-    public function addUsuarioId(\AppBundle\Entity\InfoUsuario $usuarioId)
-    {
-        $this->usuario_id[] = $usuarioId;
-
-        return $this;
-    }
-
-    /**
-     * Remove usuarioId
-     *
-     * @param \AppBundle\Entity\InfoUsuario $usuarioId
-     */
-    public function removeUsuarioId(\AppBundle\Entity\InfoUsuario $usuarioId)
-    {
-        $this->usuario_id->removeElement($usuarioId);
-    }
-
-    /**
-     * Get usuarioId
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUsuarioId()
-    {
-        return $this->usuario_id;
     }
 }
