@@ -1,0 +1,243 @@
+<?php
+
+namespace AppBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManager;
+use AppBundle\Entity\InfoRestaurante;
+use AppBundle\Entity\AdmiTipoComida;
+
+class InfoRestauranteController extends Controller
+{
+    /**
+     * @Route("/createRestaurante")
+     *
+     * Documentación para la función 'createRestaurante'
+     * Método encargado de crear los restaurantes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 01-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createRestauranteAction(Request $request)
+    {
+        $strIdentificacionUser  = $request->query->get("identificacionUsuario") ? $request->query->get("identificacionUsuario"):'';
+        $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
+        $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
+        $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
+        $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
+        $strNombreComercial     = $request->query->get("nombreComercial") ? $request->query->get("nombreComercial"):'';
+        $strRepresentanteLegal  = $request->query->get("representanteLegal") ? $request->query->get("representanteLegal"):'';
+        $strDireccionTributario = $request->query->get("direcion") ? $request->query->get("direcion"):'';
+        $strUrlCatalogo         = $request->query->get("urlCatalogo") ? $request->query->get("urlCatalogo"):'';
+        $strNumeroContacto      = $request->query->get("numeroContacto") ? $request->query->get("numeroContacto"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $strDatetimeActual      = new \DateTime('now');
+        $em                     = $this->getDoctrine()->getEntityManager();
+
+        try
+        {
+            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacionUser));
+            if(!is_object($objUsuario) || empty($objUsuario))
+            {
+                throw new \Exception('Usuario no existe.');
+            }
+            $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+            if(!is_object($objTipoComida) || empty($objTipoComida))
+            {
+                throw new \Exception('Tipo de comida no existe.');
+            }
+            $entityRestaurante = new InfoRestaurante();
+            $entityRestaurante->setUSUARIOID($objUsuario);
+            $entityRestaurante->setTIPOCOMIDAID($objTipoComida);
+            $entityRestaurante->setTIPOIDENTIFICACION($strTipoIdentificacion);
+            $entityRestaurante->setIDENTIFICACION($strIdentificacion);
+            $entityRestaurante->setRAZONSOCIAL($strRazonSocial);
+            $entityRestaurante->setNOMBRECOMERCIAL($strNombreComercial);
+            $entityRestaurante->setREPRESENTANTELEGAL($strRepresentanteLegal);
+            $entityRestaurante->setDIRECCIONTRIBUTARIO($strDireccionTributario);
+            $entityRestaurante->setURLCATALOGO($strUrlCatalogo);
+            $entityRestaurante->setNUMEROCONTACTO($strNumeroContacto);
+            $entityRestaurante->setESTADO($strEstado);
+            $entityRestaurante->setUSRCREACION($strUsuarioCreacion);
+            $entityRestaurante->setFECREACION($strDatetimeActual);
+            $em->persist($entityRestaurante);
+            $em->flush();
+            $strMensajeError = 'Restaurante creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            $strStatus  = 404;
+            $strMensajeError = "Fallo al crear un restaurante, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        return $objResponse;
+    }
+    /**
+     * @Route("/editRestaurante")
+     *
+     * Documentación para la función 'editRestaurante'
+     * Método encargado de editar los restaurantes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 01-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editRestauranteAction(Request $request)
+    {
+        $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
+        $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
+        $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
+        $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
+        $strNombreComercial     = $request->query->get("nombreComercial") ? $request->query->get("nombreComercial"):'';
+        $strRepresentanteLegal  = $request->query->get("representanteLegal") ? $request->query->get("representanteLegal"):'';
+        $strDireccionTributario = $request->query->get("direcion") ? $request->query->get("direcion"):'';
+        $strUrlCatalogo         = $request->query->get("urlCatalogo") ? $request->query->get("urlCatalogo"):'';
+        $strNumeroContacto      = $request->query->get("numeroContacto") ? $request->query->get("numeroContacto"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $strDatetimeActual      = new \DateTime('now');
+        $em                     = $this->getDoctrine()->getEntityManager();
+
+        try
+        {
+            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy(array('IDENTIFICACION'=>$strIdentificacion));
+            if(!is_object($objRestaurante) || empty($objRestaurante))
+            {
+                throw new \Exception('Restaurante no existe.');
+            }
+            if(!empty($strTipoComida))
+            {
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+                if(!is_object($objTipoComida) || empty($objTipoComida))
+                {
+                    throw new \Exception('Tipo de comida no existe.');
+                }
+                $objRestaurante->setTIPOCOMIDAID($objTipoComida);
+            }
+            if(!empty($strTipoIdentificacion))
+            {
+                $objRestaurante->setTIPOIDENTIFICACION($strTipoIdentificacion);
+            }
+            if(!empty($strIdentificacion))
+            {
+                $objRestaurante->setIDENTIFICACION($strIdentificacion);
+            }
+            if(!empty($strRazonSocial))
+            {
+                $objRestaurante->setRAZONSOCIAL($strRazonSocial);
+            }
+            if(!empty($strNombreComercial))
+            {
+                $objRestaurante->setNOMBRECOMERCIAL($strNombreComercial);
+            }
+            if(!empty($strRepresentanteLegal))
+            {
+                $objRestaurante->setREPRESENTANTELEGAL($strRepresentanteLegal);
+            }
+            if(!empty($strDireccionTributario))
+            {
+                $objRestaurante->setDIRECCIONTRIBUTARIO($strDireccionTributario);
+            }
+            if(!empty($strUrlCatalogo))
+            {
+                $objRestaurante->setURLCATALOGO($strUrlCatalogo);
+            }
+            if(!empty($strNumeroContacto))
+            {
+                $objRestaurante->setNUMEROCONTACTO($strNumeroContacto);
+            }
+            if(!empty($strEstado))
+            {
+                $objRestaurante->setESTADO($strEstado);
+            }
+            
+            $objRestaurante->setUSRMODIFICACION($strUsuarioCreacion);
+            $objRestaurante->setFEMODIFICACION($strDatetimeActual);
+            $em->persist($objRestaurante);
+            $em->flush();
+            $strMensajeError = 'Restaurante editado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            $strStatus  = 404;
+            $strMensajeError = "Fallo al crear un restaurante, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        return $objResponse;
+    }
+    /**
+     * @Route("/getRestaurante")
+     *
+     * Documentación para la función 'getRestaurante'
+     * Método encargado de retornar todos los restaurantes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 01-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getRestauranteAction(Request $request)
+    {
+        $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
+        $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
+        $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
+        $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $arrayRestaurantes      = array();
+        $strMensaje             = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        try
+        {
+            $arrayParametros = array('strTipoComida'        => $strTipoComida,
+                                    'strTipoIdentificacion' => $strTipoIdentificacion,
+                                    'strIdentificacion'     => $strIdentificacion,
+                                    'strRazonSocial'        => $strRazonSocial,
+                                    'strEstado'             => $strEstado
+                                    );
+            $arrayRestaurantes   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterio($arrayParametros);
+            if(isset($arrayRestaurantes['error']) && !empty($arrayRestaurantes['error']))
+            {
+                $strMensaje = false;
+                $strStatus  = 404;
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRestaurantes,
+                                            'succes'    => true
+                                            )
+                                        ));
+        return $objResponse;
+    }
+}

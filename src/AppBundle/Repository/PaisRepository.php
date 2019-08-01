@@ -23,29 +23,36 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getPais($arrayParametros)
     {
-        $strEstado     = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
-        $arrayPais     = array();
-        $objRsmBuilder = new ResultSetMappingBuilder($this->_em);
-        $objQuery      = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
+        $arrayPais       = array();
+        $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
+        $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strMensajeError = '';
+        $strSelect       = '';
+        $strFrom         = '';
+        $strWhere        = '';
         try
         {
-            $strSelect = "SELECT pais.PaisNombre,pais.PaisCodigo,pais.ESTADO ";
-            $strFrom   = "FROM Pais pais ";
-            $strWhere  = "WHERE pais.ESTADO=:ESTADO";
-            $objQuery->setParameter("ESTADO", $strEstado);
-            $objRsmBuilder->addScalarResult('PaisNombre', 'PaisNombre', 'string');
-            $objRsmBuilder->addScalarResult('PaisCodigo', 'PaisCodigo', 'string');
+            $strSelect = "SELECT pais.PAIS_NOMBRE,pais.PAIS_CODIGO,pais.ESTADO ";
+            $strFrom   = "FROM ADMI_PAIS pais ";
+            if(!empty($strEstado))
+            {
+                $strWhere  = "WHERE pais.ESTADO=:ESTADO";
+                $objQuery->setParameter("ESTADO", $strEstado);
+            }
+            $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
+            $objRsmBuilder->addScalarResult('PAIS_CODIGO', 'PAIS_CODIGO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
             $strSql  = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
-            $arrayPais['resultados'] = $objQuery->getResult();
+            $arrayPais['pais'] = $objQuery->getResult();
         }
         catch(\Exception $e)
         {
-            error_log('getPais -> '.$e->getMessage());
-            throw($e);
+            $strMensajeError = $ex->getMessage();
         }
+        $arrayPais['error'] = $strMensajeError;
         return $arrayPais;
     }
 }

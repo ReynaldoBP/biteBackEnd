@@ -5,36 +5,41 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\HttpFoundation\Request;
 class PaisController extends Controller
 {
     /**
      * @Route("/getPais")
      */
-    public function getPaisAction()
+    public function getPaisAction(Request $request)
     {
-        $arrayParametros = array('estado'    => 'ACTIVO');
+        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $arrayParametros = array('estado'    => $strEstado);
         $arrayPais       = array();
-        $strMensaje      = true;
+        $strMensajeError = '';
         $strStatus       = 400;
         $objResponse     = new Response;
         try
         {
-            $arrayPais   = $this->getDoctrine()->getRepository('AppBundle:Pais')->getPais($arrayParametros);
-            if( isset($arrayPais['resultados']) &&  empty($arrayPais['resultados']) ) 
+            $arrayPais = $this->getDoctrine()->getRepository('AppBundle:AdmiPais')->getPais($arrayParametros);
+            if( isset($arrayPais['error']) && !empty($arrayPais['error']) ) 
             {
-                $strMensaje = false;
+                throw new \Exception($arrayPais['error']);
                 $strStatus  = 404;
             }
         }
         catch(\Exception $ex)
         {
-            $strMensaje ="Fallo al realizar la busqueda, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError    = "Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            if(isset($arrayCiudad['error']))
+            {
+                $arrayPais['error'] = $strMensajeError.' '.$arrayPais['error'];
+            }
         }
         $objResponse->setContent(json_encode(array(
-                                            'status'  => $strStatus,
-                                            'message' => $strMensaje,
-                                            'result'  => $arrayPais
+                                            'status'    => $strStatus,
+                                            'resultado' => $strEstado,
+                                            'succes'    => true
                                             )
                                         ));
         return $objResponse;

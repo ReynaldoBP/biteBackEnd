@@ -24,7 +24,7 @@ class InfoUsuario
     /**
     * @var AdmiTipoRol
     *
-    * @ORM\ManyToOne(targetEntity="AdmiTipoRol", inversedBy="usuario_id")
+    * @ORM\ManyToOne(targetEntity="AdmiTipoRol")
     * @ORM\JoinColumns({
     * @ORM\JoinColumn(name="TIPO_ROL_ID", referencedColumnName="ID_TIPO_ROL")
     * })
@@ -130,30 +130,6 @@ class InfoUsuario
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set TIPOROLID
-     *
-     * @param integer $TIPOROLID
-     *
-     * @return InfoUsuario
-     */
-    public function setTIPOROLID($TIPOROLID)
-    {
-        $this->TIPOROLID = $TIPOROLID;
-
-        return $this;
-    }
-
-    /**
-     * Get TIPOROLID
-     *
-     * @return int
-     */
-    public function getTIPOROLID()
-    {
-        return $this->TIPOROLID;
     }
 
     /**
@@ -467,4 +443,29 @@ class InfoUsuario
     {
         return $this->FEMODIFICACION;
     }
+    /**
+     * Set TIPOROLID
+     *
+     * @param \AppBundle\Entity\AdmiTipoRol $TIPOROLID
+     *
+     * @return InfoUsuario
+     */
+    public function setTIPOROLID(\AppBundle\Entity\AdmiTipoRol $TIPOROLID = null)
+    {
+        $this->TIPOROLID = $TIPOROLID;
+
+        return $this;
+    }
+
+    /**
+     * Get TIPOROLID
+     *
+     * @return \AppBundle\Entity\AdmiTipoRol
+     */
+    public function getTIPOROLID()
+    {
+        return $this->TIPOROLID;
+    }
+
+
 }
