@@ -12,7 +12,6 @@ use AppBundle\Entity\AdmiTipoRol;
 
 class UsuarioController extends Controller
 {
-
     /**
      * @Route("/getUsuario")
      *
@@ -60,6 +59,7 @@ class UsuarioController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
     /**
@@ -140,6 +140,7 @@ class UsuarioController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
     /**
@@ -250,6 +251,7 @@ class UsuarioController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
 }

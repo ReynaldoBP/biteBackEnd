@@ -25,8 +25,10 @@ class InfoRestauranteController extends Controller
      */
     public function createRestauranteAction(Request $request)
     {
+        $strIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strIdentificacionUser  = $request->query->get("identificacionUsuario") ? $request->query->get("identificacionUsuario"):'';
         $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
+        $strIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
@@ -46,15 +48,28 @@ class InfoRestauranteController extends Controller
 
         try
         {
-            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacionUser));
+            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($strIdUsuario);
             if(!is_object($objUsuario) || empty($objUsuario))
             {
-                throw new \Exception('Usuario no existe.');
+                $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacionUser));
+                if(!is_object($objUsuario) || empty($objUsuario))
+                {
+                    throw new \Exception('Usuario no existe.');
+                }
             }
-            $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+            $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
-                throw new \Exception('Tipo de comida no existe.');
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+                if(!is_object($objTipoComida) || empty($objTipoComida))
+                {
+                    throw new \Exception('Tipo de comida no existe.');
+                }
+            }
+            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy(array('IDENTIFICACION'=>$strIdentificacion));
+            if(is_object($objRestaurante) && !empty($objRestaurante))
+            {
+                throw new \Exception('Restaurante ya existente.');
             }
             $entityRestaurante = new InfoRestaurante();
             $entityRestaurante->setUSUARIOID($objUsuario);
@@ -85,6 +100,7 @@ class InfoRestauranteController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
     /**
@@ -103,6 +119,7 @@ class InfoRestauranteController extends Controller
         $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
+        $strIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
         $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
         $strNombreComercial     = $request->query->get("nombreComercial") ? $request->query->get("nombreComercial"):'';
         $strRepresentanteLegal  = $request->query->get("representanteLegal") ? $request->query->get("representanteLegal"):'';
@@ -120,10 +137,14 @@ class InfoRestauranteController extends Controller
 
         try
         {
-            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy(array('IDENTIFICACION'=>$strIdentificacion));
+            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
             if(!is_object($objRestaurante) || empty($objRestaurante))
             {
-                throw new \Exception('Restaurante no existe.');
+                $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy(array('IDENTIFICACION'=>$strIdentificacion));
+                if(!is_object($objRestaurante) || empty($objRestaurante))
+                {
+                    throw new \Exception('Restaurante no existe.');
+                }
             }
             if(!empty($strTipoComida))
             {
@@ -188,6 +209,7 @@ class InfoRestauranteController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
     /**
@@ -238,6 +260,7 @@ class InfoRestauranteController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
 }

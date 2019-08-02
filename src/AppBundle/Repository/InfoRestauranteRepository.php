@@ -37,11 +37,12 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IR.RAZON_SOCIAL, IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, 
-                                        IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION ";
+            $strSelect      = "SELECT IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
+                                        IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.DIRECCION_TRIBUTARIO, 
+                                        IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_RESTAURANTE IR ";
-            $strWhere       = "WHERE IR.ESTADO=:ESTADO ";
+            $strWhere       = "WHERE lower(IR.ESTADO) = lower(:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
             if(!empty($strRazonSocial))
@@ -72,11 +73,15 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("DESCRIPCION", $strTipoComida);
                 $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             }
+            $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
             $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
             $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('REPRESENTANTE_LEGAL', 'REPRESENTANTE_LEGAL', 'string');
-            $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('DIRECCION_TRIBUTARIO', 'DIRECCION_TRIBUTARIO', 'string');
+            $objRsmBuilder->addScalarResult('URL_CATALOGO', 'URL_CATALOGO', 'string');
+            $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
@@ -92,6 +97,4 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $arrayRestaurante['error'] = $strMensajeError;
         return $arrayRestaurante;
     }
-
-
 }

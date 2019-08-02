@@ -23,7 +23,8 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getCiudad($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strProvincia    = $arrayParametros['provincia'] ? $arrayParametros['provincia']:'';
         $arrayCiudad     = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -35,10 +36,12 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect = "SELECT ciudad.CIUDAD_NOMBRE,ciudad.PAIS_CODIGO,ciudad.ESTADO ";
             $strFrom   = "FROM ADMI_CIUDAD ciudad ";
-            if(!empty($strEstado))
+            $strWhere  = "WHERE lower(ciudad.ESTADO) = lower(:ESTADO) ";
+            $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($strProvincia))
             {
-                $strWhere  = "WHERE ciudad.ESTADO=:ESTADO";
-                $objQuery->setParameter("ESTADO", $strEstado);
+                $strWhere  .= " AND lower(ciudad.CIUDAD_DISTRITO) = lower(:CIUDAD_DISTRITO) ";
+                $objQuery->setParameter("CIUDAD_DISTRITO", $strProvincia);
             }
             $objRsmBuilder->addScalarResult('CIUDAD_NOMBRE', 'CIUDAD_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('PAIS_CODIGO', 'PAIS_CODIGO', 'string');
