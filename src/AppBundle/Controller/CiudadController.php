@@ -65,6 +65,7 @@ class CiudadController extends Controller
                                             'succes'    => true
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
 
