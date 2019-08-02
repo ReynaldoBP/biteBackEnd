@@ -12,7 +12,6 @@ use AppBundle\Entity\AdmiTipoRol;
 
 class UsuarioController extends Controller
 {
-
     /**
      * @Route("/getUsuario")
      *
