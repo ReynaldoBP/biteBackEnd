@@ -5,28 +5,38 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AdmiPais
+ * AdmiRegion
  *
- * @ORM\Table(name="ADMI_PAIS")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PaisRepository")
+ * @ORM\Table(name="ADMI_REGION")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiRegionRepository")
  */
-class AdmiPais
+class AdmiRegion
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="ID_PAIS", type="integer")
+     * @ORM\Column(name="ID_REGION", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
+
     private $id;
+    /**
+    * @var AdmiPais
+    *
+    * @ORM\ManyToOne(targetEntity="AdmiPais")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="PAIS_ID", referencedColumnName="ID_PAIS")
+    * })
+    */
+    private $PAIS_ID;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="PAIS_NOMBRE", type="string", length=52)
+     * @ORM\Column(name="REGION_NOMBRE", type="string", length=255)
      */
-    private $PAIS_NOMBRE;
+    private $REGION_NOMBRE;
 
     /**
      * @var string
@@ -47,27 +57,27 @@ class AdmiPais
     }
 
     /**
-     * Set PAIS_NOMBRE
+     * Set REGION_NOMBRE
      *
-     * @param string $PAIS_NOMBRE
+     * @param string $REGION_NOMBRE
      *
-     * @return AdmiPais
+     * @return AdmiRegion
      */
-    public function setPAIS_NOMBRE($PAIS_NOMBRE)
+    public function setREGION_NOMBRE($REGION_NOMBRE)
     {
-        $this->PAIS_NOMBRE = $PAIS_NOMBRE;
+        $this->REGION_NOMBRE = $REGION_NOMBRE;
 
         return $this;
     }
 
     /**
-     * Get PAIS_NOMBRE
+     * Get REGION_NOMBRE
      *
      * @return string
      */
-    public function getPAIS_NOMBRE()
+    public function getREGION_NOMBRE()
     {
-        return $this->PAIS_NOMBRE;
+        return $this->REGION_NOMBRE;
     }
 
     /**
@@ -75,7 +85,7 @@ class AdmiPais
      *
      * @param string $ESTADO
      *
-     * @return AdmiPais
+     * @return AdmiRegion
      */
     public function setESTADO($ESTADO)
     {
@@ -94,3 +104,4 @@ class AdmiPais
         return $this->ESTADO;
     }
 }
+

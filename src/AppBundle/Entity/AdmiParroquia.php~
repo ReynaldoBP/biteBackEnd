@@ -1,0 +1,107 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * AdmiParroquia
+ *
+ * @ORM\Table(name="admi_parroquia")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiParroquiaRepository")
+ */
+class AdmiParroquia
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var AdmiCiudad
+    *
+    * @ORM\ManyToOne(targetEntity="AdmiCiudad")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CIUDAD_ID", referencedColumnName="ID_CIUDAD")
+    * })
+    */
+    private $CIUDAD_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="PARROQUIA_NOMBRE", type="string", length=255)
+     */
+    private $pARROQUIANOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=50)
+     */
+    private $eSTADO;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set pARROQUIANOMBRE
+     *
+     * @param string $pARROQUIANOMBRE
+     *
+     * @return AdmiParroquia
+     */
+    public function setPARROQUIANOMBRE($pARROQUIANOMBRE)
+    {
+        $this->pARROQUIANOMBRE = $pARROQUIANOMBRE;
+
+        return $this;
+    }
+
+    /**
+     * Get pARROQUIANOMBRE
+     *
+     * @return string
+     */
+    public function getPARROQUIANOMBRE()
+    {
+        return $this->pARROQUIANOMBRE;
+    }
+
+    /**
+     * Set eSTADO
+     *
+     * @param string $eSTADO
+     *
+     * @return AdmiParroquia
+     */
+    public function setESTADO($eSTADO)
+    {
+        $this->eSTADO = $eSTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get eSTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->eSTADO;
+    }
+}
+

@@ -12,8 +12,9 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 class PaisRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * 
-     * Metodo encargado de retornar todos los paises según los parametros enviados.
+     * Documentación para la función 'getPais'.
+     *
+     * Método encargado de retornar todos los paises según los parametros enviados.
      * 
      * @author Kevin Baque
      * @version 1.0 16-07-2019
@@ -23,7 +24,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getPais($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
         $arrayPais       = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -33,15 +34,14 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
         $strWhere        = '';
         try
         {
-            $strSelect = "SELECT pais.PAIS_NOMBRE,pais.PAIS_CODIGO,pais.ESTADO ";
+            $strSelect = "SELECT pais.PAIS_NOMBRE,pais.ESTADO ";
             $strFrom   = "FROM ADMI_PAIS pais ";
             if(!empty($strEstado))
             {
-                $strWhere  = "WHERE pais.ESTADO=:ESTADO";
+                $strWhere  = "WHERE lower(pais.ESTADO)=lower(:ESTADO)";
                 $objQuery->setParameter("ESTADO", $strEstado);
             }
             $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
-            $objRsmBuilder->addScalarResult('PAIS_CODIGO', 'PAIS_CODIGO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
             $strSql  = $strSelect.$strFrom.$strWhere;

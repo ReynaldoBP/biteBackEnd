@@ -38,7 +38,7 @@ class PaisController extends Controller
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $strEstado,
+                                            'resultado' => $arrayPais,
                                             'succes'    => true
                                             )
                                         ));
