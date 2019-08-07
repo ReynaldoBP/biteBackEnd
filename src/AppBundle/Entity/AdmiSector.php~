@@ -1,0 +1,107 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * AdmiSector
+ *
+ * @ORM\Table(name="ADMI_SECTOR")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiSectorRepository")
+ */
+class AdmiSector
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_SECTOR", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var AdmiParroquia
+    *
+    * @ORM\ManyToOne(targetEntity="ADMI_SECTOR")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="PARROQUIA_ID", referencedColumnName="ID_PARROQUIA")
+    * })
+    */
+    private $PARROQUIA_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="SECTOR_NOMBRE", type="string", length=255)
+     */
+    private $sECTORNOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=255)
+     */
+    private $eSTADO;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set sECTORNOMBRE
+     *
+     * @param string $sECTORNOMBRE
+     *
+     * @return AdmiSector
+     */
+    public function setSECTORNOMBRE($sECTORNOMBRE)
+    {
+        $this->sECTORNOMBRE = $sECTORNOMBRE;
+
+        return $this;
+    }
+
+    /**
+     * Get sECTORNOMBRE
+     *
+     * @return string
+     */
+    public function getSECTORNOMBRE()
+    {
+        return $this->sECTORNOMBRE;
+    }
+
+    /**
+     * Set eSTADO
+     *
+     * @param string $eSTADO
+     *
+     * @return AdmiSector
+     */
+    public function setESTADO($eSTADO)
+    {
+        $this->eSTADO = $eSTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get eSTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->eSTADO;
+    }
+}
+

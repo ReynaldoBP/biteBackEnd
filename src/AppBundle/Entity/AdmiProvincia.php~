@@ -1,0 +1,107 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * AdmiProvincia
+ *
+ * @ORM\Table(name="ADMI_PROVINCIA")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiProvinciaRepository")
+ */
+class AdmiProvincia
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_PROVINCIA", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var AdmiRegion
+    *
+    * @ORM\ManyToOne(targetEntity="AdmiRegion")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="REGION_ID", referencedColumnName="ID_REGION")
+    * })
+    */
+    private $REGION_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="PROVINCIA_NOMBRE", type="string", length=255)
+     */
+    private $pROVINCIANOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=50)
+     */
+    private $eSTADO;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set pROVINCIANOMBRE
+     *
+     * @param string $pROVINCIANOMBRE
+     *
+     * @return AdmiProvincia
+     */
+    public function setPROVINCIANOMBRE($pROVINCIANOMBRE)
+    {
+        $this->pROVINCIANOMBRE = $pROVINCIANOMBRE;
+
+        return $this;
+    }
+
+    /**
+     * Get pROVINCIANOMBRE
+     *
+     * @return string
+     */
+    public function getPROVINCIANOMBRE()
+    {
+        return $this->pROVINCIANOMBRE;
+    }
+
+    /**
+     * Set eSTADO
+     *
+     * @param string $eSTADO
+     *
+     * @return AdmiProvincia
+     */
+    public function setESTADO($eSTADO)
+    {
+        $this->eSTADO = $eSTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get eSTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->eSTADO;
+    }
+}
+

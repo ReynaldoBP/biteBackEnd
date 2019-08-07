@@ -22,25 +22,21 @@ class AdmiCiudad
     private $id;
 
     /**
+    * @var AdmiProvincia
+    *
+    * @ORM\ManyToOne(targetEntity="AdmiProvincia")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="PROVINCIA_ID", referencedColumnName="ID_PROVINCIA")
+    * })
+    */
+
+    private $PROVINCIA_ID;
+    /**
      * @var string
      *
      * @ORM\Column(name="CIUDAD_NOMBRE", type="string", length=35)
      */
     private $CIUDAD_NOMBRE;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="PAIS_CODIGO", type="string", length=3)
-     */
-    private $PAIS_CODIGO;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="CIUDAD_DISTRITO", type="string", length=20, nullable=true)
-     */
-    private $CIUDAD_DISTRITO;
 
     /**
      * @var string
@@ -85,54 +81,6 @@ class AdmiCiudad
     }
 
     /**
-     * Set PAIS_CODIGO
-     *
-     * @param string $PAIS_CODIGO
-     *
-     * @return AdmiCiudad
-     */
-    public function setPAIS_CODIGO($PAIS_CODIGO)
-    {
-        $this->PAIS_CODIGO = $PAIS_CODIGO;
-
-        return $this;
-    }
-
-    /**
-     * Get PAIS_CODIGO
-     *
-     * @return string
-     */
-    public function getPAIS_CODIGO()
-    {
-        return $this->PAIS_CODIGO;
-    }
-
-    /**
-     * Set CIUDAD_DISTRITO
-     *
-     * @param string $CIUDAD_DISTRITO
-     *
-     * @return AdmiCiudad
-     */
-    public function setCIUDAD_DISTRITO($CIUDAD_DISTRITO)
-    {
-        $this->CIUDAD_DISTRITO = $CIUDAD_DISTRITO;
-
-        return $this;
-    }
-
-    /**
-     * Get CIUDAD_DISTRITO
-     *
-     * @return string
-     */
-    public function getCIUDAD_DISTRITO()
-    {
-        return $this->CIUDAD_DISTRITO;
-    }
-
-    /**
      * Set ESTADO
      *
      * @param string $ESTADO
@@ -155,76 +103,27 @@ class AdmiCiudad
     {
         return $this->ESTADO;
     }
-
     /**
-     * Set cIUDADNOMBRE
+     * Set PROVINCIA_ID
      *
-     * @param string $cIUDADNOMBRE
+     * @param \AppBundle\Entity\AdmiProvincia $PROVINCIA_ID
      *
      * @return AdmiCiudad
      */
-    public function setCIUDADNOMBRE($cIUDADNOMBRE)
+    public function setPROVINCIA_ID(\AppBundle\Entity\AdmiProvincia $PROVINCIA_ID = null)
     {
-        $this->CIUDAD_NOMBRE = $cIUDADNOMBRE;
+        $this->PROVINCIA_ID = $PROVINCIA_ID;
 
         return $this;
     }
 
     /**
-     * Get cIUDADNOMBRE
+     * Get PROVINCIA_ID
      *
-     * @return string
+     * @return \AppBundle\Entity\AdmiProvincia
      */
-    public function getCIUDADNOMBRE()
+    public function getPROVINCIA_ID()
     {
-        return $this->CIUDAD_NOMBRE;
-    }
-
-    /**
-     * Set pAISCODIGO
-     *
-     * @param string $pAISCODIGO
-     *
-     * @return AdmiCiudad
-     */
-    public function setPAISCODIGO($pAISCODIGO)
-    {
-        $this->PAIS_CODIGO = $pAISCODIGO;
-
-        return $this;
-    }
-
-    /**
-     * Get pAISCODIGO
-     *
-     * @return string
-     */
-    public function getPAISCODIGO()
-    {
-        return $this->PAIS_CODIGO;
-    }
-
-    /**
-     * Set cIUDADDISTRITO
-     *
-     * @param string $cIUDADDISTRITO
-     *
-     * @return AdmiCiudad
-     */
-    public function setCIUDADDISTRITO($cIUDADDISTRITO)
-    {
-        $this->CIUDAD_DISTRITO = $cIUDADDISTRITO;
-
-        return $this;
-    }
-
-    /**
-     * Get cIUDADDISTRITO
-     *
-     * @return string
-     */
-    public function getCIUDADDISTRITO()
-    {
-        return $this->CIUDAD_DISTRITO;
+        return $this->PROVINCIA_ID;
     }
 }
