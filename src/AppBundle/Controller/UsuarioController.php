@@ -287,7 +287,7 @@ class UsuarioController extends Controller
             }
             foreach($objUsuario as $objItemUsuario)
             {
-                $arrayUsuarios [] = array(
+                $arrayUsuarios [] = array(  'ID_USUARIO'     => $objItemUsuario->getId(),
                                             'IDENTIFICACION' => $objItemUsuario->getIDENTIFICACION(),
                                             'NOMBRES'        => $objItemUsuario->getNOMBRES(),
                                             'APELLIDOS'      => $objItemUsuario->getAPELLIDOS(),

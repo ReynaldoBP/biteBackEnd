@@ -78,9 +78,10 @@ class CiudadController extends Controller
 
             foreach($objCiudad as $objItemCiudad)
             {
-                $arrayCiudad [] = array('CIUDAD_NOMBRE' =>$objItemCiudad->getCIUDAD_NOMBRE(),
-                                        'ESTADO'           =>$objItemCiudad->getESTADO(),
-                                        'PROVINCIA_NOMBRE'    =>$objItemCiudad->getPROVINCIA_ID()->getPROVINCIANOMBRE());
+                $arrayCiudad [] = array('ID_CIUDAD'        => $objItemCiudad->getId(),
+                                        'CIUDAD_NOMBRE'    => $objItemCiudad->getCIUDAD_NOMBRE(),
+                                        'ESTADO'           => $objItemCiudad->getESTADO(),
+                                        'PROVINCIA_NOMBRE' => $objItemCiudad->getPROVINCIA_ID()->getPROVINCIANOMBRE());
             }
         }
         catch(\Exception $ex)

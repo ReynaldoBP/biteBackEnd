@@ -21,7 +21,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arrayPais
      * 
-     */    
+     */
     public function getPais($arrayParametros)
     {
         $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
@@ -34,13 +34,14 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
         $strWhere        = '';
         try
         {
-            $strSelect = "SELECT pais.PAIS_NOMBRE,pais.ESTADO ";
+            $strSelect = "SELECT pais.ID_PAIS,pais.PAIS_NOMBRE,pais.ESTADO ";
             $strFrom   = "FROM ADMI_PAIS pais ";
             if(!empty($strEstado))
             {
                 $strWhere  = "WHERE lower(pais.ESTADO)=lower(:ESTADO)";
                 $objQuery->setParameter("ESTADO", $strEstado);
             }
+            $objRsmBuilder->addScalarResult('ID_PAIS', 'ID_PAIS', 'string');
             $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 

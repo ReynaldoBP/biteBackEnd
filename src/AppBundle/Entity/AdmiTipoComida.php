@@ -24,7 +24,7 @@ class AdmiTipoComida
     /**
      * @var string
      *
-     * @ORM\Column(name="DESCRIPCION", type="string", length=255)
+     * @ORM\Column(name="DESCRIPCION_TIPO_COMIDA", type="string", length=255)
      */
     private $DESCRIPCION;
 

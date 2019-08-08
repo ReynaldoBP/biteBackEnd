@@ -116,6 +116,7 @@ class InfoSucursalController extends Controller
             }
             $entitySucursal = new InfoSucursal();
             $entitySucursal->setRESTAURANTEID($objRestaurante);
+            $entitySucursal->setDESCRIPCION($strDescripcion);
             $entitySucursal->setESMATRIZ($strEsMatriz);
             $entitySucursal->setDIRECCION($strDireccion);
             $entitySucursal->setNUMEROCONTACTO($strNumeroContacto);
@@ -194,6 +195,10 @@ class InfoSucursalController extends Controller
             }
             $entitySucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
             $entitySucursal->setRESTAURANTEID($objRestaurante);
+            if(!empty($strDescripcion))
+            {
+                $entitySucursal->setDESCRIPCION($strDescripcion);
+            }
             if(!empty($strEsMatriz))
             {
                 $entitySucursal->setESMATRIZ($strEsMatriz);

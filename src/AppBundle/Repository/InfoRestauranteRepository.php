@@ -37,7 +37,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
+            $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
                                         IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.DIRECCION_TRIBUTARIO, 
                                         IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
@@ -65,14 +65,15 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoComida))
             {
-                $strSelect .= " ,ATC.DESCRIPCION ";
+                $strSelect .= " ,ATC.DESCRIPCION_TIPO_COMIDA ";
                 $strFrom   .= " ,ADMI_TIPO_COMIDA ATC ";
                 $strWhere  .= " AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA
-                                AND ATC.DESCRIPCION = :DESCRIPCION";
+                                AND ATC.DESCRIPCION_TIPO_COMIDA = :DESCRIPCION";
                 $objQuery->setParameter("DESCRIPCION", $strTipoComida);
                 $objQueryCount->setParameter("DESCRIPCION", $strTipoComida);
-                $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+                $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
             }
+            $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');
             $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
             $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
             $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
