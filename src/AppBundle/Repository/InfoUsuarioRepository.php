@@ -36,7 +36,8 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IU.NOMBRES,IU.APELLIDOS ";
+            $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS, IU.IDENTIFICACION, IU.CORREO, 
+                               IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_USUARIO IU ";
             $strWhere       = "WHERE IU.ESTADO=:ESTADO ";
@@ -70,8 +71,18 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
                 $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
             }
+            $objRsmBuilder->addScalarResult('ID_USUARIO', 'ID_USUARIO', 'string');
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');
             $objRsmBuilder->addScalarResult('APELLIDOS', 'APELLIDOS', 'string');
+            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('CORREO', 'CORREO', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
+            $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);

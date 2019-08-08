@@ -38,7 +38,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
+            $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
                                       ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
                                       ISUR.LONGITUD, ISUR.PAIS,ISUR.CIUDAD,ISUR.SECTOR ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
@@ -73,6 +73,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                 $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
                 $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
             }
+            $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ES_MATRIZ', 'ES_MATRIZ', 'string');
             $objRsmBuilder->addScalarResult('DIRECCION', 'DIRECCION', 'string');

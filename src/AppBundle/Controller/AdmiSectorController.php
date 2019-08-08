@@ -37,7 +37,8 @@ class AdmiSectorController extends Controller
 
             foreach($objSector as $objItemSector)
             {
-                $arraySector [] = array('SECTOR_NOMBRE'    => $objItemSector->getSECTORNOMBRE(),
+                $arraySector [] = array('ID_SECTOR'        => $objItemSector->getId(),
+                                        'SECTOR_NOMBRE'    => $objItemSector->getSECTORNOMBRE(),
                                         'ESTADO'           => $objItemSector->getESTADO(),
                                         'PARROQUIA_NOMBRE' => $objItemSector->getPARROQUIAID()->getPARROQUIANOMBRE());
             }

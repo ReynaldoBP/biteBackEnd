@@ -37,7 +37,8 @@ class AdmiParroquiaController extends Controller
 
             foreach($objParroquia as $objItemParroquia)
             {
-                $arrayParroquia [] = array('PARROQUIA_NOMBRE' =>$objItemParroquia->getPARROQUIANOMBRE(),
+                $arrayParroquia [] = array('ID_PARROQUIA'    =>$objItemParroquia->getId(),
+                                           'PARROQUIA_NOMBRE' =>$objItemParroquia->getPARROQUIANOMBRE(),
                                            'ESTADO'           =>$objItemParroquia->getESTADO(),
                                            'NOMBRE_CIUDAD'    =>$objItemParroquia->getCIUDADID()->getCIUDAD_NOMBRE());
             }

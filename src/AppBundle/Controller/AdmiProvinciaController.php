@@ -38,7 +38,8 @@ class AdmiProvinciaController extends Controller
 
             foreach($objProvincia as $objItemProvincia)
             {
-                $arrayProvincia [] = array('PROVINCIA_NOMBRE' =>$objItemProvincia->getPROVINCIANOMBRE(),
+                $arrayProvincia [] = array('ID_PROVINCIA'     =>$objItemProvincia->getId(),
+                                           'PROVINCIA_NOMBRE' =>$objItemProvincia->getPROVINCIANOMBRE(),
                                            'ESTADO'           =>$objItemProvincia->getESTADO(),
                                            'NOMBRE_REGION'    =>$objItemProvincia->getREGIONID()->getREGION_NOMBRE());
             }

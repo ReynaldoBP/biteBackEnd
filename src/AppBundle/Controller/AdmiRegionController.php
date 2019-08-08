@@ -37,9 +37,10 @@ class AdmiRegionController extends Controller
             }
             foreach($objRegion as $objItemRegion)
             {
-                $arrayRegion [] = array('REGION_NOMBRE'=>$objItemRegion->getREGION_NOMBRE(),
-                                         'ESTADO'      =>$objItemRegion->getESTADO(),
-                                         'PAIS_ID'      =>$objItemRegion->getPAIS_ID()->getId());
+                $arrayRegion [] = array( 'ID_REGION'     => $objItemRegion->getId(),
+                                         'REGION_NOMBRE' => $objItemRegion->getREGION_NOMBRE(),
+                                         'ESTADO'        => $objItemRegion->getESTADO(),
+                                         'PAIS_ID'       => $objItemRegion->getPAIS_ID()->getId());
             }
         }
         catch(\Exception $ex)
