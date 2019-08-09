@@ -26,21 +26,13 @@ class AdmiParroquiaController extends Controller
 
         try
         {
-            $objCiudad   = $em->getRepository('AppBundle:AdmiCiudad')->find($intIdCiudad);
-            if(empty($objCiudad))
+            $arrayParametros = array('estado'   => $strEstado,
+                                     'idCiudad' => $intIdCiudad);
+            $arrayParroquia  = $this->getDoctrine()->getRepository('AppBundle:AdmiParroquia')->getParroquia($arrayParametros);
+            if( isset($arrayParroquia['error']) && !empty($arrayParroquia['error']) ) 
             {
+                throw new \Exception($arrayPais['error']);
                 $strStatus  = 404;
-                throw new \Exception('Ciudad no existe.');
-            }
-            $objParroquia = $em->getRepository('AppBundle:AdmiParroquia')->findBy(array('ESTADO'    => $strEstado,
-                                                                                        'CIUDAD_ID' => $objCiudad));
-
-            foreach($objParroquia as $objItemParroquia)
-            {
-                $arrayParroquia [] = array('ID_PARROQUIA'    =>$objItemParroquia->getId(),
-                                           'PARROQUIA_NOMBRE' =>$objItemParroquia->getPARROQUIANOMBRE(),
-                                           'ESTADO'           =>$objItemParroquia->getESTADO(),
-                                           'NOMBRE_CIUDAD'    =>$objItemParroquia->getCIUDADID()->getCIUDAD_NOMBRE());
             }
         }
         catch(\Exception $ex)

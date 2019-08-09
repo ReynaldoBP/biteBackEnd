@@ -13,7 +13,7 @@ class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
     /**
      * Documentación para la función 'getProvincia'.
      *
-     * Método encargado de retornar todos los paises según los parametros enviados.
+     * Método encargado de retornar todos las provincias según los parametros enviados.
      * 
      * @author Kevin Baque
      * @version 1.0 16-07-2019

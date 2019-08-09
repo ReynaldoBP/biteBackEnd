@@ -27,7 +27,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         $strIdentificacion  = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
         $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
         $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
-        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'Activo';
         $arrayUsuarios      = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -36,11 +36,11 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS, IU.IDENTIFICACION, IU.CORREO, 
-                               IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION";
+            $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS, IU.IDENTIFICACION, IU.CORREO,IU.TIPO_ROL_ID,
+                               IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_USUARIO IU ";
-            $strWhere       = "WHERE IU.ESTADO=:ESTADO ";
+            $strWhere       = "WHERE lower(IU.ESTADO)=lower(:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
             if(!empty($strNombres))
@@ -63,8 +63,8 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoRol))
             {
-                $strSelect .= " ,ATR.DESCRIPCION_TIPO_ROL ";
-                $strFrom   .= " ,ADMI_TIPO_ROL ATR ";
+                $strSelect .= " , ATR.DESCRIPCION_TIPO_ROL ";
+                $strFrom   .= " , ADMI_TIPO_ROL ATR ";
                 $strWhere  .= " AND IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL
                                 AND ATR.DESCRIPCION_TIPO_ROL = :DESCRIPCION_TIPO_ROL";
                 $objQuery->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
@@ -76,6 +76,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('APELLIDOS', 'APELLIDOS', 'string');
             $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
             $objRsmBuilder->addScalarResult('CORREO', 'CORREO', 'string');
+            $objRsmBuilder->addScalarResult('TIPO_ROL_ID', 'TIPO_ROL_ID', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
             $objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
             $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');

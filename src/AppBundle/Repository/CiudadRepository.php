@@ -12,7 +12,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 class CiudadRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * 
+     * Documentación para la función 'getCiudad'.
      * Método encargado de retornar todos los paises según los parámetros enviados.
      * 
      * @author Kevin Baque
@@ -24,7 +24,7 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
     public function getCiudad($arrayParametros)
     {
         $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
-        $strProvincia    = $arrayParametros['provincia'] ? $arrayParametros['provincia']:'';
+        $strProvincia    = $arrayParametros['idProvincia'] ? $arrayParametros['idProvincia']:'';
         $arrayCiudad     = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -34,17 +34,19 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
         $strWhere        = '';
         try
         {
-            $strSelect = "SELECT ciudad.CIUDAD_NOMBRE,ciudad.PAIS_CODIGO,ciudad.ESTADO ";
+            $strSelect = "SELECT ciudad.ID_CIUDAD,ciudad.PROVINCIA_ID,ciudad.CIUDAD_NOMBRE,ciudad.ESTADO ";
             $strFrom   = "FROM ADMI_CIUDAD ciudad ";
             $strWhere  = "WHERE lower(ciudad.ESTADO) = lower(:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             if(!empty($strProvincia))
             {
-                $strWhere  .= " AND lower(ciudad.CIUDAD_DISTRITO) = lower(:CIUDAD_DISTRITO) ";
-                $objQuery->setParameter("CIUDAD_DISTRITO", $strProvincia);
+                $strFrom  .= " , ADMI_PROVINCIA provincia ";
+                $strWhere .= " AND provincia.ID_PROVINCIA = ciudad.PROVINCIA_ID AND provincia.ID_PROVINCIA = :ID_PROVINCIA ";
+                $objQuery->setParameter("ID_PROVINCIA", $strProvincia);
             }
+            $objRsmBuilder->addScalarResult('ID_CIUDAD', 'ID_CIUDAD', 'string');
+            $objRsmBuilder->addScalarResult('PROVINCIA_ID', 'PROVINCIA_ID', 'string');
             $objRsmBuilder->addScalarResult('CIUDAD_NOMBRE', 'CIUDAD_NOMBRE', 'string');
-            $objRsmBuilder->addScalarResult('PAIS_CODIGO', 'PAIS_CODIGO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
             $strSql  = $strSelect.$strFrom.$strWhere;
