@@ -26,21 +26,13 @@ class AdmiSectorController extends Controller
 
         try
         {
-            $objParroquia   = $em->getRepository('AppBundle:AdmiParroquia')->find($intIdParroquia);
-            if(empty($objParroquia))
+            $arrayParametros = array('estado'      => $strEstado,
+                                     'idParroquia' => $intIdParroquia);
+            $arraySector  = $this->getDoctrine()->getRepository('AppBundle:AdmiSector')->getSector($arrayParametros);
+            if( isset($arraySector['error']) && !empty($arraySector['error']) ) 
             {
+                throw new \Exception($arrayPais['error']);
                 $strStatus  = 404;
-                throw new \Exception('Parroquia no existe.');
-            }
-            $objSector = $em->getRepository('AppBundle:AdmiSector')->findBy(array('ESTADO'       => $strEstado,
-                                                                                  'PARROQUIA_ID' => $objParroquia));
-
-            foreach($objSector as $objItemSector)
-            {
-                $arraySector [] = array('ID_SECTOR'        => $objItemSector->getId(),
-                                        'SECTOR_NOMBRE'    => $objItemSector->getSECTORNOMBRE(),
-                                        'ESTADO'           => $objItemSector->getESTADO(),
-                                        'PARROQUIA_NOMBRE' => $objItemSector->getPARROQUIAID()->getPARROQUIANOMBRE());
             }
         }
         catch(\Exception $ex)
