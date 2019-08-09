@@ -24,25 +24,10 @@ class AdmiProvinciaController extends Controller
         $strStatus       = 400;
         $objResponse     = new Response;
         $em              = $this->getDoctrine()->getEntityManager();
-
         try
         {
-            $objRegion   = $em->getRepository('AppBundle:AdmiRegion')->find($intIdRegion);
-            if(empty($objRegion))
-            {
-                $strStatus  = 404;
-                throw new \Exception('Region no existe.');
-            }
-            $objProvincia = $em->getRepository('AppBundle:AdmiProvincia')->findBy(array('ESTADO'  => $strEstado,
-                                                                                        'REGION_ID' => $objRegion));
-
-            foreach($objProvincia as $objItemProvincia)
-            {
-                $arrayProvincia [] = array('ID_PROVINCIA'     =>$objItemProvincia->getId(),
-                                           'PROVINCIA_NOMBRE' =>$objItemProvincia->getPROVINCIANOMBRE(),
-                                           'ESTADO'           =>$objItemProvincia->getESTADO(),
-                                           'NOMBRE_REGION'    =>$objItemProvincia->getREGIONID()->getREGION_NOMBRE());
-            }
+            $arrayParametros = array('estado'    => $strEstado,'idRegion'=>$intIdRegion);
+            $arrayProvincia = $this->getDoctrine()->getRepository('AppBundle:AdmiProvincia')->getProvincia($arrayParametros);
         }
         catch(\Exception $ex)
         {
