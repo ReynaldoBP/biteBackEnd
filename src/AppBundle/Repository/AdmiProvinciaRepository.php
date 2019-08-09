@@ -1,7 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
-
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 /**
  * AdmiProvinciaRepository
  *
@@ -10,4 +10,55 @@ namespace AppBundle\Repository;
  */
 class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getProvincia'.
+     *
+     * Método encargado de retornar todos las provincias según los parametros enviados.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-07-2019
+     * 
+     * @return array  $arrayProvincia
+     * 
+     */
+    public function getProvincia($arrayParametros)
+    {
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $intIdRegion     = $arrayParametros['idRegion'] ? $arrayParametros['idRegion']:'';
+        $arrayProvincia  = array();
+        $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
+        $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strMensajeError = '';
+        $strSelect       = '';
+        $strFrom         = '';
+        $strWhere        = '';
+        try
+        {
+            $strSelect = "SELECT provincia.ID_PROVINCIA,provincia.REGION_ID,provincia.PROVINCIA_NOMBRE,provincia.ESTADO ";
+            $strFrom   = "FROM ADMI_PROVINCIA provincia ";
+            $strWhere  = "WHERE lower(provincia.ESTADO)=lower(:ESTADO) ";
+            $objQuery->setParameter("ESTADO", $strEstado);
+
+            if(!empty($intIdRegion))
+            {
+                $strFrom   .= ", ADMI_REGION region ";
+                $strWhere  .= " AND region.ID_REGION = provincia.REGION_ID AND region.ID_REGION = :ID_REGION";
+                $objQuery->setParameter("ID_REGION", $intIdRegion);
+            }
+            $objRsmBuilder->addScalarResult('ID_PROVINCIA', 'ID_PROVINCIA', 'string');
+            $objRsmBuilder->addScalarResult('REGION_ID', 'REGION_ID', 'string');
+            $objRsmBuilder->addScalarResult('PROVINCIA_NOMBRE', 'PROVINCIA_NOMBRE', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+
+            $strSql  = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayProvincia['provincia'] = $objQuery->getResult();
+        }
+        catch(\Exception $e)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayProvincia['error'] = $strMensajeError;
+        return $arrayProvincia;
+    }
 }

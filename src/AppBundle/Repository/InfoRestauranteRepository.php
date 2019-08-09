@@ -65,13 +65,13 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoComida))
             {
-                $strSelect .= " ,ATC.DESCRIPCION_TIPO_COMIDA ";
+                $strSelect .= " ,ATC.ID_TIPO_COMIDA ";
                 $strFrom   .= " ,ADMI_TIPO_COMIDA ATC ";
                 $strWhere  .= " AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA
                                 AND ATC.DESCRIPCION_TIPO_COMIDA = :DESCRIPCION";
                 $objQuery->setParameter("DESCRIPCION", $strTipoComida);
                 $objQueryCount->setParameter("DESCRIPCION", $strTipoComida);
-                $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
+                $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');
             }
             $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');
             $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');

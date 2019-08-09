@@ -12,13 +12,12 @@ use AppBundle\Entity\AdmiProvincia;
 class CiudadController extends Controller
 {
     /**
-     * @Route("/getCiudadCriterio")
+     * @Route("/getCiudad")
      */
-    public function getCiudadCriterioAction(Request $request)
+    public function getCiudadAction(Request $request)
     {
-        // en proceso no usar
         $strEstado             = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
-        $strProvincia          = $request->query->get("provincia") ? $request->query->get("provincia"):'';
+        $strProvincia          = $request->query->get("idProvincia") ? $request->query->get("idProvincia"):'';
         $arrayCiudad           = array();
         $strMensajeError       = '';
         $strStatus             = 400;
@@ -26,8 +25,8 @@ class CiudadController extends Controller
         $em                    = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('estado'    => $strEstado,
-                                     'provincia' => $strProvincia);
+            $arrayParametros = array('estado'      => $strEstado,
+                                     'idProvincia' => $strProvincia);
             $arrayCiudad     = $this->getDoctrine()->getRepository('AppBundle:AdmiCiudad')->getCiudad($arrayParametros);
             if( isset($arrayCiudad['error']) && !empty($arrayCiudad['error']) ) 
             {
@@ -53,9 +52,9 @@ class CiudadController extends Controller
         return $objResponse;
     }
     /**
-     * @Route("/getCiudad")
+     * @Route("/getCiudadPrueba")
      */
-    public function getCiudadAction(Request $request)
+    public function getCiudadPruebaAction(Request $request)
     {
         $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'Activo';
         $intIdProvincia  = $request->query->get("idProvincia") ? $request->query->get("idProvincia"):'';
