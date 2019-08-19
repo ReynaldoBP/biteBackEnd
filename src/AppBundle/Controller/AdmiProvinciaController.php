@@ -28,6 +28,11 @@ class AdmiProvinciaController extends Controller
         {
             $arrayParametros = array('estado'    => $strEstado,'idRegion'=>$intIdRegion);
             $arrayProvincia = $this->getDoctrine()->getRepository('AppBundle:AdmiProvincia')->getProvincia($arrayParametros);
+            if( isset($arrayProvincia['error']) && !empty($arrayProvincia['error']) ) 
+            {
+                throw new \Exception($arrayProvincia['error']);
+                $strStatus  = 404;
+            }
         }
         catch(\Exception $ex)
         {

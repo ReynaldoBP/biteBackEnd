@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoUsuario;
 use AppBundle\Entity\AdmiTipoRol;
-
+use AppBundle\Controller\DefaultController;
 class UsuarioController extends Controller
 {
     /**
@@ -112,7 +112,7 @@ class UsuarioController extends Controller
             $entityUsuario->setIDENTIFICACION($strIdentificacion);
             $entityUsuario->setNOMBRES($strNombres);
             $entityUsuario->setAPELLIDOS($strApellidos);
-            $entityUsuario->setCONTRASENIA($strContrasenia);
+            $entityUsuario->setCONTRASENIA(md5($strContrasenia));
             $entityUsuario->setIMAGEN($strImagen);
             $entityUsuario->setCORREO($strCorreo);
             $entityUsuario->setESTADO($strEstado);
@@ -202,7 +202,7 @@ class UsuarioController extends Controller
             }
             if(!empty($strContrasenia))
             {
-                $objUsuario->setCONTRASENIA($strContrasenia);
+                $objUsuario->setCONTRASENIA(md5($strContrasenia));
             }
             if(!empty($strImagen))
             {
@@ -278,7 +278,7 @@ class UsuarioController extends Controller
         try
         {
             $objUsuario   = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->findBy(array('CORREO'      => $strCorreo,
-                                                                                                       'CONTRASENIA' => $strPass));
+                                                                                                       'CONTRASENIA' => md5($strPass)));
             if(empty($objUsuario))
             {
                 $strStatus  = 404;
@@ -317,53 +317,6 @@ class UsuarioController extends Controller
     }
 
     /**
-     * @Route("/generarContrasenia")
-     *
-     * Documentación para la función 'generarContrasenia'
-     * Método encargado de generar las contraseñas a todos los usuarios.
-     * 
-     * @author Kevin Baque
-     * @version 1.0 01-08-2019
-     * 
-     * @return array  $objResponse
-     */
-    public function generarContraseniaAction()
-    {
-        $strCorreo        = 'baquekevin@hotmail.com';//$request->query->get("correo") ? $request->query->get("correo"):'baquekevin@hotmail.com';
-        $strMensaje       = '';
-        $email_address    = $strCorreo;
-        $strStatus        = 400;
-        $objResponse      = new Response;
-        $strClavetemporal = 'asd';
-        try
-        {
-            $to = $strCorreo;
-            $email_subject = "Clave temporal Bitte";
-            $email_body = "Tu clave temporal es : ";
-            $headers = "From: georgerichardd@hotmail.com";
-            //$headers .= "Reply-To: $strCorreo";
-            mail($to, $email_subject, $email_body, $headers);
-            /*$to = "baquekevin@hotmail.com";
-            $subject = "Asunto del email";
-            $message = "Este es mi primer envío de email con PHP";
-            mail($to, $subject, $message);*/
-        }
-        catch(\Exception $ex)
-        {
-            $strStatus       = 404;
-            $strMensaje = "Fallo al generar contraseña, intente nuevamente.\n ". $ex->getMessage();
-        }
-        $objResponse->setContent(json_encode(array(
-                                            'status'    => $strStatus,
-                                            'resultado' => $strMensaje,
-                                            'succes'    => true
-                                            )
-                                        ));
-        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
-        return $objResponse;
-    }
-    
-    /**
      * @Route("/generarPass")
      *
      * Documentación para la función 'generarPass'
@@ -374,98 +327,68 @@ class UsuarioController extends Controller
      *
      * @return array  $objResponse
      */
-    public function generarPassAction()
+    public function generarPassAction(Request $request)
     {
+        $strDestinatario  = $request->query->get("correo") ? trim($request->query->get("correo")):'';
         $strAsunto        = 'Clave temporal Bitte';
-        $strMensajeCorreo = 'Tu clave temporal es :';
-        $strRemitente     = 'baquekevin@hotmail.com';
-        $strCorreo        = 'baquekevin@hotmail.com';
+        $strContrasenia   = uniqid();
+        $strMensajeCorreo = 'Tu clave temporal es :'.$strContrasenia;
+        $strRemitente     = 'notificaciones_bitte@massvision.ec';
         $objResponse      = new Response;
-        $objMessage = \Swift_Message::newInstance()
-        ->setSubject($strAsunto)
-        ->setFrom('notificaciones_telcos@telconet.ec')
-        ->setTo($strCorreo)
-        ->setBody($strMensajeCorreo, 'text/html');
-        $respuesta = $this->get('mailer')->send($objMessage);
-        $objResponse->setContent(json_encode(array(
-                                            'status'    => 200,
-                                            'resultado' => $respuesta,
-                                            'succes'    => true
-                                            )
-                                        ));
-        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
-        return $objResponse;
-    }
-    /**
-     * @Route("/generarPass")
-     *
-     * Documentación para la función 'generarPass'
-     * Método encargado de generar las contraseñas a todos los usuarios.
-     * 
-     * @author Kevin Baque
-     * @version 1.0 01-08-2019
-     * 
-     * @return array  $objResponse
-     */
-    public function generarPassPruebaAction()
-    {
+        $strRespuesta     = '';
+        $arrayParametros  = array();
+        $strStatus        = 400;
+        $em               = $this->getDoctrine()->getEntityManager();
+        $strMensajeError  = '';
         try
         {
-            $strStatus        = 400;
-            $objResponse      = new Response;
-            $strMensaje       = 'ok';
-            $strAsunto        = 'Clave temporal Bitte';
-            $strMensajeCorreo = 'Tu clave temporal es :';
-            $strRemitente     = 'baquekevin@hotmail.com';
-            $strCorreo        = 'baquekevin@hotmail.com';
-            include_once "swift_required.php";
-            $transport = Swift_SmtpTransport::newInstance('smtp.mailtrap.io', 25)
-                                ->setUsername('58e18a743e44f1')
-                                ->setPassword('c362f862d245c4');
-            $mailer = Swift_Mailer::newInstance($transport);
-            /*$message = Swift_Message::newInstance('Hola')
-                                ->setFrom($strRemitente)
-                                ->setTo($strCorreo)
-                                ->setBody($strMensajeCorreo, 'text/html');
-            $mailer->send($message);*/
-            /*------------------------------------------- */
-            $message = \Swift_Message::newInstance()
-                                        ->setSubject($strAsunto)
-                                        ->setFrom($strRemitente)
-                                        ->setTo($strCorreo)
-                                        ->setBody($strMensajeCorreo, 'text/html');
-            $mailer->send($message);
-            /*------------------------------------------- */
-            /*$transport = (new Swift_SmtpTransport('smtp.mailtrap.io', 2525))
-                            ->setUsername('950ef3a975634d')
-                            ->setPassword('3c99a3ebfa827f');
-            $mailer = new Swift_Mailer($transport);
-            $message = (new Swift_Message($strAsunto))
-            ->setFrom($strCorreo)
-            ->setTo($strCorreo)
-            ->setBody('Here is the message itself');
-            $mailer->send($message);*/
-            /*------------------------------------------- */
-            /*$message = \Swift_Message::newInstance()
-                                        ->setSubject($strAsunto)
-                                        ->setFrom($strRemitente)
-                                        ->setTo($strCorreo)
-                                        ->setBody($strMensajeCorreo, 'text/html');*/
-            
+            if(empty($strDestinatario))
+            {
+                throw new \Exception('Es necesario enviar el correo.');
+            }
+            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('CORREO'=>$strDestinatario));
+            if(!is_object($objUsuario) && empty($objUsuario))
+            {
+                throw new \Exception('Usuario no existente.');
+            }
+            if(empty($strContrasenia))
+            {
+                throw new \Exception('No se ah generado la contraseña.');
+            }
+            $arrayParametros  = array('strAsunto'        => $strAsunto,
+                                      'strMensajeCorreo' => $strMensajeCorreo,
+                                      'strRemitente'     => $strRemitente,
+                                      'strDestinatario'  => $strDestinatario);
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
+            $objController->enviaCorreo($arrayParametros);
+            $objUsuario->setCONTRASENIA(md5($strContrasenia));
+            $em->persist($objUsuario);
+            $em->flush();
+            $strMensajeError = 'Cambio de clave con exito.!';
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $em->getConnection()->commit();
+                $em->getConnection()->close();
+            }
         }
         catch(\Exception $ex)
         {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $em->getConnection()->rollback();
+                $em->getConnection()->close();
+            }
             $strStatus       = 404;
-            $strMensaje = "Fallo al generar contraseña, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError = "Fallo al generar el correo, intente nuevamente.\n ". $ex->getMessage();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => '',
+                                            'resultado' => $strMensajeError,
                                             'succes'    => true
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
-
 }

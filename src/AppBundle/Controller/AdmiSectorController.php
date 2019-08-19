@@ -31,7 +31,7 @@ class AdmiSectorController extends Controller
             $arraySector  = $this->getDoctrine()->getRepository('AppBundle:AdmiSector')->getSector($arrayParametros);
             if( isset($arraySector['error']) && !empty($arraySector['error']) ) 
             {
-                throw new \Exception($arrayPais['error']);
+                throw new \Exception($arraySector['error']);
                 $strStatus  = 404;
             }
         }

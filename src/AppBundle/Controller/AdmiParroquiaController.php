@@ -31,7 +31,7 @@ class AdmiParroquiaController extends Controller
             $arrayParroquia  = $this->getDoctrine()->getRepository('AppBundle:AdmiParroquia')->getParroquia($arrayParametros);
             if( isset($arrayParroquia['error']) && !empty($arrayParroquia['error']) ) 
             {
-                throw new \Exception($arrayPais['error']);
+                throw new \Exception($arrayParroquia['error']);
                 $strStatus  = 404;
             }
         }

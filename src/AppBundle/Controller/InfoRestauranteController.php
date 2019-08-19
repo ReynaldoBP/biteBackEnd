@@ -60,7 +60,7 @@ class InfoRestauranteController extends Controller
             $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
-                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION_TIPO_COMIDA'=>$strTipoComida));
                 if(!is_object($objTipoComida) || empty($objTipoComida))
                 {
                     throw new \Exception('Tipo de comida no existe.');
@@ -148,7 +148,7 @@ class InfoRestauranteController extends Controller
             }
             if(!empty($strTipoComida))
             {
-                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION_TIPO_COMIDA'=>$strTipoComida));
                 if(!is_object($objTipoComida) || empty($objTipoComida))
                 {
                     throw new \Exception('Tipo de comida no existe.');
