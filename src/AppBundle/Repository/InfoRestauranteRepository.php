@@ -38,7 +38,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
-                                        IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.DIRECCION_TRIBUTARIO, 
+                                        IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID, IR.DIRECCION_TRIBUTARIO, 
                                         IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_RESTAURANTE IR ";
@@ -65,13 +65,11 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoComida))
             {
-                $strSelect .= " ,ATC.ID_TIPO_COMIDA ";
                 $strFrom   .= " ,ADMI_TIPO_COMIDA ATC ";
                 $strWhere  .= " AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA
                                 AND ATC.DESCRIPCION_TIPO_COMIDA = :DESCRIPCION";
                 $objQuery->setParameter("DESCRIPCION", $strTipoComida);
                 $objQueryCount->setParameter("DESCRIPCION", $strTipoComida);
-                $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');
             }
             $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');
             $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
@@ -79,6 +77,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
             $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('REPRESENTANTE_LEGAL', 'REPRESENTANTE_LEGAL', 'string');
+            $objRsmBuilder->addScalarResult('TIPO_COMIDA_ID', 'TIPO_COMIDA_ID', 'string');
             $objRsmBuilder->addScalarResult('DIRECCION_TRIBUTARIO', 'DIRECCION_TRIBUTARIO', 'string');
             $objRsmBuilder->addScalarResult('URL_CATALOGO', 'URL_CATALOGO', 'string');
             $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');

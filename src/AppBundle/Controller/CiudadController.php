@@ -30,7 +30,7 @@ class CiudadController extends Controller
             $arrayCiudad     = $this->getDoctrine()->getRepository('AppBundle:AdmiCiudad')->getCiudad($arrayParametros);
             if( isset($arrayCiudad['error']) && !empty($arrayCiudad['error']) ) 
             {
-                throw new \Exception($arrayPais['error']);
+                throw new \Exception($arrayCiudad['error']);
                 $strStatus  = 404;
             }
         }
@@ -39,7 +39,7 @@ class CiudadController extends Controller
             $strMensajeError = "Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
             if(isset($arrayCiudad['error']))
             {
-                $arrayCiudad['error'] = $strMensajeError.' '.$arrayCiudad['error'];
+                $arrayCiudad['error'] = $strMensajeError;
             }
         }
         $objResponse->setContent(json_encode(array(

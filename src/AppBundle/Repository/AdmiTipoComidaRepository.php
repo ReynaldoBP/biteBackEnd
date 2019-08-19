@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * AdmiTipoComidaRepository
@@ -10,4 +11,55 @@ namespace AppBundle\Repository;
  */
 class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getTipoComida'.
+     *
+     * Método encargado de retornar todos los tipos de comida según los parametros enviados.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 17-08-2019
+     * 
+     * @return array  $arrayTipoComida
+     * 
+     */
+    public function getTipoComida($arrayParametros)
+    {
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $arrayTipoComida = array();
+        $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
+        $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strMensajeError = '';
+        $strSelect       = '';
+        $strFrom         = '';
+        $strWhere        = '';
+        try
+        {
+            $strSelect = "SELECT tipoComida.ID_TIPO_COMIDA,tipoComida.DESCRIPCION_TIPO_COMIDA,tipoComida.ESTADO,
+                          tipoComida.USR_CREACION,tipoComida.FE_CREACION ,tipoComida.USR_MODIFICACION ,tipoComida.FE_MODIFICACION ";
+            $strFrom   = "FROM ADMI_TIPO_COMIDA tipoComida ";
+            if(!empty($strEstado))
+            {
+                $strWhere  = "WHERE lower(tipoComida.ESTADO)=lower(:ESTADO)";
+                $objQuery->setParameter("ESTADO", $strEstado);
+            }
+            $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+
+
+            $strSql  = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayTipoComida['tipoComida'] = $objQuery->getResult();
+        }
+        catch(\Exception $e)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayTipoComida['error'] = $strMensajeError;
+        return $arrayTipoComida;
+    }
 }

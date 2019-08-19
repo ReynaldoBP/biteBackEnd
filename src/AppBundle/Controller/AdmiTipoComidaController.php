@@ -6,43 +6,64 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-class PaisController extends Controller
+class AdmiTipoComidaController extends Controller
 {
     /**
-     * @Route("/getPais")
+     * @Route("/getTipoComida")
      */
-    public function getPaisAction(Request $request)
+    public function getTipoComidaAction(Request $request)
     {
         $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
         $arrayParametros = array('estado'    => $strEstado);
-        $arrayPais       = array();
+        $arrayTipoComida = array();
         $strMensajeError = '';
         $strStatus       = 400;
         $objResponse     = new Response;
         try
         {
-            $arrayPais = $this->getDoctrine()->getRepository('AppBundle:AdmiPais')->getPais($arrayParametros);
-            if( isset($arrayPais['error']) && !empty($arrayPais['error']) ) 
+            $arrayTipoComida = $this->getDoctrine()->getRepository('AppBundle:AdmiTipoComida')->getTipoComida($arrayParametros);
+            if( isset($arrayTipoComida['error']) && !empty($arrayTipoComida['error']) ) 
             {
-                throw new \Exception($arrayPais['error']);
+                throw new \Exception($arrayTipoComida['error']);
                 $strStatus  = 404;
             }
         }
         catch(\Exception $ex)
         {
             $strMensajeError    = "Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
-            if(isset($arrayPais['error']))
+            if(isset($arrayTipoComida['error']))
             {
-                $arrayPais['error'] = $strMensajeError;
+                $arrayTipoComida['error'] = $strMensajeError;
             }
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $arrayPais,
+                                            'resultado' => $arrayTipoComida,
                                             'succes'    => true
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
+
+    /**
+     * @Route("/editTipoComida")
+     */
+    public function editTipoComidaAction()
+    {
+        return $this->render('AppBundle:AdmiTipoComida:edit_tipo_comida.html.twig', array(
+            // ...
+        ));
+    }
+
+    /**
+     * @Route("/createTipoComida")
+     */
+    public function createTipoComidaAction()
+    {
+        return $this->render('AppBundle:AdmiTipoComida:create_tipo_comida.html.twig', array(
+            // ...
+        ));
+    }
+
 }
