@@ -22,8 +22,9 @@ class AdmiParroquiaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getParroquia($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strCiudad       = $arrayParametros['idCiudad'] ? $arrayParametros['idCiudad']:'';
+        $intIdParroquia  = $arrayParametros['idParroquia'] ? $arrayParametros['idParroquia']:'';
         $arrayParroquia  = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -35,13 +36,18 @@ class AdmiParroquiaRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect = "SELECT parroquia.ID_PARROQUIA,parroquia.CIUDAD_ID,parroquia.PARROQUIA_NOMBRE,parroquia.ESTADO ";
             $strFrom   = "FROM ADMI_PARROQUIA parroquia ";
-            $strWhere  = "WHERE lower(parroquia.ESTADO) = lower(:ESTADO) ";
+            $strWhere  = "WHERE parroquia.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             if(!empty($strCiudad))
             {
                 $strFrom  .= " , ADMI_CIUDAD ciudad ";
                 $strWhere .= " AND ciudad.ID_CIUDAD = parroquia.CIUDAD_ID AND ciudad.ID_CIUDAD = :ID_CIUDAD ";
                 $objQuery->setParameter("ID_CIUDAD", $strCiudad);
+            }
+            if(!empty($intIdParroquia))
+            {
+                $strWhere .= " AND parroquia.ID_PARROQUIA = :ID_PARROQUIA ";
+                $objQuery->setParameter("ID_PARROQUIA", $intIdParroquia);
             }
             $objRsmBuilder->addScalarResult('ID_PARROQUIA', 'ID_PARROQUIA', 'string');
             $objRsmBuilder->addScalarResult('CIUDAD_ID', 'CIUDAD_ID', 'string');

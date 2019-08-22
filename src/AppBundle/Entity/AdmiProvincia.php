@@ -22,14 +22,14 @@ class AdmiProvincia
     private $id;
 
     /**
-    * @var AdmiRegion
+    * @var AdmiPais
     *
-    * @ORM\ManyToOne(targetEntity="AdmiRegion")
+    * @ORM\ManyToOne(targetEntity="AdmiPais")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="REGION_ID", referencedColumnName="ID_REGION")
+    * @ORM\JoinColumn(name="PAIS_ID", referencedColumnName="ID_PAIS")
     * })
     */
-    private $REGION_ID;
+    private $PAIS_ID;
 
     /**
      * @var string
@@ -37,6 +37,13 @@ class AdmiProvincia
      * @ORM\Column(name="PROVINCIA_NOMBRE", type="string", length=255)
      */
     private $PROVINCIANOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="REGION_NOMBRE", type="string", length=50)
+     */
+    private $REGION_NOMBRE;
 
     /**
      * @var string
@@ -105,26 +112,50 @@ class AdmiProvincia
     }
 
     /**
-     * Set rEGIONID
+     * Set PAISID
      *
-     * @param \AppBundle\Entity\AdmiRegion $rEGIONID
+     * @param \AppBundle\Entity\AdmiPais $PAISID
      *
      * @return AdmiProvincia
      */
-    public function setREGIONID(\AppBundle\Entity\AdmiRegion $rEGIONID = null)
+    public function setPAISID(\AppBundle\Entity\AdmiPais $PAISID = null)
     {
-        $this->REGION_ID = $rEGIONID;
+        $this->PAIS_ID = $PAISID;
 
         return $this;
     }
 
     /**
-     * Get rEGIONID
+     * Get PAISID
      *
-     * @return \AppBundle\Entity\AdmiRegion
+     * @return \AppBundle\Entity\AdmiPais
      */
-    public function getREGIONID()
+    public function getPAISID()
     {
-        return $this->REGION_ID;
+        return $this->PAIS_ID;
+    }
+
+    /**
+     * Set REGIONNOMBRE
+     *
+     * @param string $REGIONNOMBRE
+     *
+     * @return AdmiProvincia
+     */
+    public function setREGIONNOMBRE($REGIONNOMBRE)
+    {
+        $this->REGION_NOMBRE = $REGIONNOMBRE;
+
+        return $this;
+    }
+
+    /**
+     * Get REGIONNOMBRE
+     *
+     * @return string
+     */
+    public function getREGIONNOMBRE()
+    {
+        return $this->REGION_NOMBRE;
     }
 }

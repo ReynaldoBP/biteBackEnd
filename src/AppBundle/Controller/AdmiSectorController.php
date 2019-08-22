@@ -16,8 +16,9 @@ class AdmiSectorController extends Controller
      */
     public function getSectorAction(Request $request)
     {
-        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'Activo';
+        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
         $intIdParroquia  = $request->query->get("idParroquia") ? $request->query->get("idParroquia"):'';
+        $intIdSector     = $request->query->get("idSector") ? $request->query->get("idSector"):'';
         $strMensajeError = '';
         $arraySector     = array();
         $strStatus       = 400;
@@ -27,12 +28,13 @@ class AdmiSectorController extends Controller
         try
         {
             $arrayParametros = array('estado'      => $strEstado,
+                                     'idSector'    => $intIdSector,
                                      'idParroquia' => $intIdParroquia);
             $arraySector  = $this->getDoctrine()->getRepository('AppBundle:AdmiSector')->getSector($arrayParametros);
             if( isset($arraySector['error']) && !empty($arraySector['error']) ) 
             {
-                throw new \Exception($arraySector['error']);
                 $strStatus  = 404;
+                throw new \Exception($arraySector['error']);
             }
         }
         catch(\Exception $ex)

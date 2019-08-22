@@ -14,7 +14,9 @@ class AdmiTipoComidaController extends Controller
     public function getTipoComidaAction(Request $request)
     {
         $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
-        $arrayParametros = array('estado'    => $strEstado);
+        $intIdTipoComida = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
+        $arrayParametros = array('estado'       => $strEstado,
+                                 'idTipoComida' => $intIdTipoComida);
         $arrayTipoComida = array();
         $strMensajeError = '';
         $strStatus       = 400;
@@ -24,18 +26,15 @@ class AdmiTipoComidaController extends Controller
             $arrayTipoComida = $this->getDoctrine()->getRepository('AppBundle:AdmiTipoComida')->getTipoComida($arrayParametros);
             if( isset($arrayTipoComida['error']) && !empty($arrayTipoComida['error']) ) 
             {
-                throw new \Exception($arrayTipoComida['error']);
                 $strStatus  = 404;
+                throw new \Exception($arrayTipoComida['error']);
             }
         }
         catch(\Exception $ex)
         {
             $strMensajeError    = "Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
-            if(isset($arrayTipoComida['error']))
-            {
-                $arrayTipoComida['error'] = $strMensajeError;
-            }
         }
+        $arrayTipoComida['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayTipoComida,

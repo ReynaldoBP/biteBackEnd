@@ -48,6 +48,7 @@ class InfoRestauranteController extends Controller
 
         try
         {
+            $em->getConnection()->beginTransaction();
             $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($strIdUsuario);
             if(!is_object($objUsuario) || empty($objUsuario))
             {
@@ -60,7 +61,7 @@ class InfoRestauranteController extends Controller
             $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
-                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION_TIPO_COMIDA'=>$strTipoComida));
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION'=>$strTipoComida));
                 if(!is_object($objTipoComida) || empty($objTipoComida))
                 {
                     throw new \Exception('Tipo de comida no existe.');
@@ -82,7 +83,7 @@ class InfoRestauranteController extends Controller
             $entityRestaurante->setDIRECCIONTRIBUTARIO($strDireccionTributario);
             $entityRestaurante->setURLCATALOGO($strUrlCatalogo);
             $entityRestaurante->setNUMEROCONTACTO($strNumeroContacto);
-            $entityRestaurante->setESTADO($strEstado);
+            $entityRestaurante->setESTADO(strtoupper($strEstado));
             $entityRestaurante->setUSRCREACION($strUsuarioCreacion);
             $entityRestaurante->setFECREACION($strDatetimeActual);
             $em->persist($entityRestaurante);
@@ -91,8 +92,17 @@ class InfoRestauranteController extends Controller
         }
         catch(\Exception $ex)
         {
-            $strStatus  = 404;
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
             $strMensajeError = "Fallo al crear un restaurante, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
@@ -137,6 +147,7 @@ class InfoRestauranteController extends Controller
 
         try
         {
+            $em->getConnection()->beginTransaction();
             $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
             if(!is_object($objRestaurante) || empty($objRestaurante))
             {
@@ -189,7 +200,7 @@ class InfoRestauranteController extends Controller
             }
             if(!empty($strEstado))
             {
-                $objRestaurante->setESTADO($strEstado);
+                $objRestaurante->setESTADO(strtoupper($strEstado));
             }
             
             $objRestaurante->setUSRMODIFICACION($strUsuarioCreacion);
@@ -200,8 +211,17 @@ class InfoRestauranteController extends Controller
         }
         catch(\Exception $ex)
         {
-            $strStatus  = 404;
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
             $strMensajeError = "Fallo al crear un restaurante, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
@@ -225,6 +245,7 @@ class InfoRestauranteController extends Controller
      */
     public function getRestauranteAction(Request $request)
     {
+        $intIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
         $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
@@ -238,6 +259,7 @@ class InfoRestauranteController extends Controller
         try
         {
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
+                                    'intIdRestaurante'      => $intIdRestaurante,
                                     'strTipoIdentificacion' => $strTipoIdentificacion,
                                     'strIdentificacion'     => $strIdentificacion,
                                     'strRazonSocial'        => $strRazonSocial,
@@ -246,14 +268,15 @@ class InfoRestauranteController extends Controller
             $arrayRestaurantes   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterio($arrayParametros);
             if(isset($arrayRestaurantes['error']) && !empty($arrayRestaurantes['error']))
             {
-                $strMensaje = false;
                 $strStatus  = 404;
+                throw new \Exception($arrayRestaurantes['error']);
             }
         }
         catch(\Exception $ex)
         {
             $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
+        $arrayRestaurantes['error'] = $strMensaje;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRestaurantes,

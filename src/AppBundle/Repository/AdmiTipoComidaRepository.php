@@ -24,7 +24,8 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getTipoComida($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $intIdTipoComida = $arrayParametros['idTipoComida'] ? $arrayParametros['idTipoComida']:'';
         $arrayTipoComida = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -37,10 +38,12 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
             $strSelect = "SELECT tipoComida.ID_TIPO_COMIDA,tipoComida.DESCRIPCION_TIPO_COMIDA,tipoComida.ESTADO,
                           tipoComida.USR_CREACION,tipoComida.FE_CREACION ,tipoComida.USR_MODIFICACION ,tipoComida.FE_MODIFICACION ";
             $strFrom   = "FROM ADMI_TIPO_COMIDA tipoComida ";
-            if(!empty($strEstado))
+            $strWhere  = "WHERE tipoComida.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdTipoComida))
             {
-                $strWhere  = "WHERE lower(tipoComida.ESTADO)=lower(:ESTADO)";
-                $objQuery->setParameter("ESTADO", $strEstado);
+                $strWhere .= " AND tipoComida.ID_TIPO_COMIDA = :ID_TIPO_COMIDA";
+                $objQuery->setParameter("ID_TIPO_COMIDA", $intIdTipoComida);
             }
             $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
@@ -55,7 +58,7 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setSQL($strSql);
             $arrayTipoComida['tipoComida'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

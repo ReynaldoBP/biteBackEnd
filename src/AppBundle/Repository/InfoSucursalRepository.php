@@ -28,7 +28,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $strPais               = $arrayParametros['strPais'] ? $arrayParametros['strPais']:'';
         $strCiudad             = $arrayParametros['strCiudad'] ? $arrayParametros['strCiudad']:'';
         $strSector             = $arrayParametros['strSector'] ? $arrayParametros['strSector']:'';
-        $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'Activo';
+        $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strEstadoFacturacion  = $arrayParametros['strEstadoFacturacion'] ? $arrayParametros['strEstadoFacturacion']:'';
         $arraySucursal         = array();
         $strMensajeError       = '';
@@ -39,11 +39,12 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
-                                      ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
-                                      ISUR.LONGITUD, ISUR.PAIS,ISUR.CIUDAD,ISUR.SECTOR ";
+                                      IR.IDENTIFICACION,IR.RAZON_SOCIAL, ISUR.RESTAURANTE_ID,ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
+                                      ISUR.LONGITUD, ISUR.PAIS,ISUR.CIUDAD,ISUR.SECTOR,
+                                      ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_SUCURSAL ISUR ";
-            $strWhere       = "WHERE lower(ISUR.ESTADO)= lower(:ESTADO) ";
+            $strFrom        = "FROM INFO_SUCURSAL ISUR, INFO_RESTAURANTE IR ";
+            $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) AND ISUR.RESTAURANTE_ID=IR.ID_RESTAURANTE ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
             if(!empty($strEsMatriz))
@@ -77,6 +78,9 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ES_MATRIZ', 'ES_MATRIZ', 'string');
             $objRsmBuilder->addScalarResult('DIRECCION', 'DIRECCION', 'string');
+            $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
+            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
             $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_FACTURACION', 'ESTADO_FACTURACION', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
@@ -85,6 +89,10 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
             $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');
             $objRsmBuilder->addScalarResult('SECTOR', 'SECTOR', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
 
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;

@@ -23,8 +23,9 @@ class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getProvincia($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
-        $intIdRegion     = $arrayParametros['idRegion'] ? $arrayParametros['idRegion']:'';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'';
+        $intIdPais       = $arrayParametros['idPais'] ? $arrayParametros['idPais']:'';
+        $strRegion       = $arrayParametros['region'] ? $arrayParametros['region']:'';
         $arrayProvincia  = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -34,20 +35,27 @@ class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
         $strWhere        = '';
         try
         {
-            $strSelect = "SELECT provincia.ID_PROVINCIA,provincia.REGION_ID,provincia.PROVINCIA_NOMBRE,provincia.ESTADO ";
-            $strFrom   = "FROM ADMI_PROVINCIA provincia ";
-            $strWhere  = "WHERE lower(provincia.ESTADO)=lower(:ESTADO) ";
-            $objQuery->setParameter("ESTADO", $strEstado);
+            $strSelect = "SELECT pais.PAIS_NOMBRE,pais.ID_PAIS,provincia.ID_PROVINCIA,provincia.PAIS_ID,
+                            provincia.PROVINCIA_NOMBRE,provincia.REGION_NOMBRE,provincia.ESTADO ";
+            $strFrom   = "FROM ADMI_PROVINCIA provincia, ADMI_PAIS pais ";
+            $strWhere  = "WHERE pais.ID_PAIS=provincia.PAIS_ID AND provincia.PAIS_ID=:idPais ";
+            $objQuery->setParameter("idPais", $intIdPais);
 
-            if(!empty($intIdRegion))
+            if(!empty($strEstado))
             {
-                $strFrom   .= ", ADMI_REGION region ";
-                $strWhere  .= " AND region.ID_REGION = provincia.REGION_ID AND region.ID_REGION = :ID_REGION";
-                $objQuery->setParameter("ID_REGION", $intIdRegion);
+                $strWhere  .= "AND lower(provincia.ESTADO)=lower(:ESTADO) ";
+                $objQuery->setParameter("ESTADO", $strEstado);
+            }
+            if(!empty($strRegion))
+            {
+                $strWhere  .= "AND lower(provincia.REGION_NOMBRE)=lower(:region) ";
+                $objQuery->setParameter("region", $strRegion);
             }
             $objRsmBuilder->addScalarResult('ID_PROVINCIA', 'ID_PROVINCIA', 'string');
-            $objRsmBuilder->addScalarResult('REGION_ID', 'REGION_ID', 'string');
             $objRsmBuilder->addScalarResult('PROVINCIA_NOMBRE', 'PROVINCIA_NOMBRE', 'string');
+            $objRsmBuilder->addScalarResult('REGION_NOMBRE', 'REGION_NOMBRE', 'string');
+            $objRsmBuilder->addScalarResult('ID_PAIS', 'ID_PAIS', 'string');
+            $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
             $strSql  = $strSelect.$strFrom.$strWhere;

@@ -23,8 +23,9 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getCiudad($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strProvincia    = $arrayParametros['idProvincia'] ? $arrayParametros['idProvincia']:'';
+        $intCiudad       = $arrayParametros['idCiudad'] ? $arrayParametros['idCiudad']:'';
         $arrayCiudad     = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -36,8 +37,13 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect = "SELECT ciudad.ID_CIUDAD,ciudad.PROVINCIA_ID,ciudad.CIUDAD_NOMBRE,ciudad.ESTADO ";
             $strFrom   = "FROM ADMI_CIUDAD ciudad ";
-            $strWhere  = "WHERE lower(ciudad.ESTADO) = lower(:ESTADO) ";
+            $strWhere  = "WHERE ciudad.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($intCiudad))
+            {
+                $strWhere .= " AND ciudad.ID_CIUDAD = :ID_CIUDAD ";
+                $objQuery->setParameter("ID_CIUDAD", $intCiudad);
+            }
             if(!empty($strProvincia))
             {
                 $strFrom  .= " , ADMI_PROVINCIA provincia ";

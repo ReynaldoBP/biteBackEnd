@@ -25,6 +25,7 @@ class InfoSucursalController extends Controller
     public function getSucursalAction(Request $request)
     {
         $strIdRestaurante     = $request->query->get("strIdRestaurante") ? $request->query->get("strIdRestaurante"):'';
+        $intIdSucursal        = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
         $strIdentificacionRes = $request->query->get("identificacionRestaurante") ? $request->query->get("identificacionRestaurante"):'';
         $strEsMatriz          = $request->query->get("esMatriz") ? $request->query->get("esMatriz"):'';
         $strPais              = $request->query->get("pais") ? $request->query->get("pais"):'';
@@ -40,6 +41,7 @@ class InfoSucursalController extends Controller
         try
         {
             $arrayParametros = array('strIdRestaurante'     => $strIdRestaurante,
+                                    'intIdSucursal'         => $intIdSucursal,
                                     'strIdentificacionRes'  => $strIdentificacionRes,
                                     'strEsMatriz'           => $strEsMatriz,
                                     'strPais'               => $strPais,
@@ -51,14 +53,15 @@ class InfoSucursalController extends Controller
             $arraySucursal = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')->getSucursalCriterio($arrayParametros);
             if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))
             {
-                $strMensaje = false;
                 $strStatus  = 404;
+                throw new \Exception($arraySucursal['error']);
             }
         }
         catch(\Exception $ex)
         {
             $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
+        $arraySucursal['error'] = $strMensaje;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arraySucursal,
@@ -105,6 +108,7 @@ class InfoSucursalController extends Controller
 
         try
         {
+            $em->getConnection()->beginTransaction();
             $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
             if(!is_object($objRestaurante) || empty($objRestaurante))
             {
@@ -120,8 +124,8 @@ class InfoSucursalController extends Controller
             $entitySucursal->setESMATRIZ($strEsMatriz);
             $entitySucursal->setDIRECCION($strDireccion);
             $entitySucursal->setNUMEROCONTACTO($strNumeroContacto);
-            $entitySucursal->setESTADOFACTURACION($strEstadoFacturacion);
-            $entitySucursal->setESTADO($strEstado);
+            $entitySucursal->setESTADOFACTURACION(strtoupper($strEstadoFacturacion));
+            $entitySucursal->setESTADO(strtoupper($strEstado));
             $entitySucursal->setLATITUD($floatLatitud);
             $entitySucursal->setLONGITUD($floatLongitud);
             $entitySucursal->setPAIS($strPais);
@@ -135,8 +139,17 @@ class InfoSucursalController extends Controller
         }
         catch(\Exception $ex)
         {
-            $strStatus  = 404;
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
             $strMensajeError = "Fallo al crear una sucursal, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
@@ -184,6 +197,7 @@ class InfoSucursalController extends Controller
 
         try
         {
+            $em->getConnection()->beginTransaction();
             $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
             if(!is_object($objRestaurante) || empty($objRestaurante))
             {
@@ -213,11 +227,11 @@ class InfoSucursalController extends Controller
             }
             if(!empty($strEstadoFacturacion))
             {
-                $entitySucursal->setESTADOFACTURACION($strEstadoFacturacion);
+                $entitySucursal->setESTADOFACTURACION(strtoupper($strEstadoFacturacion));
             }
             if(!empty($strEstado))
             {
-                $entitySucursal->setESTADO($strEstado);
+                $entitySucursal->setESTADO(strtoupper($strEstado));
             }
             if(!empty($floatLatitud))
             {
@@ -247,8 +261,17 @@ class InfoSucursalController extends Controller
         }
         catch(\Exception $ex)
         {
-            $strStatus  = 404;
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
             $strMensajeError = "Fallo al editar una sucursal, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,

@@ -22,8 +22,9 @@ class AdmiSectorRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getSector($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strParroquia    = $arrayParametros['idParroquia'] ? $arrayParametros['idParroquia']:'';
+        $intIdSector     = $arrayParametros['idSector'] ? $arrayParametros['idSector']:'';
         $arraySector     = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -35,8 +36,13 @@ class AdmiSectorRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect = "SELECT sector.ID_SECTOR,sector.PARROQUIA_ID,sector.SECTOR_NOMBRE,sector.ESTADO ";
             $strFrom   = "FROM ADMI_SECTOR sector ";
-            $strWhere  = "WHERE lower(sector.ESTADO) = lower(:ESTADO) ";
+            $strWhere  = "WHERE sector.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdSector))
+            {
+                $strWhere .= " AND sector.ID_SECTOR = :ID_SECTOR ";
+                $objQuery->setParameter("ID_SECTOR", $intIdSector);
+            }
             if(!empty($strParroquia))
             {
                 $strFrom  .= " , ADMI_PARROQUIA parroquia ";

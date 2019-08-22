@@ -25,18 +25,20 @@ class UsuarioController extends Controller
      */
     public function getUsuarioAction(Request $request)
     {
-        $strTipoRol             = $request->query->get("tipoRol") ? $request->query->get("tipoRol"):'';
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
+        $strTipoRol             = $request->query->get("idRol") ? $request->query->get("idRol"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strNombres             = $request->query->get("nombres") ? $request->query->get("nombres"):'';
         $strApellidos           = $request->query->get("apellidos") ? $request->query->get("apellidos"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $arrayUsuarios          = array();
-        $strMensaje             = '';
+        $strMensajeError        = '';
         $strStatus              = 400;
         $objResponse            = new Response;
         try
         {
-            $arrayParametros = array('strTipoRol'       => $strTipoRol,
+            $arrayParametros = array('intIdUsuario'     => $intIdUsuario,
+                                    'strTipoRol'        => $strTipoRol,
                                     'strIdentificacion' => $strIdentificacion,
                                     'strNombres'        => $strNombres,
                                     'strApellidos'      => $strApellidos,
@@ -45,14 +47,15 @@ class UsuarioController extends Controller
             $arrayUsuarios   = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->getUsuariosCriterio($arrayParametros);
             if(isset($arrayUsuarios['error']) && !empty($arrayUsuarios['error']))
             {
-                $strMensaje = false;
                 $strStatus  = 404;
+                throw new \Exception($arrayUsuarios['error']);
             }
         }
         catch(\Exception $ex)
         {
-            $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
+        $arrayUsuarios['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayUsuarios,
@@ -75,7 +78,7 @@ class UsuarioController extends Controller
      */
     public function createUsuarioAction(Request $request)
     {
-        $strTipoRol             = $request->query->get("tipoRol") ? $request->query->get("tipoRol"):'';
+        $strTipoRol             = $request->query->get("idRol") ? $request->query->get("idRol"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strNombres             = $request->query->get("nombres") ? $request->query->get("nombres"):'';
         $strApellidos           = $request->query->get("apellidos") ? $request->query->get("apellidos"):'';
@@ -95,8 +98,9 @@ class UsuarioController extends Controller
         $strDescripcion='';
         try
         {
-            $arrayParametrosRol = array('ESTADO'               => $strEstado,
-                                        'DESCRIPCION_TIPO_ROL' => $strTipoRol);
+            $em->getConnection()->beginTransaction();
+            $arrayParametrosRol = array('ESTADO' => 'ACTIVO',
+                                        'id'     => $strTipoRol);
             $objTipoRol         = $em->getRepository('AppBundle:AdmiTipoRol')->findOneBy($arrayParametrosRol);
             if(!is_object($objTipoRol) || empty($objTipoRol))
             {
@@ -115,7 +119,7 @@ class UsuarioController extends Controller
             $entityUsuario->setCONTRASENIA(md5($strContrasenia));
             $entityUsuario->setIMAGEN($strImagen);
             $entityUsuario->setCORREO($strCorreo);
-            $entityUsuario->setESTADO($strEstado);
+            $entityUsuario->setESTADO(strtoupper($strEstado));
             $entityUsuario->setPAIS($strPais);
             $entityUsuario->setCIUDAD($strCiudad);
             $entityUsuario->setUSRCREACION($strUsuarioCreacion);
@@ -126,13 +130,17 @@ class UsuarioController extends Controller
         }
         catch(\Exception $ex)
         {
-            $strStatus       = 404;
             if ($em->getConnection()->isTransactionActive())
             {
+                $strStatus = 404;
                 $em->getConnection()->rollback();
-                $em->getConnection()->close();
             }
             $strMensajeError = "Fallo al crear un Usuario, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
@@ -156,7 +164,8 @@ class UsuarioController extends Controller
      */
     public function editUsuarioAction(Request $request)
     {
-        $strTipoRol             = $request->query->get("tipoRol") ? $request->query->get("tipoRol"):'';
+        $strTipoRol             = $request->query->get("idRol") ? $request->query->get("idRol"):'';
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strNombres             = $request->query->get("nombres") ? $request->query->get("nombres"):'';
         $strApellidos           = $request->query->get("apellidos") ? $request->query->get("apellidos"):'';
@@ -176,21 +185,26 @@ class UsuarioController extends Controller
         $strDescripcion='';
         try
         {
-            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacion));
+            $em->getConnection()->beginTransaction();
+            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('id'=>$intIdUsuario));
             if(!is_object($objUsuario) || empty($objUsuario))
             {
                 throw new \Exception('No existe usuario con la identificación enviada por parámetro.');
             }
             if(!empty($strTipoRol))
             {
-                $arrayParametrosRol = array('ESTADO'               => $strEstado,
-                                            'DESCRIPCION_TIPO_ROL' => $strTipoRol);
+                $arrayParametrosRol = array('ESTADO' => $strEstado,
+                                            'id'     => $strTipoRol);
                 $objTipoRol         = $em->getRepository('AppBundle:AdmiTipoRol')->findOneBy($arrayParametrosRol);
                 if(!is_object($objTipoRol) || empty($objTipoRol))
                 {
                     throw new \Exception('No existe rol con la descripción enviada por parámetro.');
                 }
                 $objUsuario->setTIPOROLID($objTipoRol);
+            }
+            if(!empty($strIdentificacion))
+            {
+                $objUsuario->setIDENTIFICACION($strIdentificacion);
             }
             if(!empty($strNombres))
             {
@@ -214,7 +228,7 @@ class UsuarioController extends Controller
             }
             if(!empty($strEstado))
             {
-                $objUsuario->setESTADO($strEstado);
+                $objUsuario->setESTADO(strtoupper($strEstado));
             }
             if(!empty($strPais))
             {
@@ -229,21 +243,21 @@ class UsuarioController extends Controller
             $em->persist($objUsuario);
             $em->flush();
             $strMensajeError = 'Usuario editado con exito.!';
-            if ($em->getConnection()->isTransactionActive())
-            {
-                $em->getConnection()->commit();
-                $em->getConnection()->close();
-            }
         }
         catch(\Exception $ex)
         {
-            $strStatus       = 404;
             if ($em->getConnection()->isTransactionActive())
             {
+                $strStatus = 404;
                 $em->getConnection()->rollback();
-                $em->getConnection()->close();
             }
+            
             $strMensajeError = "Fallo al editar un Usuario, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
@@ -268,13 +282,13 @@ class UsuarioController extends Controller
      */
     public function getLoginAction(Request $request)
     {
-        $strCorreo              = $request->query->get("correo") ? $request->query->get("correo"):'';
-        $strPass                = $request->query->get("contrasenia") ? $request->query->get("contrasenia"):'';
-        $arrayUsuarios          = array();
-        $strMensaje             = true;
-        $strStatus              = 400;
-        $strSucces              = true;
-        $objResponse            = new Response;
+        $strCorreo     = $request->query->get("correo") ? $request->query->get("correo"):'';
+        $strPass       = $request->query->get("contrasenia") ? $request->query->get("contrasenia"):'';
+        $arrayUsuarios = array();
+        $strMensaje    = '';
+        $strStatus     = 400;
+        $strSucces     = true;
+        $objResponse   = new Response;
         try
         {
             $objUsuario   = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->findBy(array('CORREO'      => $strCorreo,
@@ -287,25 +301,27 @@ class UsuarioController extends Controller
             }
             foreach($objUsuario as $objItemUsuario)
             {
-                $arrayUsuarios [] = array(  'ID_USUARIO'     => $objItemUsuario->getId(),
-                                            'IDENTIFICACION' => $objItemUsuario->getIDENTIFICACION(),
-                                            'NOMBRES'        => $objItemUsuario->getNOMBRES(),
-                                            'APELLIDOS'      => $objItemUsuario->getAPELLIDOS(),
-                                            'IMAGEN'         => $objItemUsuario->getIMAGEN(),
-                                            'CORREO'         => $objItemUsuario->getCORREO(),
-                                            'TIPOROLID'      => $objItemUsuario->getTIPOROLID()->getDESCRIPCION_TIPO_ROL(),
-                                            'ESTADO'         => $objItemUsuario->getESTADO(),
-                                            'PAIS'           => $objItemUsuario->getPAIS(),
-                                            'CIUDAD'         => $objItemUsuario->getCIUDAD(),
-                                            'USRCREACION'    => $objItemUsuario->getUSRCREACION(),
-                                            'FECREACION'     => $objItemUsuario->getFECREACION()
-                                            );
+                $arrayParametros = array('intIdUsuario'     => $objItemUsuario->getId(),
+                                        'strTipoRol'        => $objItemUsuario->getTIPOROLID()->getId(),
+                                        'strIdentificacion' => $objItemUsuario->getIDENTIFICACION(),
+                                        'strNombres'        => $objItemUsuario->getNOMBRES(),
+                                        'strApellidos'      => $objItemUsuario->getAPELLIDOS(),
+                                        'strEstado'         => $objItemUsuario->getESTADO()
+                                        );
+            }
+            $arrayUsuarios   = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->getUsuariosCriterio($arrayParametros);
+            if(isset($arrayUsuarios['error']) && !empty($arrayUsuarios['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayUsuarios['error']);
             }
         }
         catch(\Exception $ex)
         {
+            $strStatus = 404;
             $strMensaje = $ex->getMessage();
         }
+        $arrayUsuarios['error'] = $strMensaje;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayUsuarios,
@@ -332,7 +348,21 @@ class UsuarioController extends Controller
         $strDestinatario  = $request->query->get("correo") ? trim($request->query->get("correo")):'';
         $strAsunto        = 'Clave temporal Bitte';
         $strContrasenia   = uniqid();
-        $strMensajeCorreo = 'Tu clave temporal es :'.$strContrasenia;
+        $strMensajeCorreo = '<div class="">Bienvenida Usuario Administrador Restaurante:</div>
+        <div class="">&nbsp;</div>
+        <div class="">BITTE le da la bienvenida a su sistema de an&aacute;lisis de datos de satisfacci&oacute;n cliente. BITE le va a permitir conocer la satisfacci&oacute;n de sus clientes bajo diferentes variables y a su vez le permitir&aacute; hacer distintos comparativos para conocer el impacto de mejoras que implemente en su restaurante. A su vez, BITTE permite a los usuarios del app compartir imagenes en redes sociales, que permitir&aacute;n a su establecimiento tener un marketing viral, tanto los datos de veces compartidas las imagen como el alcance de cada imagen, son datos estad&iacute;sticos, que dependiendo de su plan, su restaurante podr&aacute; conocer.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div class="">Es hora de premiar a su clientela fija reconoci&eacute;ndolos con premios que usted ya estableci&oacute; y podr&aacute; controlar, permitiendo crear un vinculo mas cercano con sus clientes.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div class="">Nuestro equipo de asistencia estar&aacute; disponible para usted para lo que necesite. Por favor complete su registro de establecimiento y comience a recolectar las opiniones de sus clientes de manera ordenada para un an&aacute;lisis y tabulaci&oacute;n din&aacute;mica.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div class="">
+        <div>
+        <div><strong>Tu clave temporal es :'.$strContrasenia.'&nbsp;</strong></div>
+        <div>&nbsp;</div>
+        </div>
+        </div>
+        <div class="">Bienvenido al mundo BITTE.</div>';
         $strRemitente     = 'notificaciones_bitte@massvision.ec';
         $objResponse      = new Response;
         $strRespuesta     = '';
@@ -342,6 +372,7 @@ class UsuarioController extends Controller
         $strMensajeError  = '';
         try
         {
+            $em->getConnection()->beginTransaction();
             if(empty($strDestinatario))
             {
                 throw new \Exception('Es necesario enviar el correo.');
@@ -366,11 +397,6 @@ class UsuarioController extends Controller
             $em->persist($objUsuario);
             $em->flush();
             $strMensajeError = 'Cambio de clave con exito.!';
-            if ($em->getConnection()->isTransactionActive())
-            {
-                $em->getConnection()->commit();
-                $em->getConnection()->close();
-            }
         }
         catch(\Exception $ex)
         {
@@ -381,6 +407,11 @@ class UsuarioController extends Controller
             }
             $strStatus       = 404;
             $strMensajeError = "Fallo al generar el correo, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
