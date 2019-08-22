@@ -24,7 +24,8 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getPais($arrayParametros)
     {
-        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:'Activo';
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $intIdPais       = $arrayParametros['idPais'] ? $arrayParametros['idPais']:'';
         $arrayPais       = array();
         $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
         $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
@@ -36,10 +37,12 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect = "SELECT pais.ID_PAIS,pais.PAIS_NOMBRE,pais.ESTADO ";
             $strFrom   = "FROM ADMI_PAIS pais ";
-            if(!empty($strEstado))
+            $strWhere  = "WHERE pais.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdPais))
             {
-                $strWhere  = "WHERE lower(pais.ESTADO)=lower(:ESTADO)";
-                $objQuery->setParameter("ESTADO", $strEstado);
+                $strWhere  .= "AND pais.ID_PAIS in (:ID_PAIS)";
+                $objQuery->setParameter("ID_PAIS", $intIdPais);
             }
             $objRsmBuilder->addScalarResult('ID_PAIS', 'ID_PAIS', 'string');
             $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
@@ -49,7 +52,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setSQL($strSql);
             $arrayPais['pais'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

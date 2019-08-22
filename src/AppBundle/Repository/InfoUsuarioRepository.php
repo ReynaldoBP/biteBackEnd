@@ -23,11 +23,12 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getUsuariosCriterio($arrayParametros)
     {
+        $intIdUsuario       = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $strTipoRol         = $arrayParametros['strTipoRol'] ? $arrayParametros['strTipoRol']:'';
         $strIdentificacion  = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
         $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
         $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
-        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'Activo';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayUsuarios      = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -40,9 +41,15 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
                                IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_USUARIO IU ";
-            $strWhere       = "WHERE lower(IU.ESTADO)=lower(:ESTADO) ";
-            $objQuery->setParameter("ESTADO", $strEstado);
-            $objQueryCount->setParameter("ESTADO", $strEstado);
+            $strWhere       = "WHERE IU.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            $objQueryCount->setParameter("ESTADO",$strEstado);
+            if(!empty($intIdUsuario))
+            {
+                $strWhere .= " AND IU.ID_USUARIO =:intIdUsuario";
+                $objQuery->setParameter("intIdUsuario", $intIdUsuario);
+                $objQueryCount->setParameter("intIdUsuario", $intIdUsuario);
+            }
             if(!empty($strNombres))
             {
                 $strWhere .= " AND lower(IU.NOMBRES) like lower(:NOMBRES)";
@@ -63,13 +70,14 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoRol))
             {
-                $strSelect .= " , ATR.DESCRIPCION_TIPO_ROL ";
+                $strSelect .= " , ATR.DESCRIPCION_TIPO_ROL,ATR.ID_TIPO_ROL ";
                 $strFrom   .= " , ADMI_TIPO_ROL ATR ";
                 $strWhere  .= " AND IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL
-                                AND ATR.DESCRIPCION_TIPO_ROL = :DESCRIPCION_TIPO_ROL";
-                $objQuery->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
-                $objQueryCount->setParameter("DESCRIPCION_TIPO_ROL", $strTipoRol);
+                                AND ATR.ID_TIPO_ROL = :ID_TIPO_ROL";
+                $objQuery->setParameter("ID_TIPO_ROL", $strTipoRol);
+                $objQueryCount->setParameter("ID_TIPO_ROL", $strTipoRol);
                 $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
+                $objRsmBuilder->addScalarResult('ID_TIPO_ROL', 'ID_TIPO_ROL', 'string');
             }
             $objRsmBuilder->addScalarResult('ID_USUARIO', 'ID_USUARIO', 'string');
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');

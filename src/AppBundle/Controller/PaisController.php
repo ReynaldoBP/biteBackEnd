@@ -14,7 +14,9 @@ class PaisController extends Controller
     public function getPaisAction(Request $request)
     {
         $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
-        $arrayParametros = array('estado'    => $strEstado);
+        $intIdPais       = $request->query->get("idPais") ? $request->query->get("idPais"):'';
+        $arrayParametros = array('estado' => $strEstado,
+                                'idPais'  => $intIdPais);
         $arrayPais       = array();
         $strMensajeError = '';
         $strStatus       = 400;
@@ -24,18 +26,15 @@ class PaisController extends Controller
             $arrayPais = $this->getDoctrine()->getRepository('AppBundle:AdmiPais')->getPais($arrayParametros);
             if( isset($arrayPais['error']) && !empty($arrayPais['error']) ) 
             {
-                throw new \Exception($arrayPais['error']);
                 $strStatus  = 404;
+                throw new \Exception($arrayPais['error']);
             }
         }
         catch(\Exception $ex)
         {
             $strMensajeError    = "Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
-            if(isset($arrayPais['error']))
-            {
-                $arrayPais['error'] = $strMensajeError;
-            }
         }
+        $arrayPais['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPais,

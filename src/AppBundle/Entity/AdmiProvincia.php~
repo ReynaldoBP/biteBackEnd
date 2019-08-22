@@ -22,28 +22,35 @@ class AdmiProvincia
     private $id;
 
     /**
-    * @var AdmiRegion
+    * @var AdmiPais
     *
-    * @ORM\ManyToOne(targetEntity="AdmiRegion")
+    * @ORM\ManyToOne(targetEntity="AdmiPais")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="REGION_ID", referencedColumnName="ID_REGION")
+    * @ORM\JoinColumn(name="PAIS_ID", referencedColumnName="ID_PAIS")
     * })
     */
-    private $REGION_ID;
+    private $PAIS_ID;
 
     /**
      * @var string
      *
      * @ORM\Column(name="PROVINCIA_NOMBRE", type="string", length=255)
      */
-    private $pROVINCIANOMBRE;
+    private $PROVINCIANOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="REGION_NOMBRE", type="string", length=50)
+     */
+    private $REGION_NOMBRE;
 
     /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=50)
      */
-    private $eSTADO;
+    private $ESTADO;
 
 
     /**
@@ -57,51 +64,74 @@ class AdmiProvincia
     }
 
     /**
-     * Set pROVINCIANOMBRE
+     * Set PROVINCIANOMBRE
      *
-     * @param string $pROVINCIANOMBRE
+     * @param string $PROVINCIANOMBRE
      *
      * @return AdmiProvincia
      */
-    public function setPROVINCIANOMBRE($pROVINCIANOMBRE)
+    public function setPROVINCIANOMBRE($PROVINCIANOMBRE)
     {
-        $this->pROVINCIANOMBRE = $pROVINCIANOMBRE;
+        $this->PROVINCIANOMBRE = $PROVINCIANOMBRE;
 
         return $this;
     }
 
     /**
-     * Get pROVINCIANOMBRE
+     * Get PROVINCIANOMBRE
      *
      * @return string
      */
     public function getPROVINCIANOMBRE()
     {
-        return $this->pROVINCIANOMBRE;
+        return $this->PROVINCIANOMBRE;
     }
 
     /**
-     * Set eSTADO
+     * Set ESTADO
      *
-     * @param string $eSTADO
+     * @param string $ESTADO
      *
      * @return AdmiProvincia
      */
-    public function setESTADO($eSTADO)
+    public function setESTADO($ESTADO)
     {
-        $this->eSTADO = $eSTADO;
+        $this->ESTADO = $ESTADO;
 
         return $this;
     }
 
     /**
-     * Get eSTADO
+     * Get ESTADO
      *
      * @return string
      */
     public function getESTADO()
     {
-        return $this->eSTADO;
+        return $this->ESTADO;
+    }
+
+    /**
+     * Set pAISID
+     *
+     * @param \AppBundle\Entity\AdmiPais $pAISID
+     *
+     * @return AdmiProvincia
+     */
+    public function setPAISID(\AppBundle\Entity\AdmiPais $pAISID = null)
+    {
+        $this->PAIS_ID = $pAISID;
+
+        return $this;
+    }
+
+    /**
+     * Get pAISID
+     *
+     * @return \AppBundle\Entity\AdmiPais
+     */
+    public function getPAISID()
+    {
+        return $this->PAIS_ID;
     }
 }
-

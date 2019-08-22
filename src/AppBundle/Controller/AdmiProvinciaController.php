@@ -7,7 +7,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Entity\AdmiRegion;
 use AppBundle\Entity\AdmiPais;
 use AppBundle\Entity\AdmiProvincia;
 class AdmiProvinciaController extends Controller
@@ -17,8 +16,9 @@ class AdmiProvinciaController extends Controller
      */
     public function getProvinciaAction(Request $request)
     {
-        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'Activo';
-        $intIdRegion     = $request->query->get("idRegion") ? $request->query->get("idRegion"):'';
+        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $intIdPais       = $request->query->get("idPais") ? $request->query->get("idPais"):1;
+        $strRegion       = $request->query->get("region") ? $request->query->get("region"):'';
         $strMensajeError = '';
         $arrayProvincia  = array();
         $strStatus       = 400;
@@ -26,12 +26,14 @@ class AdmiProvinciaController extends Controller
         $em              = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('estado'    => $strEstado,'idRegion'=>$intIdRegion);
+            $arrayParametros = array('estado'    => $strEstado,
+                                     'idPais'    => $intIdPais,
+                                     'region'    => $strRegion);
             $arrayProvincia = $this->getDoctrine()->getRepository('AppBundle:AdmiProvincia')->getProvincia($arrayParametros);
             if( isset($arrayProvincia['error']) && !empty($arrayProvincia['error']) ) 
             {
-                throw new \Exception($arrayProvincia['error']);
                 $strStatus  = 404;
+                throw new \Exception($arrayProvincia['error']);
             }
         }
         catch(\Exception $ex)

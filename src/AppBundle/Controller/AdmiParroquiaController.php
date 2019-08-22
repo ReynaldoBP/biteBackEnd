@@ -16,8 +16,9 @@ class AdmiParroquiaController extends Controller
      */
     public function getParroquiaAction(Request $request)
     {
-        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'Activo';
+        $strEstado       = $request->query->get("estado") ? $request->query->get("estado"):'';
         $intIdCiudad     = $request->query->get("idCiudad") ? $request->query->get("idCiudad"):'';
+        $intIdParroquia  = $request->query->get("idParroquia") ? $request->query->get("idParroquia"):'';
         $strMensajeError = '';
         $arrayParroquia  = array();
         $strStatus       = 400;
@@ -26,13 +27,14 @@ class AdmiParroquiaController extends Controller
 
         try
         {
-            $arrayParametros = array('estado'   => $strEstado,
-                                     'idCiudad' => $intIdCiudad);
+            $arrayParametros = array('estado'      => $strEstado,
+                                     'idCiudad'    => $intIdCiudad,
+                                     'idParroquia' => $intIdParroquia);
             $arrayParroquia  = $this->getDoctrine()->getRepository('AppBundle:AdmiParroquia')->getParroquia($arrayParametros);
             if( isset($arrayParroquia['error']) && !empty($arrayParroquia['error']) ) 
             {
-                throw new \Exception($arrayParroquia['error']);
                 $strStatus  = 404;
+                throw new \Exception($arrayParroquia['error']);
             }
         }
         catch(\Exception $ex)
