@@ -24,7 +24,7 @@ class AdmiSector
     /**
     * @var AdmiParroquia
     *
-    * @ORM\ManyToOne(targetEntity="ADMI_SECTOR")
+    * @ORM\ManyToOne(targetEntity="AdmiParroquia")
     * @ORM\JoinColumns({
     * @ORM\JoinColumn(name="PARROQUIA_ID", referencedColumnName="ID_PARROQUIA")
     * })
@@ -36,14 +36,14 @@ class AdmiSector
      *
      * @ORM\Column(name="SECTOR_NOMBRE", type="string", length=255)
      */
-    private $sECTORNOMBRE;
+    private $SECTORNOMBRE;
 
     /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=255)
      */
-    private $eSTADO;
+    private $ESTADO;
 
 
     /**
@@ -57,51 +57,50 @@ class AdmiSector
     }
 
     /**
-     * Set sECTORNOMBRE
+     * Set SECTORNOMBRE
      *
-     * @param string $sECTORNOMBRE
+     * @param string $SECTORNOMBRE
      *
      * @return AdmiSector
      */
-    public function setSECTORNOMBRE($sECTORNOMBRE)
+    public function setSECTORNOMBRE($SECTORNOMBRE)
     {
-        $this->sECTORNOMBRE = $sECTORNOMBRE;
+        $this->SECTORNOMBRE = $SECTORNOMBRE;
 
         return $this;
     }
 
     /**
-     * Get sECTORNOMBRE
+     * Get SECTORNOMBRE
      *
      * @return string
      */
     public function getSECTORNOMBRE()
     {
-        return $this->sECTORNOMBRE;
+        return $this->SECTORNOMBRE;
     }
 
     /**
-     * Set eSTADO
+     * Set ESTADO
      *
-     * @param string $eSTADO
+     * @param string $ESTADO
      *
      * @return AdmiSector
      */
-    public function setESTADO($eSTADO)
+    public function setESTADO($ESTADO)
     {
-        $this->eSTADO = $eSTADO;
+        $this->ESTADO = $ESTADO;
 
         return $this;
     }
 
     /**
-     * Get eSTADO
+     * Get ESTADO
      *
      * @return string
      */
     public function getESTADO()
     {
-        return $this->eSTADO;
+        return $this->ESTADO;
     }
 }
-

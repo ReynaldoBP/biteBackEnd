@@ -105,23 +105,23 @@ class AdmiSector
     }
 
     /**
-     * Set pARROQUIAID
+     * Set PARROQUIAID
      *
-     * @param \AppBundle\Entity\ADMI_SECTOR $pARROQUIAID
+     * @param \AppBundle\Entity\AdmiParroquia $PARROQUIAID
      *
      * @return AdmiSector
      */
-    public function setPARROQUIAID(\AppBundle\Entity\ADMI_SECTOR $pARROQUIAID = null)
+    public function setPARROQUIAID(\AppBundle\Entity\AdmiParroquia $PARROQUIAID = null)
     {
-        $this->PARROQUIA_ID = $pARROQUIAID;
+        $this->PARROQUIA_ID = $PARROQUIAID;
 
         return $this;
     }
 
     /**
-     * Get pARROQUIAID
+     * Get PARROQUIAID
      *
-     * @return \AppBundle\Entity\ADMI_SECTOR
+     * @return \AppBundle\Entity\AdmiParroquia
      */
     public function getPARROQUIAID()
     {
