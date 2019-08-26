@@ -10,8 +10,10 @@ use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoUsuario;
 use AppBundle\Entity\AdmiTipoRol;
 use AppBundle\Controller\DefaultController;
+
 class UsuarioController extends Controller
 {
+
     /**
      * @Route("/getUsuario")
      *
