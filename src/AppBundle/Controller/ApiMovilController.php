@@ -18,19 +18,34 @@ class ApiMovilController extends FOSRestController
 {
 
   /**
-   * @Rest\Post("/crearUsuario/")
+   * @Rest\Post("/movilBitte/procesar")
    * @param Request $request
    * @return Json
    */
    public function postAction(Request $request)
    {
-       $name = $request->get('name');
-       $role = $request->get('role');
-       if(empty($name) || empty($role))
+       $operacion    = $request->get('op');
+       $arrayRequest = json_decode($request->getContent(),true);
+       $arrayData    = $arrayRequest['data'];
+       if($operacion)
        {
-          return array("respuesta" => 'Nombre'.$name);
+           switch($operacion)
+	   {
+	       case 'putIngresarCliente':
+	           $arrayRespuesta = 
+$this->putIngresarCliente($arrayData);
+break;
+	   }
        }
-       return array('respuesta' => 'SI');
+       return $arrayRespuesta;
     }
+
+    private function putIngresarCliente($arrayData)
+    {
+       $name = $arrayData['nombre'];
+       $role = $arrayData['correo'];
+       return array('nombres' => $name);
+    }  
+    
 }
 

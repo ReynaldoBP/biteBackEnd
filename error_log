@@ -2,3 +2,10 @@
 Stack trace:
 #0 /home2/massvisi/bitte.app/bitteBackend3.1/vendor/symfony/symfony/src/Symfony/Component/DependencyInjection/ContainerBuilder.php(260): Symfony\Component\DependencyInjection\ContainerBuilder->addResource(Object(Symfony\Component\Config\Resource\FileResource))
 #1 /home2/massvisi/bitte.app/bitteBackend3.1/vendor/symfony/symfony/src/Symfony/Component/DependencyInjection/ContainerBuilder.php(239): Symfony\Component in /home2/massvisi/bitte.app/bitteBackend3.1/vendor/symfony/symfony/src/Symfony/Component/DependencyInjection/ContainerBuilder.php on line 200
+[26-Aug-2019 12:16:20 America/Chicago] PHP Fatal error:  Uncaught Error: Class 'FOS\RestBundle\FOSRestBundle' not found in /home2/massvisi/bitte.app/bitteCore/app/AppKernel.php:18
+Stack trace:
+#0 /home2/massvisi/bitte.app/bitteCore/vendor/symfony/symfony/src/Symfony/Component/HttpKernel/Kernel.php(396): AppKernel->registerBundles()
+#1 /home2/massvisi/bitte.app/bitteCore/vendor/symfony/symfony/src/Symfony/Component/HttpKernel/Kernel.php(114): Symfony\Component\HttpKernel\Kernel->initializeBundles()
+#2 /home2/massvisi/bitte.app/bitteCore/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Console/Application.php(68): Symfony\Component\HttpKernel\Kernel->boot()
+#3 /home2/massvisi/bitte.app/bitteCore/vendor/symfony/symfony/src/Symfony/Component/Console/Application.php(116): Symfony\Bundle\FrameworkBundle\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#4 /home2/massvisi/bitte.app/bitteCore/bin/console(29): Symfony\Component\Console\Application->run(Object(Symfony\Component\Conso in /home2/massvisi/bitte.app/bitteCore/app/AppKernel.php on line 18
