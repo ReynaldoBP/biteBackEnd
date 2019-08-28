@@ -1,7 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
-
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 /**
  * AdmiTipoRolRepository
  *
@@ -10,4 +10,62 @@ namespace AppBundle\Repository;
  */
 class AdmiTipoRolRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getTipoRol'.
+     * Método encargado de retornar todos los tipo de roles según los parámetros enviados.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 27-08-2019
+     * 
+     * @return array  $arrayTipoRol
+     * 
+     */
+    public function getTipoRol($arrayParametros)
+    {
+        $strEstado       = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strDescripcion  = $arrayParametros['descripcion'] ? $arrayParametros['descripcion']:'';
+        $intIdTipoRol    = $arrayParametros['idTipoRol'] ? $arrayParametros['idTipoRol']:'';
+        $arrayTipoRol    = array();
+        $objRsmBuilder   = new ResultSetMappingBuilder($this->_em);
+        $objQuery        = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $strMensajeError = '';
+        $strSelect       = '';
+        $strFrom         = '';
+        $strWhere        = '';
+        try
+        {
+            $strSelect = "SELECT tipoRol.ID_TIPO_ROL,tipoRol.DESCRIPCION_TIPO_ROL,tipoRol.ESTADO,tipoRol.USR_CREACION,tipoRol.FE_CREACION, 
+                                  tipoRol.USR_MODIFICACION,tipoRol.FE_MODIFICACION ";
+            $strFrom   = "FROM ADMI_TIPO_ROL tipoRol ";
+            $strWhere  = "WHERE tipoRol.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdTipoRol))
+            {
+                $strWhere .= " AND tipoRol.ID_TIPO_ROL = :ID_TIPO_ROL ";
+                $objQuery->setParameter("ID_TIPO_ROL", $intIdTipoRol);
+            }
+            if(!empty($strDescripcion))
+            {
+                $strWhere .= " AND lower(tipoRol.DESCRIPCION_TIPO_ROL) like lower(:DESCRIPCION_TIPO_ROL)";
+                $objQuery->setParameter("DESCRIPCION_TIPO_ROL", '%' . trim($strDescripcion) . '%');
+            }
+            $objRsmBuilder->addScalarResult('ID_TIPO_ROL', 'ID_TIPO_ROL', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+
+            $strSql  = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayTipoRol['tipoRol'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayTipoRol['error'] = $strMensajeError;
+        return $arrayTipoRol;
+    }
 }

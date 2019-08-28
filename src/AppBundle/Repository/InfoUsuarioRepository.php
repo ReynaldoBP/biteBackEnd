@@ -100,7 +100,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             $arrayUsuarios['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arrayUsuarios['resultados'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

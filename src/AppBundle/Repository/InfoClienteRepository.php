@@ -92,7 +92,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
             $arrayCliente['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arrayCliente['resultados'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

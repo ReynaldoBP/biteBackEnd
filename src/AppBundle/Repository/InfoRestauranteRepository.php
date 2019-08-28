@@ -96,7 +96,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $arrayRestaurante['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arrayRestaurante['resultados'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

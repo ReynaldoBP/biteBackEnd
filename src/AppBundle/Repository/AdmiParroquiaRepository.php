@@ -58,7 +58,7 @@ class AdmiParroquiaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setSQL($strSql);
             $arrayParroquia['Parroquia'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

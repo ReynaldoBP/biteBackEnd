@@ -16,7 +16,7 @@ class CiudadController extends Controller
      */
     public function getCiudadAction(Request $request)
     {
-        $strEstado             = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strEstado             = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strProvincia          = $request->query->get("idProvincia") ? $request->query->get("idProvincia"):'';
         $intCiudad             = $request->query->get("idCiudad") ? $request->query->get("idCiudad"):'';
         $arrayCiudad           = array();

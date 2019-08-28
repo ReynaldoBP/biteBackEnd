@@ -102,7 +102,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $arraySucursal['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arraySucursal['resultados'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }

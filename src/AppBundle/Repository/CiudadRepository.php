@@ -59,7 +59,7 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setSQL($strSql);
             $arrayCiudad['ciudad'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }
