@@ -133,7 +133,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
+            $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
                                     IR.IDENTIFICACION,IR.RAZON_SOCIAL, ISUR.RESTAURANTE_ID,ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
                                     ISUR.LONGITUD, ISUR.PAIS,ISUR.CIUDAD,ISUR.SECTOR,
                                     ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION,
