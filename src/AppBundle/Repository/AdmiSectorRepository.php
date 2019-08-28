@@ -58,7 +58,7 @@ class AdmiSectorRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setSQL($strSql);
             $arraySector['Sector'] = $objQuery->getResult();
         }
-        catch(\Exception $e)
+        catch(\Exception $ex)
         {
             $strMensajeError = $ex->getMessage();
         }
