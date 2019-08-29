@@ -13,6 +13,7 @@ use AppBundle\Controller\DefaultController;
 use AppBundle\Entity\AdmiTipoClientePuntaje;
 use AppBundle\Entity\InfoUsuario;
 use AppBundle\Entity\AdmiParametro;
+use AppBundle\Entity\InfoRestaurante;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -39,6 +40,8 @@ class ApiMovilController extends FOSRestController
                case 'getCliente':$arrayRespuesta = $this->getCliente($arrayData);
                break;
                case 'getSucursalPorUbicacion':$arrayRespuesta = $this->getSucursalPorUbicacion($arrayData);
+               break;
+               case 'getRestaurante':$arrayRespuesta = $this->getRestaurante($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -387,5 +390,59 @@ class ApiMovilController extends FOSRestController
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
-}
 
+    /**
+     * Documentación para la función 'getRestaurante'
+     * Método encargado de retornar todos los restaurantes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 28-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getRestaurante($arrayData)
+    {
+        $intIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $strTipoComida          = $arrayData['tipoComida'] ? $arrayData['tipoComida']:'';
+        $strTipoIdentificacion  = $arrayData['tipoIdentificacion'] ? $arrayData['tipoIdentificacion']:'';
+        $strIdentificacion      = $arrayData['identificacion'] ? $arrayData['identificacion']:'';
+        $strRazonSocial         = $arrayData['razonSocial'] ? $arrayData['razonSocial']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $arrayRestaurante       = array();
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $strMetros              = 0;
+        $objResponse            = new Response;
+        try
+        {
+            $arrayParametros = array('strTipoComida'        => $strTipoComida,
+                                    'intIdRestaurante'      => $intIdRestaurante,
+                                    'strTipoIdentificacion' => $strTipoIdentificacion,
+                                    'strIdentificacion'     => $strIdentificacion,
+                                    'strRazonSocial'        => $strRazonSocial,
+                                    'strEstado'             => $strEstado
+                                    );
+            $arrayRestaurante   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterioMovil($arrayParametros);
+            if(isset($arrayRestaurante['error']) && !empty($arrayRestaurante['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayRestaurante['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayRestaurante['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRestaurante,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+}
