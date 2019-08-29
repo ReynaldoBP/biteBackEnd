@@ -9,4 +9,6 @@ insert into ADMI_TIPO_ROL(DESCRIPCION_TIPO_ROL,ESTADO,USR_CREACION,FE_CREACION) 
 insert into ADMI_TIPO_ROL(DESCRIPCION_TIPO_ROL,ESTADO,USR_CREACION,FE_CREACION) values('VENDEDOR','ACTIVO','kbaque',sysdate());
 /*                       Tipo Cliente Puntaje                       */
 insert into ADMI_TIPO_CLIENTE_PUNTAJE(DESCRIPCION,VALOR,ESTADO,USR_CREACION,FE_CREACION) values('CLIENTE','CLIENTE','ACTIVO','kbaque',sysdate());
+/*                            Parametros                            */
+insert into ADMI_PARAMETRO(DESCRIPCION,VALOR1,VALOR2,VALOR3,ESTADO,USR_CREACION,FE_CREACION) values('CANTIDAD_DISTANCIA','MOVIL','SUCURSAL','5','ACTIVO','kbaque',sysdate());
 commit;

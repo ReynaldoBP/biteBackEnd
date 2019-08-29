@@ -48,7 +48,7 @@ class InfoSucursalController extends Controller
                                     'strCiudad'             => $strCiudad,
                                     'strSector'             => $strSector,
                                     'strEstado'             => $strEstado,
-                                    'strEstadoFacturacion'  => $strEstadoFacturacion,
+                                    'strEstadoFacturacion'  => $strEstadoFacturacion
                                     );
             $arraySucursal = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')->getSucursalCriterio($arrayParametros);
             if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))

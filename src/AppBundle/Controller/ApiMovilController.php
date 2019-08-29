@@ -12,6 +12,7 @@ use AppBundle\Entity\AdmiTipoRol;
 use AppBundle\Controller\DefaultController;
 use AppBundle\Entity\AdmiTipoClientePuntaje;
 use AppBundle\Entity\InfoUsuario;
+use AppBundle\Entity\AdmiParametro;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -353,12 +354,17 @@ class ApiMovilController extends FOSRestController
         $arraySucursal     = array();
         $strMensajeError   = '';
         $strStatus         = 400;
+        $strMetros         = 0;
         $objResponse       = new Response;
+        $strDescripcion    = 'CANTIDAD_DISTANCIA';
         try
         {
+            $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
+                                                                                                               'DESCRIPCION'  => $strDescripcion));
             $arrayParametros = array('latitud' => $strLatitud,
                                     'longitud' => $strLongitud,
-                                    'estado'   => $strEstado
+                                    'estado'   => $strEstado,
+                                    'metros'   => $objParametro->getVALOR2()
                                     );
             $arraySucursal   = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')->getSucursalPorUbicacion($arrayParametros);
             if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))

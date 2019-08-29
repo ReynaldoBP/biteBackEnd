@@ -19,7 +19,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arraySucursal
      * 
-     */    
+     */
     public function getSucursalCriterio($arrayParametros)
     {
         $strIdRestaurante      = $arrayParametros['strIdRestaurante'] ? $arrayParametros['strIdRestaurante']:'';
@@ -115,95 +115,52 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      * Método encargado de retornar todos las sucursales según los parámetros recibidos.
      * 
      * @author Kevin Baque
-     * @version 1.0 16-07-2019
+     * @version 1.0 29-08-2019
      * 
      * @return array  $arraySucursal
      * 
-     */    
+     */
     public function getSucursalPorUbicacion($arrayParametros)
     {
         $strLatitud            = $arrayParametros['latitud'] ? $arrayParametros['latitud']:'';
         $strLongitud           = $arrayParametros['longitud'] ? $arrayParametros['longitud']:'';
+        $strMetros             = $arrayParametros['metros'] ? $arrayParametros['metros']:5;
         $strEstado             = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arraySucursal         = array();
         $strMensajeError       = '';
         $objRsmBuilder         = new ResultSetMappingBuilder($this->_em);
         $objQuery              = $this->_em->createNativeQuery(null, $objRsmBuilder);
-        /*$objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
-        $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);*/
+        $objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
         try
         {
-            $strSelect      = "SELECT IR.RAZON_SOCIAL, ISUR.ESTADO,ISUR.LATITUD,
-                                    ISUR.LONGITUD,ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION,
-                                (6371 * ACOS( 
-                                                SIN(RADIANS(ISUR.LATITUD)) * SIN(RADIANS(:LATITUD)) 
-                                                + COS(RADIANS(ISUR.LONGITUD - :LONGITUD)) * COS(RADIANS(ISUR.LATITUD)) 
-                                                * COS(RADIANS(:LATITUD))
-                                                )
-                                ) AS DISTANCIA ";
-            //$strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_SUCURSAL ISUR
-                                INNER JOIN INFO_RESTAURANTE IR ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID
-                                HAVING DISTANCIA < (5/1000) ";
-            $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) ";
+            $strSelect      = "SELECT T1.ID_SUCURSAL, T1.RESTAURANTE_ID, T1.DESCRIPCION, T1.NOMBRE_COMERCIAL,T1.DISTANCIA  ";
+            $strFrom        ="FROM
+                                    (SELECT ISU.ID_SUCURSAL, ISU.RESTAURANTE_ID,
+                                        ISU.DESCRIPCION, IRE.NOMBRE_COMERCIAL,
+                                        (6371 * ACOS( 
+                                                    SIN(RADIANS(ISU.LATITUD)) * SIN(RADIANS(:LATITUD)) 
+                                                    + COS(RADIANS(ISU.LONGITUD - :LONGITUD)) * COS(RADIANS(ISU.LATITUD)) 
+                                                    * COS(RADIANS(:LATITUD))
+                                                    )
+                                        ) AS DISTANCIA
+                                FROM INFO_SUCURSAL ISU
+                                INNER JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE = ISU.RESTAURANTE_ID
+                                WHERE ISU.ESTADO in (:ESTADO)
+                                ) T1 ";
+            $strWhere       = "WHERE T1.DISTANCIA < (:METROS/1000) ORDER BY T1.DISTANCIA ASC ";
             $objQuery->setParameter("ESTADO", $strEstado);
-            //$objQueryCount->setParameter("ESTADO", $strEstado);
             $objQuery->setParameter("LATITUD", $strLatitud);
-            //$objQueryCount->setParameter("LATITUD", $strLatitud);
             $objQuery->setParameter("LONGITUD", $strLongitud);
-            //$objQueryCount->setParameter("LONGITUD", $strLongitud);
-            /*if(!empty($strEsMatriz))
-            {
-                $strWhere .= " AND ISUR.ES_MATRIZ =:ES_MATRIZ";
-                $objQuery->setParameter("ES_MATRIZ", $strEsMatriz);
-                $objQueryCount->setParameter("ES_MATRIZ", $strEsMatriz);
-            }
-            if(!empty($strIdentificacionRes) || !empty($strIdRestaurante))
-            {
-                $strSelect .= " ,IR.RAZON_SOCIAL ";
-                $strFrom   .= " ,INFO_RESTAURANTE IR ";
-                $strWhere  .= " AND IR.ID_RESTAURANTE=ISUR.RESTAURANTE_ID ";
-                if(!empty($strIdentificacionRes))
-                {
-                    $strWhere .= " AND IR.IDENTIFICACION = :IDENTIFICACION";
-                    $objQuery->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                    $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                }
-                if(!empty($strIdRestaurante))
-                {
-                    $strWhere .= " AND IR.ID_RESTAURANTE = :ID_RESTAURANTE";
-                    $objQuery->setParameter("ID_RESTAURANTE", $strIdRestaurante);
-                    $objQueryCount->setParameter("ID_RESTAURANTE", $strIdRestaurante);
-                }
-                $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-                $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
-            }*/
-            /*$objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
-            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
-            $objRsmBuilder->addScalarResult('ES_MATRIZ', 'ES_MATRIZ', 'string');
-            $objRsmBuilder->addScalarResult('DIRECCION', 'DIRECCION', 'string');
-            $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
-            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');*/
-            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
-            //$objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
-            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
-            $objRsmBuilder->addScalarResult('LATITUD', 'LATITUD', 'string');
-            $objRsmBuilder->addScalarResult('LONGITUD', 'LONGITUD', 'string');
-            /*$objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
-            $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');
-            $objRsmBuilder->addScalarResult('SECTOR', 'SECTOR', 'string');*/
-            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
-            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
-            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+            $objQuery->setParameter("METROS", $strMetros);
 
-            //$objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
-            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
+            $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
+            $objRsmBuilder->addScalarResult('DISTANCIA', 'DISTANCIA', 'string');
+
+            $strSql       = $strSelect.$strFrom.$strFromAd.$strWhere;
             $objQuery->setSQL($strSql);
-            /*$strSqlCount  = $strSelectCount.$strFrom.$strWhere;
-            $objQueryCount->setSQL($strSqlCount);
-            $arraySucursal['cantidad']   = $objQueryCount->getSingleScalarResult();*/
             $arraySucursal['resultados'] = $objQuery->getResult();
         }
         catch(\Exception $ex)
