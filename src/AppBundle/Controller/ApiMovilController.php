@@ -12,6 +12,7 @@ use AppBundle\Entity\AdmiTipoRol;
 use AppBundle\Controller\DefaultController;
 use AppBundle\Entity\AdmiTipoClientePuntaje;
 use AppBundle\Entity\InfoUsuario;
+use AppBundle\Entity\AdmiParametro;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -36,6 +37,8 @@ class ApiMovilController extends FOSRestController
                case 'editCliente':$arrayRespuesta = $this->editCliente($arrayData);
                break;
                case 'getCliente':$arrayRespuesta = $this->getCliente($arrayData);
+               break;
+               case 'getSucursalPorUbicacion':$arrayRespuesta = $this->getSucursalPorUbicacion($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -327,6 +330,57 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCliente,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+    /**
+     * Documentación para la función 'getSucursalPorUbicacion'
+     * Método encargado de retornar todos las sucursales según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 28-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getSucursalPorUbicacion($arrayData)
+    {
+        $strLatitud        = $arrayData['latitud'] ? $arrayData['latitud']:'';
+        $strLongitud       = $arrayData['longitud'] ? $arrayData['longitud']:'';
+        $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
+        $arraySucursal     = array();
+        $strMensajeError   = '';
+        $strStatus         = 400;
+        $strMetros         = 0;
+        $objResponse       = new Response;
+        $strDescripcion    = 'CANTIDAD_DISTANCIA';
+        try
+        {
+            $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
+                                                                                                               'DESCRIPCION'  => $strDescripcion));
+            $arrayParametros = array('latitud' => $strLatitud,
+                                    'longitud' => $strLongitud,
+                                    'estado'   => $strEstado,
+                                    'metros'   => $objParametro->getVALOR2()
+                                    );
+            $arraySucursal   = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')->getSucursalPorUbicacion($arrayParametros);
+            if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arraySucursal['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arraySucursal['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arraySucursal,
                                             'succes'    => true
                                             )
                                         ));

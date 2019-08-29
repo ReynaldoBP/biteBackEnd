@@ -49,6 +49,14 @@ class InfoRestauranteController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
+            if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
+            {
+                throw new \Exception('cantidad de dígitos incorrecto');
+            }
+            elseif(strtoupper($strTipoIdentificacion) == 'CED' && strlen(trim($strIdentificacion))!=10)
+            {
+                throw new \Exception('cantidad de dígitos incorrecto');
+            }
             $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($strIdUsuario);
             if(!is_object($objUsuario) || empty($objUsuario))
             {
@@ -75,7 +83,7 @@ class InfoRestauranteController extends Controller
             $entityRestaurante = new InfoRestaurante();
             $entityRestaurante->setUSUARIOID($objUsuario);
             $entityRestaurante->setTIPOCOMIDAID($objTipoComida);
-            $entityRestaurante->setTIPOIDENTIFICACION($strTipoIdentificacion);
+            $entityRestaurante->setTIPOIDENTIFICACION(strtoupper($strTipoIdentificacion));
             $entityRestaurante->setIDENTIFICACION($strIdentificacion);
             $entityRestaurante->setRAZONSOCIAL($strRazonSocial);
             $entityRestaurante->setNOMBRECOMERCIAL($strNombreComercial);
@@ -148,6 +156,14 @@ class InfoRestauranteController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
+            if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
+            {
+                throw new \Exception('cantidad de dígitos incorrecto');
+            }
+            elseif(strtoupper($strTipoIdentificacion) == 'CED' && strlen(trim($strIdentificacion))!=10)
+            {
+                throw new \Exception('cantidad de dígitos incorrecto');
+            }
             $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
             if(!is_object($objRestaurante) || empty($objRestaurante))
             {
@@ -168,7 +184,7 @@ class InfoRestauranteController extends Controller
             }
             if(!empty($strTipoIdentificacion))
             {
-                $objRestaurante->setTIPOIDENTIFICACION($strTipoIdentificacion);
+                $objRestaurante->setTIPOIDENTIFICACION(strtoupper($strTipoIdentificacion));
             }
             if(!empty($strIdentificacion))
             {
