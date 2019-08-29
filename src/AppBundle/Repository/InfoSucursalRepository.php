@@ -19,7 +19,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arraySucursal
      * 
-     */    
+     */
     public function getSucursalCriterio($arrayParametros)
     {
         $strIdRestaurante      = $arrayParametros['strIdRestaurante'] ? $arrayParametros['strIdRestaurante']:'';
@@ -119,7 +119,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arraySucursal
      * 
-     */    
+     */
     public function getSucursalPorUbicacion($arrayParametros)
     {
         $strLatitud            = $arrayParametros['latitud'] ? $arrayParametros['latitud']:'';
