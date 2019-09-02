@@ -29,8 +29,9 @@ class InfoSucursalController extends Controller
         $strIdentificacionRes = $request->query->get("identificacionRestaurante") ? $request->query->get("identificacionRestaurante"):'';
         $strEsMatriz          = $request->query->get("esMatriz") ? $request->query->get("esMatriz"):'';
         $strPais              = $request->query->get("pais") ? $request->query->get("pais"):'';
+        $strProvincia         = $request->query->get("provincia") ? $request->query->get("provincia"):'';
         $strCiudad            = $request->query->get("ciudad") ? $request->query->get("ciudad"):'';
-        $strSector            = $request->query->get("sector") ? $request->query->get("sector"):'';
+        $strParroquia         = $request->query->get("parroquia") ? $request->query->get("parroquia"):'';
         $strEstado            = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strEstadoFacturacion = $request->query->get("estadoFacturacion") ? $request->query->get("estadoFacturacion"):'';
         $strUsuarioCreacion   = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -45,8 +46,9 @@ class InfoSucursalController extends Controller
                                     'strIdentificacionRes'  => $strIdentificacionRes,
                                     'strEsMatriz'           => $strEsMatriz,
                                     'strPais'               => $strPais,
+                                    'strProvincia'          => $strProvincia,
                                     'strCiudad'             => $strCiudad,
-                                    'strSector'             => $strSector,
+                                    'strParroquia'          => $strParroquia,
                                     'strEstado'             => $strEstado,
                                     'strEstadoFacturacion'  => $strEstadoFacturacion
                                     );
@@ -91,8 +93,9 @@ class InfoSucursalController extends Controller
         $strDescripcion       = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strDireccion         = $request->query->get("direccion") ? $request->query->get("direccion"):'';
         $strPais              = $request->query->get("pais") ? $request->query->get("pais"):'';
+        $strProvincia         = $request->query->get("provincia") ? $request->query->get("provincia"):'';
         $strCiudad            = $request->query->get("ciudad") ? $request->query->get("ciudad"):'';
-        $strSector            = $request->query->get("sector") ? $request->query->get("sector"):'';
+        $strParroquia         = $request->query->get("parroquia") ? $request->query->get("parroquia"):'';
         $floatLatitud         = $request->query->get("latitud") ? $request->query->get("latitud"):'';
         $floatLongitud        = $request->query->get("longitud") ? $request->query->get("longitud"):'';
         $strNumeroContacto    = $request->query->get("numeroContacto") ? $request->query->get("numeroContacto"):'';
@@ -129,8 +132,9 @@ class InfoSucursalController extends Controller
             $entitySucursal->setLATITUD($floatLatitud);
             $entitySucursal->setLONGITUD($floatLongitud);
             $entitySucursal->setPAIS($strPais);
+            $entitySucursal->setPROVINCIA($strProvincia);
             $entitySucursal->setCIUDAD($strCiudad);
-            $entitySucursal->setSECTOR($strSector);
+            $entitySucursal->setPARROQUIA($strParroquia);
             $entitySucursal->setUSRCREACION($strUsuarioCreacion);
             $entitySucursal->setFECREACION($strDatetimeActual);
             $em->persist($entitySucursal);
@@ -181,8 +185,9 @@ class InfoSucursalController extends Controller
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strDireccion           = $request->query->get("direccion") ? $request->query->get("direccion"):'';
         $strPais                = $request->query->get("pais") ? $request->query->get("pais"):'';
+        $strProvincia           = $request->query->get("provincia") ? $request->query->get("provincia"):'';
         $strCiudad              = $request->query->get("ciudad") ? $request->query->get("ciudad"):'';
-        $strSector              = $request->query->get("sector") ? $request->query->get("sector"):'';
+        $strParroquia           = $request->query->get("parroquia") ? $request->query->get("parroquia"):'';
         $floatLatitud           = $request->query->get("latitud") ? $request->query->get("latitud"):'';
         $floatLongitud          = $request->query->get("longitud") ? $request->query->get("longitud"):'';
         $strNumeroContacto      = $request->query->get("numeroContacto") ? $request->query->get("numeroContacto"):'';
@@ -245,13 +250,17 @@ class InfoSucursalController extends Controller
             {
                 $entitySucursal->setPAIS($strPais);
             }
+            if(!empty($strProvincia))
+            {
+                $entitySucursal->setPROVINCIA($strProvincia);
+            }
             if(!empty($strCiudad))
             {
                 $entitySucursal->setCIUDAD($strCiudad);
             }
-            if(!empty($strSector))
+            if(!empty($strParroquia))
             {
-                $entitySucursal->setSECTOR($strSector);
+                $entitySucursal->setPARROQUIA($strParroquia);
             }
             $entitySucursal->setUSRMODIFICACION($strUsuarioModificacion);
             $entitySucursal->setFEMODIFICACION($strDatetimeActual);

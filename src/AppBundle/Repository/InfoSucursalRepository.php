@@ -26,8 +26,9 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $strIdentificacionRes  = $arrayParametros['strIdentificacionRes'] ? $arrayParametros['strIdentificacionRes']:'';
         $strEsMatriz           = $arrayParametros['strEsMatriz'] ? $arrayParametros['strEsMatriz']:'';
         $strPais               = $arrayParametros['strPais'] ? $arrayParametros['strPais']:'';
+        $strProvincia          = $arrayParametros['strProvincia'] ? $arrayParametros['strProvincia']:'';
         $strCiudad             = $arrayParametros['strCiudad'] ? $arrayParametros['strCiudad']:'';
-        $strSector             = $arrayParametros['strSector'] ? $arrayParametros['strSector']:'';
+        $strParroquia          = $arrayParametros['strParroquia'] ? $arrayParametros['strParroquia']:'';
         $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strEstadoFacturacion  = $arrayParametros['strEstadoFacturacion'] ? $arrayParametros['strEstadoFacturacion']:'';
         $arraySucursal         = array();
@@ -40,7 +41,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
                                       IR.IDENTIFICACION,IR.RAZON_SOCIAL, ISUR.RESTAURANTE_ID,ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
-                                      ISUR.LONGITUD, ISUR.PAIS,ISUR.CIUDAD,ISUR.SECTOR,
+                                      ISUR.LONGITUD, ISUR.PAIS,ISUR.PROVINCIA,ISUR.CIUDAD,ISUR.PARROQUIA,
                                       ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_SUCURSAL ISUR, INFO_RESTAURANTE IR ";
@@ -87,8 +88,9 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('LATITUD', 'LATITUD', 'string');
             $objRsmBuilder->addScalarResult('LONGITUD', 'LONGITUD', 'string');
             $objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
+            $objRsmBuilder->addScalarResult('PROVINCIA', 'PROVINCIA', 'string');
             $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');
-            $objRsmBuilder->addScalarResult('SECTOR', 'SECTOR', 'string');
+            $objRsmBuilder->addScalarResult('PARROQUIA', 'PARROQUIA', 'string');
             $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
@@ -133,10 +135,12 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
         try
         {
-            $strSelect      = "SELECT T1.ID_SUCURSAL, T1.RESTAURANTE_ID, T1.DESCRIPCION, T1.NOMBRE_COMERCIAL,T1.DISTANCIA  ";
+            $strSelect      = "SELECT T1.ID_SUCURSAL, T1.RESTAURANTE_ID, T1.DESCRIPCION, T1.PAIS, T1.PROVINCIA,
+                                T1.CIUDAD,T1.PARROQUIA, T1.NOMBRE_COMERCIAL,T1.DISTANCIA  ";
             $strFrom        ="FROM
                                     (SELECT ISU.ID_SUCURSAL, ISU.RESTAURANTE_ID,
-                                        ISU.DESCRIPCION, IRE.NOMBRE_COMERCIAL,
+                                        ISU.DESCRIPCION, ISU.PAIS,ISU.PROVINCIA,ISU.CIUDAD,ISU.PARROQUIA,
+                                        IRE.NOMBRE_COMERCIAL,
                                         (6371 * ACOS( 
                                                     SIN(RADIANS(ISU.LATITUD)) * SIN(RADIANS(:LATITUD)) 
                                                     + COS(RADIANS(ISU.LONGITUD - :LONGITUD)) * COS(RADIANS(ISU.LATITUD)) 
@@ -156,6 +160,10 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
             $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('PAIS', 'PAIS', 'string');
+            $objRsmBuilder->addScalarResult('PROVINCIA', 'PROVINCIA', 'string');
+            $objRsmBuilder->addScalarResult('CIUDAD', 'CIUDAD', 'string');
+            $objRsmBuilder->addScalarResult('PARROQUIA', 'PARROQUIA', 'string');
             $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('DISTANCIA', 'DISTANCIA', 'string');
 

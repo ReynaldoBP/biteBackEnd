@@ -97,6 +97,13 @@ class InfoSucursal
     /**
      * @var string
      *
+     * @ORM\Column(name="PROVINCIA", type="string", length=100)
+     */
+    private $PROVINCIA;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="CIUDAD", type="string", length=100)
      */
     private $CIUDAD;
@@ -104,9 +111,9 @@ class InfoSucursal
     /**
      * @var string
      *
-     * @ORM\Column(name="SECTOR", type="string", length=100)
+     * @ORM\Column(name="PARROQUIA", type="string", length=100)
      */
-    private $SECTOR;
+    private $PARROQUIA;
 
     /**
      * @var string
@@ -388,30 +395,6 @@ class InfoSucursal
     }
 
     /**
-     * Set SECTOR
-     *
-     * @param string $SECTOR
-     *
-     * @return InfoSucursal
-     */
-    public function setSECTOR($SECTOR)
-    {
-        $this->SECTOR = $SECTOR;
-
-        return $this;
-    }
-
-    /**
-     * Get SECTOR
-     *
-     * @return string
-     */
-    public function getSECTOR()
-    {
-        return $this->SECTOR;
-    }
-
-    /**
      * Set USRCREACION
      *
      * @param string $USRCREACION
@@ -529,5 +512,53 @@ class InfoSucursal
     public function getRESTAURANTEID()
     {
         return $this->RESTAURANTEID;
+    }
+
+    /**
+     * Set PROVINCIA
+     *
+     * @param string $PROVINCIA
+     *
+     * @return InfoSucursal
+     */
+    public function setPROVINCIA($PROVINCIA)
+    {
+        $this->PROVINCIA = $PROVINCIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PROVINCIA
+     *
+     * @return string
+     */
+    public function getPROVINCIA()
+    {
+        return $this->PROVINCIA;
+    }
+
+    /**
+     * Set PARROQUIA
+     *
+     * @param string $PARROQUIA
+     *
+     * @return InfoSucursal
+     */
+    public function setPARROQUIA($PARROQUIA)
+    {
+        $this->PARROQUIA = $PARROQUIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PARROQUIA
+     *
+     * @return string
+     */
+    public function getPARROQUIA()
+    {
+        return $this->PARROQUIA;
     }
 }
