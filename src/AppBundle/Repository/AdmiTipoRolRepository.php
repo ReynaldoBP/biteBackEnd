@@ -47,7 +47,7 @@ class AdmiTipoRolRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strDescripcion))
             {
-                $strWhere .= " AND lower(tipoRol.DESCRIPCION_TIPO_ROL) like lower(:DESCRIPCION_TIPO_ROL)";
+                $strWhere .= " AND lower(tipoRol.DESCRIPCION_TIPO_ROL) like lower(:DESCRIPCION_TIPO_ROL) ";
                 $objQuery->setParameter("DESCRIPCION_TIPO_ROL", '%' . trim($strDescripcion) . '%');
             }
             $objRsmBuilder->addScalarResult('ID_TIPO_ROL', 'ID_TIPO_ROL', 'string');

@@ -42,7 +42,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO", $strEstado);
             if(!empty($intIdPais))
             {
-                $strWhere  .= "AND pais.ID_PAIS in (:ID_PAIS)";
+                $strWhere  .= "AND pais.ID_PAIS in (:ID_PAIS) ";
                 $objQuery->setParameter("ID_PAIS", $intIdPais);
             }
             $objRsmBuilder->addScalarResult('ID_PAIS', 'ID_PAIS', 'string');

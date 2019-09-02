@@ -36,19 +36,20 @@ class InfoOpcionRespuestaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect = "SELECT IOR.ID_OPCION_RESPUESTA,IOR.TIPO_RESPUESTA,
-                          IOR.DESCRIPCION,IOR.ESTADO,IOR.USR_CREACION,IOR.FE_CREACION,
+                          IOR.DESCRIPCION,IOR.VALOR,IOR.ESTADO,IOR.USR_CREACION,IOR.FE_CREACION,
                           IOR.USR_MODIFICACION,IOR.FE_MODIFICACION ";
             $strFrom   = "FROM INFO_OPCION_RESPUESTA IOR ";
             $strWhere  = "WHERE IOR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             if(!empty($intIdOpcionRespuesta))
             {
-                $strWhere  .= "AND IOR.ID_OPCION_RESPUESTA in (:ID_OPCION_RESPUESTA)";
+                $strWhere  .= "AND IOR.ID_OPCION_RESPUESTA in (:ID_OPCION_RESPUESTA) ";
                 $objQuery->setParameter("ID_OPCION_RESPUESTA", $intIdOpcionRespuesta);
             }
             $objRsmBuilder->addScalarResult('ID_OPCION_RESPUESTA', 'ID_OPCION_RESPUESTA', 'string');
             $objRsmBuilder->addScalarResult('TIPO_RESPUESTA', 'TIPO_RESPUESTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('VALOR', 'VALOR', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
             $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');

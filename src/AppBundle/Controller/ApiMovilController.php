@@ -14,6 +14,8 @@ use AppBundle\Entity\AdmiTipoClientePuntaje;
 use AppBundle\Entity\InfoUsuario;
 use AppBundle\Entity\AdmiParametro;
 use AppBundle\Entity\InfoRestaurante;
+use AppBundle\Entity\InfoEncuesta;
+use AppBundle\Entity\InfoPregunta;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -42,6 +44,10 @@ class ApiMovilController extends FOSRestController
                case 'getSucursalPorUbicacion':$arrayRespuesta = $this->getSucursalPorUbicacion($arrayData);
                break;
                case 'getRestaurante':$arrayRespuesta = $this->getRestaurante($arrayData);
+               break;
+               case 'getEncuesta':$arrayRespuesta = $this->getEncuesta($arrayData);
+               break;
+               case 'getPregunta':$arrayRespuesta = $this->getPregunta($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -438,6 +444,110 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRestaurante,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getEncuesta'
+     * Método encargado de listar las encuestas según los parámetros recibidos.
+     *
+     * @author Kevin Baque
+     * @version 1.0 02-09-2019
+     *
+     * @return array  $objResponse
+     */
+    public function getEncuesta($arrayData)
+    {
+        $strIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $strIdEncuesta          = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
+        $strDescripcion         = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
+        $strTitulo              = $arrayData['titulo'] ? $arrayData['titulo']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $strDatetimeActual      = new \DateTime('now');
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $arrayParametros = array('strIdRestaurante' => $strIdRestaurante,
+                                    'strIdEncuesta'     => $strIdEncuesta,
+                                    'strDescripcion'    => $strDescripcion,
+                                    'strTitulo'         => $strTitulo,
+                                    'strEstado'         => $strEstado
+                                    );
+            $arrayEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoEncuesta')->getEncuestaCriterioMovil($arrayParametros);
+            if(isset($arrayEncuesta['error']) && !empty($arrayEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayEncuesta['error'] = $strMensaje;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getPregunta'
+     * Método encargado de listar las preguntas según los parámetros recibidos.
+     *
+     * @author Kevin Baque
+     * @version 1.0 29-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getPregunta($arrayData)
+    {
+        $strIdEncuesta          = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
+        $strIdPregunta          = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
+        $strDescripcion         = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
+        $strObligatoria         = $arrayData['obligatoria'] ? $arrayData['obligatoria']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $strDatetimeActual      = new \DateTime('now');
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $arrayParametros = array('strIdPregunta'    => $strIdPregunta,
+                                    'strIdEncuesta'     => $strIdEncuesta,
+                                    'strDescripcion'    => $strDescripcion,
+                                    'strObligatoria'    => $strObligatoria,
+                                    'strEstado'         => $strEstado
+                                    );
+            $arrayEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoPregunta')->getPreguntaCriterioMovil($arrayParametros);
+            if(isset($arrayEncuesta['error']) && !empty($arrayEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayEncuesta['error'] = $strMensaje;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayEncuesta,
                                             'succes'    => true
                                             )
                                         ));
