@@ -90,6 +90,7 @@ class InfoSucursalController extends Controller
         $strIdRestaurante     = $request->query->get("strIdRestaurante") ? $request->query->get("strIdRestaurante"):'';
         $strIdentificacionRes = $request->query->get("identificacionRestaurante") ? $request->query->get("identificacionRestaurante"):'';
         $strEsMatriz          = $request->query->get("esMatriz") ? $request->query->get("esMatriz"):'';
+        $strEnCentroComercial = $request->query->get("enCentroComercial") ? $request->query->get("enCentroComercial"):'';
         $strDescripcion       = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strDireccion         = $request->query->get("direccion") ? $request->query->get("direccion"):'';
         $strPais              = $request->query->get("pais") ? $request->query->get("pais"):'';
@@ -125,6 +126,7 @@ class InfoSucursalController extends Controller
             $entitySucursal->setRESTAURANTEID($objRestaurante);
             $entitySucursal->setDESCRIPCION($strDescripcion);
             $entitySucursal->setESMATRIZ($strEsMatriz);
+            $entitySucursal->setENCENTROCOMERCIAL($strEnCentroComercial);
             $entitySucursal->setDIRECCION($strDireccion);
             $entitySucursal->setNUMEROCONTACTO($strNumeroContacto);
             $entitySucursal->setESTADOFACTURACION(strtoupper($strEstadoFacturacion));
@@ -182,6 +184,7 @@ class InfoSucursalController extends Controller
         $strIdentificacionRes   = $request->query->get("identificacionRestaurante") ? $request->query->get("identificacionRestaurante"):'';
         $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
         $strEsMatriz            = $request->query->get("esMatriz") ? $request->query->get("esMatriz"):'';
+        $strEnCentroComercial   = $request->query->get("enCentroComercial") ? $request->query->get("enCentroComercial"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strDireccion           = $request->query->get("direccion") ? $request->query->get("direccion"):'';
         $strPais                = $request->query->get("pais") ? $request->query->get("pais"):'';
@@ -221,6 +224,10 @@ class InfoSucursalController extends Controller
             if(!empty($strEsMatriz))
             {
                 $entitySucursal->setESMATRIZ($strEsMatriz);
+            }
+            if(!empty($strEnCentroComercial))
+            {
+                $entitySucursal->setENCENTROCOMERCIAL($strEnCentroComercial);
             }
             if(!empty($strDireccion))
             {

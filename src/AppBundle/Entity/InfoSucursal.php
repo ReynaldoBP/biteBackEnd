@@ -41,6 +41,13 @@ class InfoSucursal
     /**
      * @var string
      *
+     * @ORM\Column(name="EN_CENTRO_COMERCIAL", type="string", length=50)
+     */
+    private $EN_CENTRO_COMERCIAL;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
      */
     private $DESCRIPCION;
@@ -560,5 +567,29 @@ class InfoSucursal
     public function getPARROQUIA()
     {
         return $this->PARROQUIA;
+    }
+
+    /**
+     * Set ENCENTROCOMERCIAL
+     *
+     * @param string $ENCENTROCOMERCIAL
+     *
+     * @return InfoSucursal
+     */
+    public function setENCENTROCOMERCIAL($ENCENTROCOMERCIAL)
+    {
+        $this->EN_CENTRO_COMERCIAL = $ENCENTROCOMERCIAL;
+
+        return $this;
+    }
+
+    /**
+     * Get ENCENTROCOMERCIAL
+     *
+     * @return string
+     */
+    public function getENCENTROCOMERCIAL()
+    {
+        return $this->EN_CENTRO_COMERCIAL;
     }
 }

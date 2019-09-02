@@ -43,7 +43,7 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO", $strEstado);
             if(!empty($intIdTipoComida))
             {
-                $strWhere .= " AND tipoComida.ID_TIPO_COMIDA = :ID_TIPO_COMIDA";
+                $strWhere .= " AND tipoComida.ID_TIPO_COMIDA = :ID_TIPO_COMIDA ";
                 $objQuery->setParameter("ID_TIPO_COMIDA", $intIdTipoComida);
             }
             $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');

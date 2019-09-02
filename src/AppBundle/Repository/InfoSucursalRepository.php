@@ -40,7 +40,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
+            $strSelect      = "SELECT ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,ISUR.ES_MATRIZ,ISUR.EN_CENTRO_COMERCIAL,ISUR.DIRECCION,ISUR.NUMERO_CONTACTO,
                                       IR.IDENTIFICACION,IR.RAZON_SOCIAL, ISUR.RESTAURANTE_ID,ISUR.ESTADO_FACTURACION,ISUR.ESTADO,ISUR.LATITUD,
                                       ISUR.LONGITUD, ISUR.PAIS,ISUR.PROVINCIA,ISUR.CIUDAD,ISUR.PARROQUIA,
                                       ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
@@ -85,6 +85,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ES_MATRIZ', 'ES_MATRIZ', 'string');
+            $objRsmBuilder->addScalarResult('EN_CENTRO_COMERCIAL', 'EN_CENTRO_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('DIRECCION', 'DIRECCION', 'string');
             $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
             $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');

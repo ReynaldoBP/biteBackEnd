@@ -41,6 +41,13 @@ class InfoSucursal
     /**
      * @var string
      *
+     * @ORM\Column(name="EN_CENTRO_COMERCIAL", type="string", length=50)
+     */
+    private $EN_CENTRO_COMERCIAL;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
      */
     private $DESCRIPCION;
@@ -512,5 +519,53 @@ class InfoSucursal
     public function getRESTAURANTEID()
     {
         return $this->RESTAURANTEID;
+    }
+
+    /**
+     * Set PROVINCIA
+     *
+     * @param string $PROVINCIA
+     *
+     * @return InfoSucursal
+     */
+    public function setPROVINCIA($PROVINCIA)
+    {
+        $this->PROVINCIA = $PROVINCIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PROVINCIA
+     *
+     * @return string
+     */
+    public function getPROVINCIA()
+    {
+        return $this->PROVINCIA;
+    }
+
+    /**
+     * Set PARROQUIA
+     *
+     * @param string $PARROQUIA
+     *
+     * @return InfoSucursal
+     */
+    public function setPARROQUIA($PARROQUIA)
+    {
+        $this->PARROQUIA = $PARROQUIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PARROQUIA
+     *
+     * @return string
+     */
+    public function getPARROQUIA()
+    {
+        return $this->PARROQUIA;
     }
 }

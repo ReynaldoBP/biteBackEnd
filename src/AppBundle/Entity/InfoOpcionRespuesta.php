@@ -35,6 +35,14 @@ class InfoOpcionRespuesta
      */
     private $DESCRIPCION;
 
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="VALOR", type="string", length=100, nullable=true)
+     */
+    private $VALOR;
+
     /**
      * @var string
      *
@@ -246,5 +254,29 @@ class InfoOpcionRespuesta
     public function getFEMODIFICACION()
     {
         return $this->FEMODIFICACION;
+    }
+
+    /**
+     * Set VALOR
+     *
+     * @param string $VALOR
+     *
+     * @return InfoOpcionRespuesta
+     */
+    public function setVALOR($VALOR)
+    {
+        $this->VALOR = $VALOR;
+
+        return $this;
+    }
+
+    /**
+     * Get VALOR
+     *
+     * @return string
+     */
+    public function getVALOR()
+    {
+        return $this->VALOR;
     }
 }
