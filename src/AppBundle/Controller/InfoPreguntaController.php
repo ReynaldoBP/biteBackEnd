@@ -25,6 +25,7 @@ class InfoPreguntaController extends Controller
     public function createPreguntaAction(Request $request)
     {
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
+        $intIdOpcionRespuesta   = $request->query->get("idOpcionRespuesta") ? $request->query->get("idOpcionRespuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strObligatoria         = $request->query->get("obligatoria") ? $request->query->get("obligatoria"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -41,10 +42,16 @@ class InfoPreguntaController extends Controller
             $objEncuesta = $em->getRepository('AppBundle:InfoEncuesta')->find($strIdEncuesta);
             if(!is_object($objEncuesta) || empty($objEncuesta))
             {
-                throw new \Exception('No existe encuesta con la parámetros enviados.');
+                throw new \Exception('No existe encuesta con los parámetros enviados.');
+            }
+            $objOpcionRespuesta = $em->getRepository('AppBundle:InfoOpcionRespuesta')->find($intIdOpcionRespuesta);
+            if(!is_object($objOpcionRespuesta) || empty($objOpcionRespuesta))
+            {
+                throw new \Exception('No existe la opción de respuesta con los parámetros enviados.');
             }
             $entityPregunta = new InfoPregunta();
             $entityPregunta->setENCUESTAID($objEncuesta);
+            $entityPregunta->setOPCIONRESPUESTAID($objOpcionRespuesta);
             $entityPregunta->setDESCRIPCION($strDescripcion);
             $entityPregunta->setOBLIGATORIA($strObligatoria);
             $entityPregunta->setESTADO(strtoupper($strEstado));
@@ -92,6 +99,7 @@ class InfoPreguntaController extends Controller
     public function editPreguntaAction(Request $request)
     {
         $strIdPregunta          = $request->query->get("idPregunta") ? $request->query->get("idPregunta"):'';
+        $intIdOpcionRespuesta   = $request->query->get("idOpcionRespuesta") ? $request->query->get("idOpcionRespuesta"):'';
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strObligatoria         = $request->query->get("obligatoria") ? $request->query->get("obligatoria"):'';
@@ -119,6 +127,15 @@ class InfoPreguntaController extends Controller
                     throw new \Exception('No existe encuesta con la descripción enviada por parámetro.');
                 }
                 $objPregunta->setENCUESTAID($objEncuesta);
+            }
+            if(!empty($intIdOpcionRespuesta))
+            {
+                $objOpcionRespuesta  = $em->getRepository('AppBundle:InfoOpcionRespuesta')->find($intIdOpcionRespuesta);
+                if(!is_object($objOpcionRespuesta) || empty($objOpcionRespuesta))
+                {
+                    throw new \Exception('No existe opción de respuesta con la identificación enviada por parámetro.');
+                }
+                $objPregunta->setOPCIONRESPUESTAID($objOpcionRespuesta);
             }
             if(!empty($strDescripcion))
             {

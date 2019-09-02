@@ -32,6 +32,16 @@ class InfoPregunta
     private $ENCUESTA_ID;
 
     /**
+    * @var InfoOpcionRespuesta
+    *
+    * @ORM\ManyToOne(targetEntity="InfoOpcionRespuesta")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="OPCION_RESPUESTA_ID", referencedColumnName="ID_OPCION_RESPUESTA")
+    * })
+    */
+    private $OPCION_RESPUESTA_ID;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
@@ -280,5 +290,29 @@ class InfoPregunta
     public function getENCUESTAID()
     {
         return $this->ENCUESTA_ID;
+    }
+
+    /**
+     * Set OPCIONRESPUESTAID
+     *
+     * @param \AppBundle\Entity\InfoOpcionRespuesta $OPCIONRESPUESTAID
+     *
+     * @return InfoPregunta
+     */
+    public function setOPCIONRESPUESTAID(\AppBundle\Entity\InfoOpcionRespuesta $OPCIONRESPUESTAID = null)
+    {
+        $this->OPCION_RESPUESTA_ID = $OPCIONRESPUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get OPCIONRESPUESTAID
+     *
+     * @return \AppBundle\Entity\InfoOpcionRespuesta
+     */
+    public function getOPCIONRESPUESTAID()
+    {
+        return $this->OPCION_RESPUESTA_ID;
     }
 }
