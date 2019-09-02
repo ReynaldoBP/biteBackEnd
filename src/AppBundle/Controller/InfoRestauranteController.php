@@ -134,7 +134,7 @@ class InfoRestauranteController extends Controller
      */
     public function editRestauranteAction(Request $request)
     {
-        $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
+        $strIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
@@ -173,9 +173,9 @@ class InfoRestauranteController extends Controller
                     throw new \Exception('Restaurante no existe.');
                 }
             }
-            if(!empty($strTipoComida))
+            if(!empty($strIdTipoComida))
             {
-                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy(array('DESCRIPCION_TIPO_COMIDA'=>$strTipoComida));
+                $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
                 if(!is_object($objTipoComida) || empty($objTipoComida))
                 {
                     throw new \Exception('Tipo de comida no existe.');

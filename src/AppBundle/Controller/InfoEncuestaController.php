@@ -36,6 +36,7 @@ class InfoEncuestaController extends Controller
         $objResponse            = new Response;
         $strDatetimeActual      = new \DateTime('now');
         $em                     = $this->getDoctrine()->getEntityManager();
+        $arrayEncuesta          = array();
         try
         {
             $em->getConnection()->beginTransaction();
@@ -69,9 +70,21 @@ class InfoEncuestaController extends Controller
             $em->getConnection()->commit();
             $em->getConnection()->close();
         }
+        $arrayEncuesta = array( 'id'                        => $entityEncuesta->getId(),
+                                'descripcion'               => $entityEncuesta->getDESCRIPCION(),
+                                'titulo'                    => $entityEncuesta->getTITULO(),
+                                'idRestaurante'             => $entityEncuesta->getRESTAURANTEID()->getId(),
+                                'identificacionRestaurante' => $entityEncuesta->getRESTAURANTEID()->getIDENTIFICACION(),
+                                'razonSocialRestaurante'    => $entityEncuesta->getRESTAURANTEID()->getRAZONSOCIAL(),
+                                'estadoRestaurante'         => $entityEncuesta->getRESTAURANTEID()->getESTADO(),
+                                'estadoEncuesta'            => $entityEncuesta->getESTADO(),
+                                'usrCreacion'               => $entityEncuesta->getUSRCREACION(),
+                                'feModificacion'            => $entityEncuesta->getUSRCREACION(),
+                                'mensaje'                   => $strMensajeError);
+
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $strMensajeError,
+                                            'resultado' => $arrayEncuesta,
                                             'succes'    => true
                                             )
                                         ));

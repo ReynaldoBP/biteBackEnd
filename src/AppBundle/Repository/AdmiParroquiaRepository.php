@@ -32,6 +32,7 @@ class AdmiParroquiaRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY parroquia.PARROQUIA_NOMBRE ASC';
         try
         {
             $strSelect = "SELECT parroquia.ID_PARROQUIA,parroquia.CIUDAD_ID,parroquia.PARROQUIA_NOMBRE,parroquia.ESTADO ";
@@ -54,7 +55,7 @@ class AdmiParroquiaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('PARROQUIA_NOMBRE', 'PARROQUIA_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayParroquia['Parroquia'] = $objQuery->getResult();
         }

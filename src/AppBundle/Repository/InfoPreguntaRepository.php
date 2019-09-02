@@ -34,6 +34,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         $objQuery              = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        $strOrder              = ' ORDER BY PE.FE_CREACION ASC';
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
@@ -74,11 +75,13 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_ENCUESTA', 'DESCRIPCION_ENCUESTA', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
 
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
-            $strSql       = $strSelect.$strFrom.$strWhere;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
             $objQueryCount->setSQL($strSqlCount);
