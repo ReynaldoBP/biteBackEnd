@@ -41,6 +41,13 @@ class InfoSucursal
     /**
      * @var string
      *
+     * @ORM\Column(name="DESCRIPCION", type="string", length=255)
+     */
+    private $DESCRIPCION;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="DIRECCION", type="string", length=255)
      */
     private $DIRECCION;
@@ -90,6 +97,13 @@ class InfoSucursal
     /**
      * @var string
      *
+     * @ORM\Column(name="PROVINCIA", type="string", length=100)
+     */
+    private $PROVINCIA;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="CIUDAD", type="string", length=100)
      */
     private $CIUDAD;
@@ -97,9 +111,9 @@ class InfoSucursal
     /**
      * @var string
      *
-     * @ORM\Column(name="SECTOR", type="string", length=100)
+     * @ORM\Column(name="PARROQUIA", type="string", length=100)
      */
-    private $SECTOR;
+    private $PARROQUIA;
 
     /**
      * @var string
@@ -162,6 +176,30 @@ class InfoSucursal
     public function getESMATRIZ()
     {
         return $this->ESMATRIZ;
+    }
+
+    /**
+     * Set DESCRIPCION
+     *
+     * @param string $DESCRIPCION
+     *
+     * @return InfoSucursal
+     */
+    public function setDESCRIPCION($DESCRIPCION)
+    {
+        $this->DESCRIPCION = $DESCRIPCION;
+
+        return $this;
+    }
+
+    /**
+     * Get DESCRIPCION
+     *
+     * @return string
+     */
+    public function getDESCRIPCION()
+    {
+        return $this->DESCRIPCION;
     }
 
     /**
@@ -357,30 +395,6 @@ class InfoSucursal
     }
 
     /**
-     * Set SECTOR
-     *
-     * @param string $SECTOR
-     *
-     * @return InfoSucursal
-     */
-    public function setSECTOR($SECTOR)
-    {
-        $this->SECTOR = $SECTOR;
-
-        return $this;
-    }
-
-    /**
-     * Get SECTOR
-     *
-     * @return string
-     */
-    public function getSECTOR()
-    {
-        return $this->SECTOR;
-    }
-
-    /**
      * Set USRCREACION
      *
      * @param string $USRCREACION
@@ -475,5 +489,28 @@ class InfoSucursal
     {
         return $this->FEMODIFICACION;
     }
-}
 
+    /**
+     * Set RESTAURANTEID
+     *
+     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
+     *
+     * @return InfoSucursal
+     */
+    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
+    {
+        $this->RESTAURANTEID = $RESTAURANTEID;
+
+        return $this;
+    }
+
+    /**
+     * Get RESTAURANTEID
+     *
+     * @return \AppBundle\Entity\InfoRestaurante
+     */
+    public function getRESTAURANTEID()
+    {
+        return $this->RESTAURANTEID;
+    }
+}
