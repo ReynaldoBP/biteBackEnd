@@ -33,6 +33,7 @@ class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY provincia.PROVINCIA_NOMBRE ASC';
         try
         {
             $strSelect = "SELECT pais.PAIS_NOMBRE,pais.ID_PAIS,provincia.ID_PROVINCIA,provincia.PAIS_ID,
@@ -58,7 +59,7 @@ class AdmiProvinciaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayProvincia['provincia'] = $objQuery->getResult();
         }

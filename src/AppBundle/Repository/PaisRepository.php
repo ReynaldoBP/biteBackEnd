@@ -33,6 +33,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY pais.PAIS_NOMBRE ASC';
         try
         {
             $strSelect = "SELECT pais.ID_PAIS,pais.PAIS_NOMBRE,pais.ESTADO ";
@@ -48,7 +49,7 @@ class PaisRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('PAIS_NOMBRE', 'PAIS_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayPais['pais'] = $objQuery->getResult();
         }

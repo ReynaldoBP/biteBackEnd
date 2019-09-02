@@ -33,6 +33,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        $strOrder           = ' ORDER BY IC.APELLIDO ASC';
         try
         {
             $strSelect      = "SELECT IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
@@ -85,7 +86,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
-            $strSql       = $strSelect.$strFrom.$strWhere;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
             $objQueryCount->setSQL($strSqlCount);

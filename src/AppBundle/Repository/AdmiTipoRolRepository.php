@@ -32,6 +32,7 @@ class AdmiTipoRolRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY tipoRol.DESCRIPCION_TIPO_ROL ASC';
         try
         {
             $strSelect = "SELECT tipoRol.ID_TIPO_ROL,tipoRol.DESCRIPCION_TIPO_ROL,tipoRol.ESTADO,tipoRol.USR_CREACION,tipoRol.FE_CREACION, 
@@ -57,7 +58,7 @@ class AdmiTipoRolRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayTipoRol['tipoRol'] = $objQuery->getResult();
         }

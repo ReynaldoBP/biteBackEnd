@@ -33,6 +33,7 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY ciudad.CIUDAD_NOMBRE ASC';
         try
         {
             $strSelect = "SELECT ciudad.ID_CIUDAD,ciudad.PROVINCIA_ID,ciudad.CIUDAD_NOMBRE,ciudad.ESTADO ";
@@ -55,7 +56,7 @@ class CiudadRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('CIUDAD_NOMBRE', 'CIUDAD_NOMBRE', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayCiudad['ciudad'] = $objQuery->getResult();
         }

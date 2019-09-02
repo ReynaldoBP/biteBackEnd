@@ -33,6 +33,7 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
         $strSelect       = '';
         $strFrom         = '';
         $strWhere        = '';
+        $strOrder        = 'ORDER BY tipoComida.DESCRIPCION_TIPO_COMIDA ASC';
         try
         {
             $strSelect = "SELECT tipoComida.ID_TIPO_COMIDA,tipoComida.DESCRIPCION_TIPO_COMIDA,tipoComida.ESTADO,
@@ -54,7 +55,7 @@ class AdmiTipoComidaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
 
 
-            $strSql  = $strSelect.$strFrom.$strWhere;
+            $strSql  = $strSelect.$strFrom.$strWhere.$strOrder;
             $objQuery->setSQL($strSql);
             $arrayTipoComida['tipoComida'] = $objQuery->getResult();
         }

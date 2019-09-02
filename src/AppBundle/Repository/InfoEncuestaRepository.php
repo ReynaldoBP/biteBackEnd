@@ -34,6 +34,7 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $objQuery              = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        $strOrder           = ' ORDER BY EC.FE_CREACION ASC';
         try
         {
             $strSelect      = "SELECT EC.ID_ENCUESTA,EC.RESTAURANTE_ID,EC.DESCRIPCION,EC.TITULO,EC.ESTADO AS ESTADO_ENCUESTA, 
@@ -85,7 +86,7 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
-            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
+            $strSqlCount  = $strSelectCount.$strFrom.$strWhere.$strOrder;
             $objQueryCount->setSQL($strSqlCount);
             $arrayEncuesta['cantidad']   = $objQueryCount->getSingleScalarResult();
             $arrayEncuesta['resultados'] = $objQuery->getResult();
