@@ -11,4 +11,8 @@ insert into ADMI_TIPO_ROL(DESCRIPCION_TIPO_ROL,ESTADO,USR_CREACION,FE_CREACION) 
 insert into ADMI_TIPO_CLIENTE_PUNTAJE(DESCRIPCION,VALOR,ESTADO,USR_CREACION,FE_CREACION) values('CLIENTE','CLIENTE','ACTIVO','kbaque',sysdate());
 /*                            Parametros                            */
 insert into ADMI_PARAMETRO(DESCRIPCION,VALOR1,VALOR2,VALOR3,ESTADO,USR_CREACION,FE_CREACION) values('CANTIDAD_DISTANCIA','MOVIL','SUCURSAL','5','ACTIVO','kbaque',sysdate());
+/*                       INFO_OPCION_RESPUESTA                      */
+insert into massVisionDesa.INFO_OPCION_RESPUESTA(TIPO_RESPUESTA,DESCRIPCION,ESTADO,USR_CREACION,FE_CREACION) values('CERRADA','5 Estrellas','ACTIVO','kbaque',sysdate());
+insert into massVisionDesa.INFO_OPCION_RESPUESTA(TIPO_RESPUESTA,DESCRIPCION,ESTADO,USR_CREACION,FE_CREACION) values('CERRADA','10 Estrellas','ACTIVO','kbaque',sysdate());
+insert into massVisionDesa.INFO_OPCION_RESPUESTA(TIPO_RESPUESTA,DESCRIPCION,ESTADO,USR_CREACION,FE_CREACION) values('ABIERTA','Comentario','ACTIVO','kbaque',sysdate());
 commit;

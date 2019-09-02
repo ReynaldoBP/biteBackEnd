@@ -32,6 +32,16 @@ class InfoPregunta
     private $ENCUESTA_ID;
 
     /**
+    * @var InfoOpcionRespuesta
+    *
+    * @ORM\ManyToOne(targetEntity="InfoOpcionRespuesta")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="OPCION_RESPUESTA_ID", referencedColumnName="ID_OPCION_RESPUESTA")
+    * })
+    */
+    private $OPCION_RESPUESTA_ID;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
@@ -137,5 +147,148 @@ class InfoPregunta
     {
         return $this->OBLIGATORIA;
     }
-}
 
+    /**
+     * Set eSTADO
+     *
+     * @param string $eSTADO
+     *
+     * @return InfoPregunta
+     */
+    public function setESTADO($eSTADO)
+    {
+        $this->ESTADO = $eSTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get eSTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->ESTADO;
+    }
+
+    /**
+     * Set uSRCREACION
+     *
+     * @param string $uSRCREACION
+     *
+     * @return InfoPregunta
+     */
+    public function setUSRCREACION($uSRCREACION)
+    {
+        $this->USRCREACION = $uSRCREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get uSRCREACION
+     *
+     * @return string
+     */
+    public function getUSRCREACION()
+    {
+        return $this->USRCREACION;
+    }
+
+    /**
+     * Set fECREACION
+     *
+     * @param \DateTime $fECREACION
+     *
+     * @return InfoPregunta
+     */
+    public function setFECREACION($fECREACION)
+    {
+        $this->FECREACION = $fECREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get fECREACION
+     *
+     * @return \DateTime
+     */
+    public function getFECREACION()
+    {
+        return $this->FECREACION;
+    }
+
+    /**
+     * Set uSRMODIFICACION
+     *
+     * @param string $uSRMODIFICACION
+     *
+     * @return InfoPregunta
+     */
+    public function setUSRMODIFICACION($uSRMODIFICACION)
+    {
+        $this->USRMODIFICACION = $uSRMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get uSRMODIFICACION
+     *
+     * @return string
+     */
+    public function getUSRMODIFICACION()
+    {
+        return $this->USRMODIFICACION;
+    }
+
+    /**
+     * Set fEMODIFICACION
+     *
+     * @param \DateTime $fEMODIFICACION
+     *
+     * @return InfoPregunta
+     */
+    public function setFEMODIFICACION($fEMODIFICACION)
+    {
+        $this->FEMODIFICACION = $fEMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get fEMODIFICACION
+     *
+     * @return \DateTime
+     */
+    public function getFEMODIFICACION()
+    {
+        return $this->FEMODIFICACION;
+    }
+
+    /**
+     * Set ENCUESTAID
+     *
+     * @param \AppBundle\Entity\InfoEncuesta $ENCUESTAID
+     *
+     * @return InfoPregunta
+     */
+    public function setENCUESTAID(\AppBundle\Entity\InfoEncuesta $ENCUESTAID = null)
+    {
+        $this->ENCUESTA_ID = $ENCUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get ENCUESTAID
+     *
+     * @return \AppBundle\Entity\InfoEncuesta
+     */
+    public function getENCUESTAID()
+    {
+        return $this->ENCUESTA_ID;
+    }
+}

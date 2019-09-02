@@ -22,6 +22,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getSucursalCriterio($arrayParametros)
     {
+        $intIdSucursal         = $arrayParametros['intIdSucursal'] ? $arrayParametros['intIdSucursal']:'';
         $strIdRestaurante      = $arrayParametros['strIdRestaurante'] ? $arrayParametros['strIdRestaurante']:'';
         $strIdentificacionRes  = $arrayParametros['strIdentificacionRes'] ? $arrayParametros['strIdentificacionRes']:'';
         $strEsMatriz           = $arrayParametros['strEsMatriz'] ? $arrayParametros['strEsMatriz']:'';
@@ -48,6 +49,12 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) AND ISUR.RESTAURANTE_ID=IR.ID_RESTAURANTE ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdSucursal))
+            {
+                $strWhere .= " AND ISUR.ID_SUCURSAL =:ID_SUCURSAL";
+                $objQuery->setParameter("ID_SUCURSAL", $intIdSucursal);
+                $objQueryCount->setParameter("ID_SUCURSAL", $intIdSucursal);
+            }
             if(!empty($strEsMatriz))
             {
                 $strWhere .= " AND ISUR.ES_MATRIZ =:ES_MATRIZ";

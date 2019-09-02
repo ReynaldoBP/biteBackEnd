@@ -23,7 +23,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getPreguntaCriterio($arrayParametros)
     {
-        $strIdPregunta      = $arrayParametros['strIdPregunta'] ? $arrayParametros['strIdPregunta']:'';
+        $strIdPregunta         = $arrayParametros['strIdPregunta'] ? $arrayParametros['strIdPregunta']:'';
         $strIdEncuesta         = $arrayParametros['strIdEncuesta'] ? $arrayParametros['strIdEncuesta']:'';
         $strDescripcion        = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
         $strObligatoria        = $arrayParametros['strObligatoria'] ? $arrayParametros['strObligatoria']:'';
@@ -38,7 +38,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
-                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,
+                                      EC.ID_ENCUESTA,PE.OPCION_RESPUESTA_ID,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,
                                       PE.USR_CREACION, PE.FE_CREACION,PE.USR_MODIFICACION,PE.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_ENCUESTA EC, INFO_PREGUNTA PE ";
@@ -71,6 +71,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             }
             $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
+            $objRsmBuilder->addScalarResult('OPCION_RESPUESTA_ID', 'OPCION_RESPUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
