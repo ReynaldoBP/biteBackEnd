@@ -16,6 +16,8 @@ use AppBundle\Entity\AdmiParametro;
 use AppBundle\Entity\InfoRestaurante;
 use AppBundle\Entity\InfoEncuesta;
 use AppBundle\Entity\InfoPregunta;
+use AppBundle\Entity\InfoRespuesta;
+use AppBundle\Entity\InfoOpcionRespuesta;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -48,6 +50,8 @@ class ApiMovilController extends FOSRestController
                case 'getEncuesta':$arrayRespuesta = $this->getEncuesta($arrayData);
                break;
                case 'getPregunta':$arrayRespuesta = $this->getPregunta($arrayData);
+               break;
+               case 'createRespuesta':$arrayRespuesta = $this->createRespuesta($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -470,33 +474,58 @@ class ApiMovilController extends FOSRestController
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
         $strStatus              = 400;
+        $boolSucces             = true;
+        $arrayPregunta          = array();
+        $arrayEncuesta          = array();
         $objResponse            = new Response;
         $strDatetimeActual      = new \DateTime('now');
         $em                     = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('strIdRestaurante' => $strIdRestaurante,
-                                    'strIdEncuesta'     => $strIdEncuesta,
-                                    'strDescripcion'    => $strDescripcion,
-                                    'strTitulo'         => $strTitulo,
-                                    'strEstado'         => $strEstado
-                                    );
-            $arrayEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoEncuesta')->getEncuestaCriterioMovil($arrayParametros);
-            if(isset($arrayEncuesta['error']) && !empty($arrayEncuesta['error']))
+            $arrayParametros = array('RESTAURANTE_ID' => $strIdRestaurante,
+                                     'ESTADO'         => $strEstado);
+            $objEncuesta     = $em->getRepository('AppBundle:InfoEncuesta')->findBy($arrayParametros);
+            if(empty($objEncuesta) && !is_array($objEncuesta))
             {
-                $strStatus  = 404;
-                throw new \Exception($arrayEncuesta['error']);
+                throw new \Exception('La encuesta a buscar no existe.');
+            }
+            foreach($objEncuesta as $arrayItem)
+            {
+                $arrayParametrosPreg = array('ESTADO'     => 'ACTIVO',
+                                             'ENCUESTA_ID' => $arrayItem->getId());
+                $objPregunta         = $em->getRepository('AppBundle:InfoPregunta')->findBy($arrayParametrosPreg);
+                if(!empty($objPregunta) && is_array($objPregunta))
+                {
+                    foreach($objPregunta as $arrayItemPregunta)
+                    {
+                        $arrayPregunta[] = array('idPregunta'      => $arrayItemPregunta->getId(),
+                                                 'descripcion'     => $arrayItemPregunta->getDESCRIPCION(),
+                                                 'obligatoria'     => $arrayItemPregunta->getOBLIGATORIA(),
+                                                 'idTipoRespuesta' => $arrayItemPregunta->getOPCIONRESPUESTAID()->getId(),
+                                                 'tipoRespuesta'   => $arrayItemPregunta->getOPCIONRESPUESTAID()->getTIPORESPUESTA(),
+                                                 'cantOpcion'      => $arrayItemPregunta->getOPCIONRESPUESTAID()->getValor(),
+                                                 'estado'          => $arrayItemPregunta->getESTADO());
+                    }
+                }
+                $arrayEncuesta = array( 'descripcionEncuesta' => $arrayItem->getDESCRIPCION(),
+                                        'tituloEncuesta'      => $arrayItem->getTITULO(),
+                                        'identificacion'      => $arrayItem->getRESTAURANTEID()->getIDENTIFICACION(),
+                                        'razonSocial'         => $arrayItem->getRESTAURANTEID()->getRAZONSOCIAL(),
+                                        'nombreComercial'     => $arrayItem->getRESTAURANTEID()->getNOMBRECOMERCIAL(),
+                                        'preguntas'           => $arrayPregunta);
             }
         }
         catch(\Exception $ex)
         {
-            $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $boolSucces             = false;
+            $strStatus              = 404;
+            $strMensaje             ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $arrayEncuesta['error'] = $strMensaje;
         }
-        $arrayEncuesta['error'] = $strMensaje;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayEncuesta,
-                                            'succes'    => true
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
@@ -548,6 +577,94 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createRespuesta'
+     * Método encargado de crear todas las respuesta según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 04-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createRespuesta($arrayData)
+    {
+        $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strRespuesta       = $arrayData['respuesta'] ? $arrayData['respuesta']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $arrayParametrosClt = array('ESTADO' => 'ACTIVO',
+                                        'id'     => $intIdCliente);
+            $objCliente         = $em->getRepository('AppBundle:InfoCliente')->findOneBy($arrayParametrosClt);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe cliente con la descripción enviada por parámetro.');
+            }
+            $arrayParametrosPreg = array('ESTADO' => 'ACTIVO',
+                                         'id'     => $intIdPregunta);
+            $objPregunta    = $em->getRepository('AppBundle:InfoPregunta')->findOneBy($arrayParametrosPreg);
+            if(!is_object($objPregunta) || empty($objPregunta))
+            {
+                throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
+            }
+
+            $entityRespuesta = new InfoRespuesta();
+            $entityRespuesta->setRESPUESTA($strRespuesta);
+            $entityRespuesta->setPREGUNTAID($objPregunta);
+            $entityRespuesta->setCLIENTEID($objCliente);
+            $entityRespuesta->setESTADO(strtoupper($strEstado));
+            $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
+            $entityRespuesta->setFECREACION($strDatetimeActual);
+            $em->persist($entityRespuesta);
+            $em->flush();
+            $strMensajeError = 'Respuesta creada con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear la respuesta, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayRespuesta = array('idRespuesta'   => $entityRespuesta->getId(),
+                                  'respuesta'       => $entityRespuesta->getRESPUESTA(),
+                                  'estadoRespuesta' => $entityRespuesta->getESTADO(),
+                                  'nombreClt'       => $entityRespuesta->getCLIENTEID()->getNOMBRE(),
+                                  'apellidoClt'     => $entityRespuesta->getCLIENTEID()->getAPELLIDO(),
+                                  'correoClt'       => $entityRespuesta->getCLIENTEID()->getCORREO(),
+                                  'direccionClt'    => $entityRespuesta->getCLIENTEID()->getDIRECCION(),
+                                  'idPregunta'      => $entityRespuesta->getPREGUNTAID()->getId(),
+                                  'preguntaDescrip' => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
+                                  'preguntaObl'     => $entityRespuesta->getPREGUNTAID()->getOBLIGATORIA(),
+                                  'preguntaDesc'    => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
+                                  'usrCreacion'     => $entityRespuesta->getUSRCREACION(),
+                                  'feModificacion'  => $entityRespuesta->getUSRCREACION());
+        }
+        $arrayRespuesta['mensaje'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRespuesta,
                                             'succes'    => true
                                             )
                                         ));
