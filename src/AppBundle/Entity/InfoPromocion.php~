@@ -1,0 +1,172 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * InfoPromocion
+ *
+ * @ORM\Table(name="INFO_PROMOCION")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoPromocionRepository")
+ */
+class InfoPromocion
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_PROMOCION", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var InfoSucursal
+    *
+    * @ORM\ManyToOne(targetEntity="InfoSucursal")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="SUCURSAL_ID", referencedColumnName="ID_SUCURSAL")
+    * })
+    */
+    private $SUCURSAL_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="DESCRIPCION_TIPO_PROMOCION", type="string", length=255)
+     */
+    private $DESCRIPCIONTIPOPROMOCION;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer", nullable=true)
+     */
+    private $CANTIDADPUNTOS;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ACEPTA_GLOBAL", type="string", length=50)
+     */
+    private $ACEPTAGLOBAL;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=100)
+     */
+    private $ESTADO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_CREACION", type="string", length=255)
+     */
+    private $USR_CREACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_CREACION", type="date")
+     */
+    private $FE_CREACION;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_MODIFICACION", type="string", length=255, nullable=true)
+     */
+    private $USR_MODIFICACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_MODIFICACION", type="date", nullable=true)
+     */
+    private $FE_MODIFICACION;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set DESCRIPCIONTIPOPROMOCION
+     *
+     * @param string $DESCRIPCIONTIPOPROMOCION
+     *
+     * @return InfoPromocion
+     */
+    public function setDESCRIPCIONTIPOPROMOCION($DESCRIPCIONTIPOPROMOCION)
+    {
+        $this->DESCRIPCIONTIPOPROMOCION = $DESCRIPCIONTIPOPROMOCION;
+
+        return $this;
+    }
+
+    /**
+     * Get DESCRIPCIONTIPOPROMOCION
+     *
+     * @return string
+     */
+    public function getDESCRIPCIONTIPOPROMOCION()
+    {
+        return $this->DESCRIPCIONTIPOPROMOCION;
+    }
+
+    /**
+     * Set CANTIDADPUNTOS
+     *
+     * @param integer $CANTIDADPUNTOS
+     *
+     * @return InfoPromocion
+     */
+    public function setCANTIDADPUNTOS($CANTIDADPUNTOS)
+    {
+        $this->CANTIDADPUNTOS = $CANTIDADPUNTOS;
+
+        return $this;
+    }
+
+    /**
+     * Get CANTIDADPUNTOS
+     *
+     * @return int
+     */
+    public function getCANTIDADPUNTOS()
+    {
+        return $this->CANTIDADPUNTOS;
+    }
+
+    /**
+     * Set ACEPTAGLOBAL
+     *
+     * @param string $ACEPTAGLOBAL
+     *
+     * @return InfoPromocion
+     */
+    public function setACEPTAGLOBAL($ACEPTAGLOBAL)
+    {
+        $this->ACEPTAGLOBAL = $ACEPTAGLOBAL;
+
+        return $this;
+    }
+
+    /**
+     * Get ACEPTAGLOBAL
+     *
+     * @return string
+     */
+    public function getACEPTAGLOBAL()
+    {
+        return $this->ACEPTAGLOBAL;
+    }
+}
+
