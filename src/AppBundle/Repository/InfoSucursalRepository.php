@@ -45,8 +45,9 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                                       ISUR.LONGITUD, ISUR.PAIS,ISUR.PROVINCIA,ISUR.CIUDAD,ISUR.PARROQUIA,
                                       ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_SUCURSAL ISUR, INFO_RESTAURANTE IR ";
-            $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) AND ISUR.RESTAURANTE_ID=IR.ID_RESTAURANTE ";
+            $strFrom        = "FROM INFO_SUCURSAL ISUR
+                               JOIN INFO_RESTAURANTE IR ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID ";
+            $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
             if(!empty($intIdSucursal))
@@ -61,27 +62,19 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("ES_MATRIZ", $strEsMatriz);
                 $objQueryCount->setParameter("ES_MATRIZ", $strEsMatriz);
             }
-            if(!empty($strIdentificacionRes) || !empty($strIdRestaurante))
+            if(!empty($strIdentificacionRes))
             {
-                $strSelect .= " ,IR.RAZON_SOCIAL ";
-                $strFrom   .= " ,INFO_RESTAURANTE IR ";
-                $strWhere  .= " AND IR.ID_RESTAURANTE=ISUR.RESTAURANTE_ID ";
-                if(!empty($strIdentificacionRes))
-                {
-                    $strWhere .= " AND IR.IDENTIFICACION = :IDENTIFICACION";
-                    $objQuery->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                    $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                }
-                if(!empty($strIdRestaurante))
-                {
-                    $strWhere .= " AND IR.ID_RESTAURANTE = :ID_RESTAURANTE";
-                    $objQuery->setParameter("ID_RESTAURANTE", $strIdRestaurante);
-                    $objQueryCount->setParameter("ID_RESTAURANTE", $strIdRestaurante);
-                }
+                $strWhere .= " AND IR.IDENTIFICACION = :IDENTIFICACION";
+                $objQuery->setParameter("IDENTIFICACION", $strIdentificacionRes);
                 $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacionRes);
-                $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-                $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
             }
+            if(!empty($strIdRestaurante))
+            {
+                $strWhere .= " AND IR.ID_RESTAURANTE = :ID_RESTAURANTE";
+                $objQuery->setParameter("ID_RESTAURANTE", $strIdRestaurante);
+                $objQueryCount->setParameter("ID_RESTAURANTE", $strIdRestaurante);
+            }
+
             $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ES_MATRIZ', 'ES_MATRIZ', 'string');
