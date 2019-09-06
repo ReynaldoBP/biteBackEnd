@@ -32,6 +32,20 @@ class InfoCliente
     private $USUARIOID;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="CONTRASENIA", type="string", length=50, nullable=true)
+     */
+    private $CONTRASENIA;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="AUTENTICACION_RS", type="string", length=1, nullable=true)
+     */
+    private $AUTENTICACION_RS;
+
+    /**
     * @var AdmiTipoClientePuntaje
     *
     * @ORM\ManyToOne(targetEntity="AdmiTipoClientePuntaje")
@@ -47,6 +61,27 @@ class InfoCliente
      * @ORM\Column(name="IDENTIFICACION", type="string", length=100, nullable=true)
      */
     private $IDENTIFICACION;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="NOMBRE", type="string", length=100)
+     */
+    private $NOMBRE;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="APELLIDO", type="string", length=100)
+     */
+    private $APELLIDO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="CORREO", type="string", length=100)
+     */
+    private $CORREO;
 
     /**
      * @var string
@@ -151,6 +186,78 @@ class InfoCliente
     public function getIDENTIFICACION()
     {
         return $this->IDENTIFICACION;
+    }
+
+    /**
+     * Set NOMBRE
+     *
+     * @param string $NOMBRE
+     *
+     * @return InfoCliente
+     */
+    public function setNOMBRE($NOMBRE)
+    {
+        $this->NOMBRE = $NOMBRE;
+
+        return $this;
+    }
+
+    /**
+     * Get NOMBRE
+     *
+     * @return string
+     */
+    public function getNOMBRE()
+    {
+        return $this->NOMBRE;
+    }
+
+    /**
+     * Set APELLIDO
+     *
+     * @param string $APELLIDO
+     *
+     * @return InfoCliente
+     */
+    public function setAPELLIDO($APELLIDO)
+    {
+        $this->APELLIDO = $APELLIDO;
+
+        return $this;
+    }
+
+    /**
+     * Get APELLIDO
+     *
+     * @return string
+     */
+    public function getAPELLIDO()
+    {
+        return $this->APELLIDO;
+    }
+
+    /**
+     * Set CORREO
+     *
+     * @param string $CORREO
+     *
+     * @return InfoCliente
+     */
+    public function setCORREO($CORREO)
+    {
+        $this->CORREO = $CORREO;
+
+        return $this;
+    }
+
+    /**
+     * Get CORREO
+     *
+     * @return string
+     */
+    public function getCORREO()
+    {
+        return $this->CORREO;
     }
 
     /**
@@ -392,5 +499,52 @@ class InfoCliente
     {
         return $this->FEMODIFICACION;
     }
-}
 
+    /**
+     * Set USUARIOID
+     *
+     * @param \AppBundle\Entity\InfoUsuario $USUARIOID
+     *
+     * @return InfoCliente
+     */
+    public function setUSUARIOID(\AppBundle\Entity\InfoUsuario $USUARIOID = null)
+    {
+        $this->USUARIOID = $USUARIOID;
+
+        return $this;
+    }
+
+    /**
+     * Get USUARIOID
+     *
+     * @return \AppBundle\Entity\InfoUsuario
+     */
+    public function getUSUARIOID()
+    {
+        return $this->USUARIOID;
+    }
+
+    /**
+     * Set TIPOCLIENTEPUNTAJEID
+     *
+     * @param \AppBundle\Entity\AdmiTipoClientePuntaje $TIPOCLIENTEPUNTAJEID
+     *
+     * @return InfoCliente
+     */
+    public function setTIPOCLIENTEPUNTAJEID(\AppBundle\Entity\AdmiTipoClientePuntaje $TIPOCLIENTEPUNTAJEID = null)
+    {
+        $this->TIPOCLIENTEPUNTAJEID = $TIPOCLIENTEPUNTAJEID;
+
+        return $this;
+    }
+
+    /**
+     * Get TIPOCLIENTEPUNTAJEID
+     *
+     * @return \AppBundle\Entity\AdmiTipoClientePuntaje
+     */
+    public function getTIPOCLIENTEPUNTAJEID()
+    {
+        return $this->TIPOCLIENTEPUNTAJEID;
+    }
+}

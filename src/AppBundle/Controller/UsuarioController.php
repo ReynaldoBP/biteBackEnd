@@ -275,7 +275,7 @@ class UsuarioController extends Controller
      * @Route("/getLogin")
      *
      * Documentación para la función 'editUsuario'
-     * Método encargado de editar los usuarios según los parámetros recibidos.
+     * Método encargado de verificar si ingresa a la plataforma Web según los parámetros recibidos.
      * 
      * @author Kevin Baque
      * @version 1.0 01-08-2019

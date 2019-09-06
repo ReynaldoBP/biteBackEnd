@@ -53,6 +53,8 @@ class ApiMovilController extends FOSRestController
                break;
                case 'createRespuesta':$arrayRespuesta = $this->createRespuesta($arrayData);
                break;
+               case 'getLoginMovil':$arrayRespuesta = $this->getLoginMovil($arrayData);
+               break;
                default:
                 $objResponse->setContent(json_encode(array(
                                                     'status'    => 400,
@@ -90,6 +92,8 @@ class ApiMovilController extends FOSRestController
         $strGenero          = $arrayData['genero'] ? $arrayData['genero']:'';
         $intIdTipoCLiente   = $arrayData['idTipoCLiente'] ? $arrayData['idTipoCLiente']:'';
         $intIdUsuario       = $arrayData['idUsuario'] ? $arrayData['idUsuario']:'';
+        $strContrasenia     = $arrayData['contrasenia'] ? $arrayData['contrasenia']:'';
+        $strAutenticacionRS = $arrayData['autenticacionRS'] ? $arrayData['autenticacionRS']:'';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
         $arrayCliente       = array();
@@ -116,6 +120,8 @@ class ApiMovilController extends FOSRestController
             }
 
             $entityCliente = new InfoCliente();
+            $entityCliente->setAUTENTICACIONRS($strAutenticacionRS);
+            $entityCliente->setCONTRASENIA(md5($strContrasenia));
             $entityCliente->setIDENTIFICACION($strIdentificacion);
             $entityCliente->setDIRECCION($strDireccion);
             $entityCliente->setEDAD($strEdad);
@@ -195,6 +201,8 @@ class ApiMovilController extends FOSRestController
         $strGenero          = $arrayData['genero'] ? $arrayData['genero']:'';
         $intIdTipoCLiente   = $arrayData['idTipoCLiente'] ? $arrayData['idTipoCLiente']:'';
         $intIdUsuario       = $arrayData['idUsuario'] ? $arrayData['idUsuario']:'';
+        $strContrasenia     = $arrayData['contrasenia'] ? $arrayData['contrasenia']:'';
+        $strAutenticacionRS = $arrayData['autenticacionRS'] ? $arrayData['autenticacionRS']:'';
         $strUsuarioModif    = $arrayData['usuarioModificacion'] ? $arrayData['usuarioModificacion']:'';
         $strDatetimeActual  = new \DateTime('now');
         $strMensajeError    = '';
@@ -230,6 +238,14 @@ class ApiMovilController extends FOSRestController
                     throw new \Exception('No existe usuario con identificador enviado por parámetro.');
                 }
                 $objCliente->setUSUARIOID($objUsuario);
+            }
+            if(!empty($strContrasenia))
+            {
+                $objCliente->setCONTRASENIA(md5($strContrasenia));
+            }
+            if(!empty($strAutenticacionRS))
+            {
+                $objCliente->setAUTENTICACIONRS($strAutenticacionRS);
             }
             if(!empty($strIdentificacion))
             {
@@ -666,6 +682,68 @@ class ApiMovilController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRespuesta,
                                             'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getLoginMovil'
+     * Método encargado de verificar si ingresa a la plataforma movil según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 06-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getLoginMovil($arrayData)
+    {
+        $strCorreo          = $arrayData['correo'] ? $arrayData['correo']:'';
+        $strPass            = $arrayData['contrasenia'] ? $arrayData['contrasenia']:'';
+        $strAutenticacionRS = $arrayData['autenticacionRS'] ? $arrayData['autenticacionRS']:'';
+        $arrayCliente       = array();
+        $strMensaje         = '';
+        $strStatus          = 400;
+        $strSucces          = true;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayParametros = array('CORREO' => $strCorreo);
+            if($strAutenticacionRS == 'N')
+            {
+                $arrayParametros['CONTRASENIA'] = md5($strPass);
+            }
+            $objCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->findBy($arrayParametros);
+            if(empty($objCliente))
+            {
+                $strStatus  = 404;
+                $strSucces  = false;
+                throw new \Exception('Cliente no existe.');
+            }
+            foreach($objCliente as $objItemCliente)
+            {
+                $arrayCliente   = array('idCliente'       => $objItemCliente->getId(),
+                                        'autenticacionRS' => $objItemCliente->getAUTENTICACIONRS(),
+                                        'identificacion'  => $objItemCliente->getIDENTIFICACION(),
+                                        'nombre'          => $objItemCliente->getNOMBRE(),
+                                        'apellido'        => $objItemCliente->getAPELLIDO(),
+                                        'correo'          => $objItemCliente->getCORREO(),
+                                        'edad'            => $objItemCliente->getEDAD(),
+                                        'genero'          => $objItemCliente->getGENERO(),
+                                        'strEstado'       => $objItemCliente->getESTADO()
+                                        );
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strStatus = 404;
+            $arrayCliente['error'] = $strMensaje;
+            $strMensaje = $ex->getMessage();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCliente,
+                                            'succes'    => $strSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
