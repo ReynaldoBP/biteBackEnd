@@ -32,6 +32,20 @@ class InfoCliente
     private $USUARIOID;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="CONTRASENIA", type="string", length=50, nullable=true)
+     */
+    private $CONTRASENIA;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="AUTENTICACION_RS", type="string", length=1, nullable=true)
+     */
+    private $AUTENTICACION_RS;
+
+    /**
     * @var AdmiTipoClientePuntaje
     *
     * @ORM\ManyToOne(targetEntity="AdmiTipoClientePuntaje")
@@ -532,5 +546,53 @@ class InfoCliente
     public function getTIPOCLIENTEPUNTAJEID()
     {
         return $this->TIPOCLIENTEPUNTAJEID;
+    }
+
+    /**
+     * Set CONTRASENIA
+     *
+     * @param string $CONTRASENIA
+     *
+     * @return InfoCliente
+     */
+    public function setCONTRASENIA($CONTRASENIA)
+    {
+        $this->CONTRASENIA = $CONTRASENIA;
+
+        return $this;
+    }
+
+    /**
+     * Get CONTRASENIA
+     *
+     * @return string
+     */
+    public function getCONTRASENIA()
+    {
+        return $this->CONTRASENIA;
+    }
+
+    /**
+     * Set AUTENTICACIONRS
+     *
+     * @param string $AUTENTICACIONRS
+     *
+     * @return InfoCliente
+     */
+    public function setAUTENTICACIONRS($AUTENTICACIONRS)
+    {
+        $this->AUTENTICACION_RS = $AUTENTICACIONRS;
+
+        return $this;
+    }
+
+    /**
+     * Get AUTENTICACIONRS
+     *
+     * @return string
+     */
+    public function getAUTENTICACIONRS()
+    {
+        return $this->AUTENTICACION_RS;
     }
 }
