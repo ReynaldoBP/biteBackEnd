@@ -93,6 +93,20 @@ class InfoRestaurante
     /**
      * @var string
      *
+     * @ORM\Column(name="IMAGEN", type="string", length=450, nullable=true)
+     */
+    private $IMAGEN;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ICONO", type="string", length=450, nullable=true)
+     */
+    private $ICONO;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="NUMERO_CONTACTO", type="string", length=100, nullable=true)
      */
     private $NUMEROCONTACTO;
@@ -501,5 +515,53 @@ class InfoRestaurante
     public function getTIPOCOMIDAID()
     {
         return $this->TIPOCOMIDAID;
+    }
+
+    /**
+     * Set IMAGEN
+     *
+     * @param string $IMAGEN
+     *
+     * @return InfoRestaurante
+     */
+    public function setIMAGEN($IMAGEN)
+    {
+        $this->IMAGEN = $IMAGEN;
+
+        return $this;
+    }
+
+    /**
+     * Get IMAGEN
+     *
+     * @return string
+     */
+    public function getIMAGEN()
+    {
+        return $this->IMAGEN;
+    }
+
+    /**
+     * Set ICONO
+     *
+     * @param string $ICONO
+     *
+     * @return InfoRestaurante
+     */
+    public function setICONO($ICONO)
+    {
+        $this->ICONO = $ICONO;
+
+        return $this;
+    }
+
+    /**
+     * Get ICONO
+     *
+     * @return string
+     */
+    public function getICONO()
+    {
+        return $this->ICONO;
     }
 }
