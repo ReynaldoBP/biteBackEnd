@@ -15,7 +15,7 @@ class InfoRestaurante
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="ID_RESTAURANTE", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -89,6 +89,20 @@ class InfoRestaurante
      * @ORM\Column(name="URL_CATALOGO", type="string", length=255, nullable=true)
      */
     private $URLCATALOGO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="IMAGEN", type="string", length=450, nullable=true)
+     */
+    private $IMAGEN;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ICONO", type="string", length=450, nullable=true)
+     */
+    private $ICONO;
 
     /**
      * @var string
@@ -477,5 +491,29 @@ class InfoRestaurante
     public function getUSUARIOID()
     {
         return $this->USUARIOID;
+    }
+
+    /**
+     * Set TIPOCOMIDAID
+     *
+     * @param \AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID
+     *
+     * @return InfoRestaurante
+     */
+    public function setTIPOCOMIDAID(\AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID = null)
+    {
+        $this->TIPOCOMIDAID = $TIPOCOMIDAID;
+
+        return $this;
+    }
+
+    /**
+     * Get TIPOCOMIDAID
+     *
+     * @return \AppBundle\Entity\AdmiTipoComida
+     */
+    public function getTIPOCOMIDAID()
+    {
+        return $this->TIPOCOMIDAID;
     }
 }
