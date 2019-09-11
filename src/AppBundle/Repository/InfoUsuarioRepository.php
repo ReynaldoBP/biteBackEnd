@@ -37,7 +37,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS, IU.IDENTIFICACION, IU.CORREO,IU.TIPO_ROL_ID,
+            $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS,IU.CONTRASENIA, IU.IDENTIFICACION, IU.CORREO,IU.TIPO_ROL_ID,
                                IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_USUARIO IU ";
@@ -82,6 +82,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ID_USUARIO', 'ID_USUARIO', 'string');
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');
             $objRsmBuilder->addScalarResult('APELLIDOS', 'APELLIDOS', 'string');
+            $objRsmBuilder->addScalarResult('CONTRASENIA', 'CONTRASENIA', 'string');
             $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
             $objRsmBuilder->addScalarResult('CORREO', 'CORREO', 'string');
             $objRsmBuilder->addScalarResult('TIPO_ROL_ID', 'TIPO_ROL_ID', 'string');
