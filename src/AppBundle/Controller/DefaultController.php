@@ -65,7 +65,7 @@ class DefaultController extends Controller
         $logger = $this->get('logger');
         $logger->err('---------------------');
         $logger->err($strRespuesta);
-        return $arrayParametros;
+        return $arrayParametros; 
         /*
         ----------------------------------------------------------------------
         jbermeo[FIN]
