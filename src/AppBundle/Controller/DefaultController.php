@@ -78,7 +78,7 @@ class DefaultController extends Controller
     {
         $img = file_get_contents("images/".$nameImg);
         $ext   = explode('.', $img)[1];
-        $data = "data:image/".$ext.";base64," . base64_encode($img);
+        $data = ("data:image/".$ext.";base64," . base64_encode($img));
         return $data;
     }
 }
