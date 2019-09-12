@@ -203,11 +203,6 @@ class ApiWebController extends FOSRestController
             $objController->setContainer($this->container);
             $strRutaImagen = $objController->subirfichero($imgBase64);
             $strRutaIcono  = $objController->subirfichero($icoBase64);
-            $logger = $this->get('logger');
-            $logger->err('-------------------------------------------');
-            $logger->err($strRutaImagen);
-            $logger->err($strRutaIcono);
-            $logger->err('-------------------------------------------');
 
             $em->getConnection()->beginTransaction();
             if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
@@ -272,7 +267,14 @@ class ApiWebController extends FOSRestController
             {
                 $objRestaurante->setESTADO(strtoupper($strEstado));
             }
-            
+            if(!empty($strRutaImagen))
+            {
+                $objRestaurante->setIMAGEN($strRutaImagen);
+            }
+            if(!empty($strRutaIcono))
+            {
+                $objRestaurante->setICONO($strRutaIcono);
+            }
             $objRestaurante->setUSRMODIFICACION($strUsuarioCreacion);
             $objRestaurante->setFEMODIFICACION($strDatetimeActual);
             $em->persist($objRestaurante);
