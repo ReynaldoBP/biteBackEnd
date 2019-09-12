@@ -41,9 +41,9 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
                                TC.ID_TIPO_COMIDA,TC.DESCRIPCION_TIPO_COMIDA ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PUBLICIDAD PB 
-                                JOIN ADMI_TIPO_COMIDA TC ON TC.ID_TIPO_COMIDA=PB.TIPO_COMIDA_ID 
-                                JOIN ADMI_CIUDAD AC ON AC.ID_CIUDAD=PB.CIUDAD 
-                                JOIN ADMI_PARROQUIA AP ON AP.ID_PARROQUIA=PB.PARROQUIA ";
+                                LEFT JOIN ADMI_TIPO_COMIDA TC ON TC.ID_TIPO_COMIDA=PB.TIPO_COMIDA_ID 
+                                LEFT JOIN ADMI_CIUDAD AC ON AC.ID_CIUDAD=PB.CIUDAD 
+                                LEFT JOIN ADMI_PARROQUIA AP ON AP.ID_PARROQUIA=PB.PARROQUIA ";
             $strWhere       = "WHERE PB.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);

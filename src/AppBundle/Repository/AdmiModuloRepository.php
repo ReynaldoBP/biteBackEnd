@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * AdmiModuloRepository
@@ -10,4 +11,71 @@ namespace AppBundle\Repository;
  */
 class AdmiModuloRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getModuloCriterio'
+     * Método encargado de retornar todos los modulos según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-07-2019
+     * 
+     * @return array  $arrayModulo
+     * 
+     */    
+    public function getModuloCriterio($arrayParametros)
+    {
+        $intIdModulo        = $arrayParametros['intIdModulo'] ? $arrayParametros['intIdModulo']:'';
+        $strDescripcion     = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $arrayModulo        = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
+        $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        try
+        {
+            $strSelect      = "SELECT AM.ID_MODULO,AM.DESCRIPCION AS DESCRIPCION_MODULO,
+                                AM.ESTADO,AM.USR_CREACION,AM.FE_CREACION,AM.USR_MODIFICACION,AM.FE_MODIFICACION ";
+            $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
+            $strFrom        = "FROM ADMI_MODULO  AM ";
+            $strWhere       = "WHERE AM.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            $objQueryCount->setParameter("ESTADO",$strEstado);
+
+            if(!empty($intIdModulo))
+            {
+                $strWhere .= " AND AM.ID_MODULO =:ID_MODULO";
+                $objQuery->setParameter("ID_MODULO", $intIdModulo);
+                $objQueryCount->setParameter("ID_MODULO", $intIdModulo);
+            }
+            if(!empty($strDescripcion))
+            {
+                $strWhere .= " AND lower(AM.DESCRIPCION) like lower(:DESCRIPCION)";
+                $objQuery->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
+                $objQueryCount->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
+            }
+
+            $objRsmBuilder->addScalarResult('ID_MODULO', 'ID_MODULO', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION_MODULO', 'DESCRIPCION_MODULO', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+
+            $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
+            $objQueryCount->setSQL($strSqlCount);
+            $arrayModulo['cantidad']   = $objQueryCount->getSingleScalarResult();
+            $arrayModulo['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayModulo['error'] = $strMensajeError;
+        return $arrayModulo;
+    }
 }

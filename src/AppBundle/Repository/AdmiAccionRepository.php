@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * AdmiAccionRepository
@@ -10,4 +11,70 @@ namespace AppBundle\Repository;
  */
 class AdmiAccionRepository extends \Doctrine\ORM\EntityRepository
 {
+        /**
+     * Documentación para la función 'getAccionCriterio'
+     * Método encargado de retornar todos las acciones según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 11-09-2019
+     * 
+     * @return array  $arrayAccion
+     * 
+     */    
+    public function getAccionCriterio($arrayParametros)
+    {
+        $intIdAccion        = $arrayParametros['intIdAccion'] ? $arrayParametros['intIdAccion']:'';
+        $strDescripcion     = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $arrayAccion        = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
+        $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        try
+        {
+            $strSelect      = "SELECT AC.ID_ACCION,AC.DESCRIPCION AS DESCRIPCION_ACCION,AC.ESTADO,AC.USR_CREACION,AC.FE_CREACION,
+                                AC.USR_MODIFICACION,AC.FE_MODIFICACION ";
+            $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
+            $strFrom        = "FROM ADMI_ACCION  AC ";
+            $strWhere       = "WHERE AC.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            $objQueryCount->setParameter("ESTADO",$strEstado);
+            if(!empty($intIdAccion))
+            {
+                $strWhere .= " AND AC.ID_ACCION =:ID_ACCION";
+                $objQuery->setParameter("ID_ACCION", $intIdAccion);
+                $objQueryCount->setParameter("ID_ACCION", $intIdAccion);
+            }
+            if(!empty($strDescripcion))
+            {
+                $strWhere .= " AND lower(AC.DESCRIPCION) like lower(:DESCRIPCION)";
+                $objQuery->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
+                $objQueryCount->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
+            }
+
+            $objRsmBuilder->addScalarResult('ID_ACCION', 'ID_ACCION', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION_ACCION', 'DESCRIPCION_ACCION', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+
+            $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
+            $objQueryCount->setSQL($strSqlCount);
+            $arrayAccion['cantidad']   = $objQueryCount->getSingleScalarResult();
+            $arrayAccion['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayAccion['error'] = $strMensajeError;
+        return $arrayAccion;
+    }
 }
