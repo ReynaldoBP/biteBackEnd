@@ -46,8 +46,8 @@ class DefaultController extends Controller
      * Documentación para la función 'subir_fichero'
      * Método encargado de subir una imagen al servidor según los parámetros recibidos.
      * 
-     * @author Kevin Baque
-     * @version 1.0 09-09-2019
+     * @author Jorge Bermeo
+     * @version 1.0 12-09-2019
      * 
      * @return array  $nombreImg
      */
@@ -56,6 +56,11 @@ class DefaultController extends Controller
         $base_to_php   = explode(',', $imgBase64);
         $data          = base64_decode($base_to_php[1]);
         $ext           = explode("/",explode(";",$base_to_php[0])[0])[1];
+        $pos           = strpos($ext, "ico");
+        if($pos)
+        {
+            $ext = "ico";
+        }
         $nombreImg     = ("bitte_".date("YmdHis").".".$ext);
         $strRutaImagen = ("images"."/".$nombreImg);
         file_put_contents($strRutaImagen,$data);
@@ -65,15 +70,16 @@ class DefaultController extends Controller
      * Documentación para la función 'getImgBase64'
      * Método encargado de subir una imagen al servidor según los parámetros recibidos.
      * 
-     * @author Kevin Baque
-     * @version 1.0 09-09-2019
+     * @author Jorge Bermeo
+     * @version 1.0 12-09-2019
      * 
      * @return array  $data
      */
     public function getImgBase64($nameImg)
     {
         $img = file_get_contents("images/".$nameImg);
-        $data = base64_encode($img);
+        $ext   = explode('.', $nameImg)[1];
+        $data = ("data:image/".$ext.";base64," . base64_encode($img));
         return $data;
     }
 }
