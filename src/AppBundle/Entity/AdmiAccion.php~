@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AdmiAccion
  *
- * @ORM\Table(name="admi_accion")
+ * @ORM\Table(name="ADMI_ACCION")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AdmiAccionRepository")
  */
 class AdmiAccion
@@ -218,4 +218,3 @@ class AdmiAccion
         return $this->FEMODIFICACION;
     }
 }
-
