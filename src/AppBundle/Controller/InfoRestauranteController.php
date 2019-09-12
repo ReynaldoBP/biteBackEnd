@@ -296,22 +296,19 @@ class InfoRestauranteController extends Controller
         {
             $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
-        $arrayRestaurantes['error'] = $strMensaje;
-        if($conImagen == 'SI')
-        {
-            foreach ($arrayRestaurantes['resultados'] as &$item)
-            {
-                $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+        //$arrayRestaurantes['error'] = $strMensaje;
+        if($conImagen == 'SI'){
+            foreach ($arrayRestaurantes['resultados'] as &$item){
+                $item['IMAGEN'] = $this->getImgBase64($item['IMAGEN']);
             }
         }
 
-        if($conIcono == 'SI')
-        {
-            foreach ($arrayRestaurantes['resultados'] as &$item)
-            {
-                $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+        if($conIcono == 'SI'){
+            foreach ($arrayRestaurantes['resultados'] as &$item){
+                $item['ICONO'] = $this->getImgBase64($item['ICONO']);
             }
         }
+        
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRestaurantes,
@@ -320,5 +317,11 @@ class InfoRestauranteController extends Controller
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
+    }
+
+    public function getImgBase64($nameImg){
+        $img = file_get_contents("images/".$nameImg);
+        $data = base64_encode($img);
+        return $data;
     }
 }

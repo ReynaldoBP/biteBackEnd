@@ -70,8 +70,24 @@ class ApiWebController extends FOSRestController
         $strNumeroContacto      = $arrayData['numeroContacto'] ? $arrayData['numeroContacto']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
-        $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
-        $icoBase64              = $arrayData['rutaIcono'] ? $arrayData['rutaIcono']:'';
+        /*
+        ----------------------------------------------------------------------
+        jbermeo[INI]
+        ----------------------------------------------------------------------
+        */
+        $imgBase64             = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $icoBase64             = $arrayData['rutaIcono'] ? $arrayData['rutaIcono']:'';
+        $strNombreImagen       = $arrayData['nombreImagen'] ? $arrayData['nombreImagen']:'';
+        $strPeso               = $arrayData['peso'] ? $arrayData['peso']:'';
+
+        $strRutaImagen = $this->subirfichero($imgBase64);
+        $strRutaIcono = $this->subirfichero($icoBase64);
+        
+        /*
+        ----------------------------------------------------------------------
+        jbermeo[FIN]
+        ----------------------------------------------------------------------
+        */
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
         $strStatus              = 400;
@@ -81,15 +97,26 @@ class ApiWebController extends FOSRestController
 
         try
         {
+            /*
+            ----------------------------------------------------------------------
+            jbermeo[INI]
+            ----------------------------------------------------------------------
+            */
+           /* $arrayParametros  = array('strRuta'         => $strRutaImagen,
+                                      'strNombreImagen' => $strNombreImagen,
+                                      'strPeso'         => $strPeso);
+            $logger = $this->get('logger');
+            $logger->err($arrayParametros['strRuta']);
+            //La función para subir imagen va hacer de manera general en el defaultCOntroller
             $objController    = new DefaultController();
             $objController->setContainer($this->container);
-            $strRutaImagen = $objController->subirfichero($imgBase64);
-            $strRutaIcono  = $objController->subirfichero($icoBase64);
-            $logger = $this->get('logger');
-            $logger->err('-------------------------------------------');
-            $logger->err($strRutaImagen);
-            $logger->err($strRutaIcono);
-            $logger->err('-------------------------------------------');
+            $prueba=$objController->subir_fichero($arrayParametros);*/
+            /*
+            ----------------------------------------------------------------------
+            jbermeo[FIN]
+            ----------------------------------------------------------------------
+            */
+
             $em->getConnection()->beginTransaction();
             if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
             {
@@ -303,5 +330,20 @@ class ApiWebController extends FOSRestController
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
+    }
+
+    public function subirfichero($imgBase64){
+        $base_to_php = explode(',', $imgBase64);
+        $data = base64_decode($base_to_php[1]);
+        $ext = explode("/",explode(";",$base_to_php[0])[0])[1];
+        $pos = strpos($ext, "ico");
+        if ($pos) {
+            $ext = "ico";
+        }
+        $nombreImg = ("bitte_".date("YmdHis").".".$ext);
+        $strRutaImagen=("images"."/".$nombreImg);
+        //$data = base64_decode(preg_replace('#^(data:image\/)\w+;base64,#i', '', $strRutaImagen));
+        file_put_contents($strRutaImagen,$data);
+        return $nombreImg;
     }
 }
