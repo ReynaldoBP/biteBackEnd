@@ -301,7 +301,9 @@ class InfoRestauranteController extends Controller
         {
             foreach ($arrayRestaurantes['resultados'] as &$item)
             {
-                $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+		if($item['IMAGEN']){
+			$item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+		}
             }
         }
 
@@ -309,7 +311,9 @@ class InfoRestauranteController extends Controller
         {
             foreach ($arrayRestaurantes['resultados'] as &$item)
             {
-                $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+		if($item['ICONO']){
+                	$item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+		}
             }
         }
         $objResponse->setContent(json_encode(array(
