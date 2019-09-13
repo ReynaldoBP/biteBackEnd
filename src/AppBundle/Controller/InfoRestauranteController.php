@@ -269,7 +269,7 @@ class InfoRestauranteController extends Controller
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
-        $conIcono              = $request->query->get("icono") ? $request->query->get("icono"):'NO';
+        $conIcono               = $request->query->get("icono") ? $request->query->get("icono"):'NO';
         $arrayRestaurantes      = array();
         $strMensaje             = '';
         $strStatus              = 400;
@@ -301,7 +301,10 @@ class InfoRestauranteController extends Controller
         {
             foreach ($arrayRestaurantes['resultados'] as &$item)
             {
-                $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
             }
         }
 
@@ -309,7 +312,10 @@ class InfoRestauranteController extends Controller
         {
             foreach ($arrayRestaurantes['resultados'] as &$item)
             {
-                $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+                if($item['ICONO'])
+                {
+                    $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+                }
             }
         }
         $objResponse->setContent(json_encode(array(

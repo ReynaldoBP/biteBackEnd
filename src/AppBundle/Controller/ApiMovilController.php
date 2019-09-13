@@ -435,6 +435,8 @@ class ApiMovilController extends FOSRestController
         $strRazonSocial         = $arrayData['razonSocial'] ? $arrayData['razonSocial']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $conImagen              = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
+        $conIcono               = $arrayData['icono']  ? $arrayData['icono']:'NO';
         $arrayRestaurante       = array();
         $strMensajeError        = '';
         $strStatus              = 400;
@@ -442,6 +444,8 @@ class ApiMovilController extends FOSRestController
         $objResponse            = new Response;
         try
         {
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
                                     'intIdRestaurante'      => $intIdRestaurante,
                                     'strTipoIdentificacion' => $strTipoIdentificacion,
@@ -449,7 +453,7 @@ class ApiMovilController extends FOSRestController
                                     'strRazonSocial'        => $strRazonSocial,
                                     'strEstado'             => $strEstado
                                     );
-            $arrayRestaurante   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterioMovil($arrayParametros);
+            $arrayRestaurante   = (array) $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterioMovil($arrayParametros);
             if(isset($arrayRestaurante['error']) && !empty($arrayRestaurante['error']))
             {
                 $strStatus  = 404;
@@ -459,6 +463,27 @@ class ApiMovilController extends FOSRestController
         catch(\Exception $ex)
         {
             $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayRestaurantes['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
+
+        if($conIcono == 'SI')
+        {
+            foreach ($arrayRestaurantes['resultados'] as &$item)
+            {
+                if($item['ICONO'])
+                {
+                    $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+                }
+            }
         }
         $arrayRestaurante['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(

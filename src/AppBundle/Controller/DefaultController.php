@@ -57,7 +57,7 @@ class DefaultController extends Controller
         $data          = base64_decode($base_to_php[1]);
         $ext           = explode("/",explode(";",$base_to_php[0])[0])[1];
         $pos           = strpos($ext, "ico");
-        if($pos)
+        if($pos > 0)
         {
             $ext = "ico";
         }
