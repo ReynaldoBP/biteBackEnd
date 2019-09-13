@@ -70,20 +70,8 @@ class ApiWebController extends FOSRestController
         $strNumeroContacto      = $arrayData['numeroContacto'] ? $arrayData['numeroContacto']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
-        /*
-        ----------------------------------------------------------------------
-        jbermeo[INI]
-        ----------------------------------------------------------------------
-        */
-        $strRutaImagen         = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
-        $strRutaIcono          = $arrayData['rutaIcono'] ? $arrayData['rutaIcono']:'';
-        $strNombreImagen       = $arrayData['nombreImagen'] ? $arrayData['nombreImagen']:'';
-        $strPeso               = $arrayData['peso'] ? $arrayData['peso']:'';
-        /*
-        ----------------------------------------------------------------------
-        jbermeo[FIN]
-        ----------------------------------------------------------------------
-        */
+        $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $icoBase64              = $arrayData['rutaIcono'] ? $arrayData['rutaIcono']:'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
         $strStatus              = 400;
@@ -93,26 +81,15 @@ class ApiWebController extends FOSRestController
 
         try
         {
-            /*
-            ----------------------------------------------------------------------
-            jbermeo[INI]
-            ----------------------------------------------------------------------
-            */
-            $arrayParametros  = array('strRuta'         => $strRutaImagen,
-                                      'strNombreImagen' => $strNombreImagen,
-                                      'strPeso'         => $strPeso);
-            $logger = $this->get('logger');
-            $logger->err($arrayParametros['strRuta']);
-            //La función para subir imagen va hacer de manera general en el defaultCOntroller
             $objController    = new DefaultController();
             $objController->setContainer($this->container);
-            $prueba=$objController->subir_fichero($arrayParametros);
-            /*
-            ----------------------------------------------------------------------
-            jbermeo[FIN]
-            ----------------------------------------------------------------------
-            */
-
+            $strRutaImagen = $objController->subirfichero($imgBase64);
+            $strRutaIcono  = $objController->subirfichero($icoBase64);
+            $logger = $this->get('logger');
+            $logger->err('-------------------------------------------');
+            $logger->err($strRutaImagen);
+            $logger->err($strRutaIcono);
+            $logger->err('-------------------------------------------');
             $em->getConnection()->beginTransaction();
             if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
             {
@@ -211,19 +188,8 @@ class ApiWebController extends FOSRestController
         $strNumeroContacto      = $arrayData['numeroContacto'] ? $arrayData['numeroContacto']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
-        /*
-        ----------------------------------------------------------------------
-        jbermeo[INI]
-        ----------------------------------------------------------------------
-        */
-        $strRuta               = $arrayData['ruta'] ? $arrayData['ruta']:'';
-        $strNombreImagen       = $arrayData['nombreImagen'] ? $arrayData['nombreImagen']:'';
-        $strPeso               = $arrayData['peso'] ? $arrayData['peso']:'';
-        /*
-        ----------------------------------------------------------------------
-        jbermeo[FIN]
-        ----------------------------------------------------------------------
-        */
+        $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $icoBase64              = $arrayData['rutaIcono'] ? $arrayData['rutaIcono']:'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
         $strStatus              = 400;
@@ -233,25 +199,11 @@ class ApiWebController extends FOSRestController
 
         try
         {
-            /*
-            ----------------------------------------------------------------------
-            jbermeo[INI]
-            ----------------------------------------------------------------------
-            */
-            $arrayParametros  = array('strRuta'         => $strRuta,
-                                      'strNombreImagen' => $strNombreImagen,
-                                      'strPeso'         => $strPeso);
-            $logger = $this->get('logger');
-            $logger->err($arrayParametros['strRuta']);
-            //La función para subir imagen va hacer de manera general en el defaultCOntroller
-            $objController    = new DefaultController();
+            $objController = new DefaultController();
             $objController->setContainer($this->container);
-            $prueba=$objController->subir_fichero($arrayParametros);
-            /*
-            ----------------------------------------------------------------------
-            jbermeo[FIN]
-            ----------------------------------------------------------------------
-            */
+            $strRutaImagen = $objController->subirfichero($imgBase64);
+            $strRutaIcono  = $objController->subirfichero($icoBase64);
+
             $em->getConnection()->beginTransaction();
             if(strtoupper($strTipoIdentificacion) == 'RUC' && strlen(trim($strIdentificacion))!=13)
             {
@@ -315,7 +267,14 @@ class ApiWebController extends FOSRestController
             {
                 $objRestaurante->setESTADO(strtoupper($strEstado));
             }
-            
+            if(!empty($strRutaImagen))
+            {
+                $objRestaurante->setIMAGEN($strRutaImagen);
+            }
+            if(!empty($strRutaIcono))
+            {
+                $objRestaurante->setICONO($strRutaIcono);
+            }
             $objRestaurante->setUSRMODIFICACION($strUsuarioCreacion);
             $objRestaurante->setFEMODIFICACION($strDatetimeActual);
             $em->persist($objRestaurante);

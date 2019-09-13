@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoRestaurante;
 use AppBundle\Entity\AdmiTipoComida;
-
+use AppBundle\Controller\DefaultController;
 class InfoRestauranteController extends Controller
 {
     /**
@@ -268,12 +268,16 @@ class InfoRestauranteController extends Controller
         $strRazonSocial         = $request->query->get("razonSocial") ? $request->query->get("razonSocial"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
+        $conIcono               = $request->query->get("icono") ? $request->query->get("icono"):'NO';
         $arrayRestaurantes      = array();
         $strMensaje             = '';
         $strStatus              = 400;
         $objResponse            = new Response;
         try
         {
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
                                     'intIdRestaurante'      => $intIdRestaurante,
                                     'strTipoIdentificacion' => $strTipoIdentificacion,
@@ -281,7 +285,7 @@ class InfoRestauranteController extends Controller
                                     'strRazonSocial'        => $strRazonSocial,
                                     'strEstado'             => $strEstado
                                     );
-            $arrayRestaurantes   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterio($arrayParametros);
+            $arrayRestaurantes   = (array) $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterio($arrayParametros);
             if(isset($arrayRestaurantes['error']) && !empty($arrayRestaurantes['error']))
             {
                 $strStatus  = 404;
@@ -293,6 +297,27 @@ class InfoRestauranteController extends Controller
             $strMensaje ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
         $arrayRestaurantes['error'] = $strMensaje;
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayRestaurantes['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
+
+        if($conIcono == 'SI')
+        {
+            foreach ($arrayRestaurantes['resultados'] as &$item)
+            {
+                if($item['ICONO'])
+                {
+                    $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+                }
+            }
+        }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRestaurantes,
