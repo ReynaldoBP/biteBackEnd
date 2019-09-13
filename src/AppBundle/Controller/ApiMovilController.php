@@ -466,7 +466,7 @@ class ApiMovilController extends FOSRestController
         }
         if($conImagen == 'SI')
         {
-            foreach ($arrayRestaurantes['resultados'] as &$item)
+            foreach ($arrayRestaurante['resultados'] as &$item)
             {
                 if($item['IMAGEN'])
                 {
@@ -477,7 +477,7 @@ class ApiMovilController extends FOSRestController
 
         if($conIcono == 'SI')
         {
-            foreach ($arrayRestaurantes['resultados'] as &$item)
+            foreach ($arrayRestaurante['resultados'] as &$item)
             {
                 if($item['ICONO'])
                 {
