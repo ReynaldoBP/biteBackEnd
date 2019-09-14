@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
-
+use AppBundle\Controller\DefaultController;
 class InfoPromocionController extends Controller
 {
     /**
@@ -193,17 +193,20 @@ class InfoPromocionController extends Controller
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
         $arrayPromocion          = array();
         $strMensajeError        = '';
         $strStatus              = 400;
         $objResponse            = new Response;
         try
         {
+            $objController   = new DefaultController();
+            $objController->setContainer($this->container);
             $arrayParametros = array('intIdPromocion'   => $intIdPromocion,
                                     'intIdSucursal'     => $intIdSucursal,
                                     'strDescrPromocion' => $strDescrPromocion,
                                     'strEstado'         => $strEstado);
-            $arrayPromocion   = $this->getDoctrine()->getRepository('AppBundle:InfoPromocion')->getPromocionCriterio($arrayParametros);
+            $arrayPromocion   = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPromocion')->getPromocionCriterio($arrayParametros);
             if(isset($arrayPromocion['error']) && !empty($arrayPromocion['error']))
             {
                 $strStatus  = 404;
@@ -215,6 +218,16 @@ class InfoPromocionController extends Controller
             $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
         $arrayPromocion['error'] = $strMensajeError;
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayPromocion['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPromocion,

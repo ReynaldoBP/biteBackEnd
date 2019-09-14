@@ -38,7 +38,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,
                                PB.PAIS,PB.PROVINCIA,PB.CIUDAD,PB.PARROQUIA,AC.CIUDAD_NOMBRE,AP.PARROQUIA_NOMBRE,
                                PB.ESTADO,PB.USR_CREACION,PB.FE_CREACION,PB.USR_MODIFICACION,PB.FE_MODIFICACION, 
-                               TC.ID_TIPO_COMIDA,TC.DESCRIPCION_TIPO_COMIDA ";
+                               PB.IMAGEN, TC.ID_TIPO_COMIDA,TC.DESCRIPCION_TIPO_COMIDA ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PUBLICIDAD PB 
                                 LEFT JOIN ADMI_TIPO_COMIDA TC ON TC.ID_TIPO_COMIDA=PB.TIPO_COMIDA_ID 
@@ -66,6 +66,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("DESCRIPCION", '%' . trim($strDescrPublicidad) . '%');
             }
             $objRsmBuilder->addScalarResult('ID_PUBLICIDAD', 'ID_PUBLICIDAD', 'string');
+            $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MAXIMA', 'EDAD_MAXIMA', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MINIMA', 'EDAD_MINIMA', 'string');

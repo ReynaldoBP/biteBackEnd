@@ -22,6 +22,13 @@ class InfoPromocion
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="IMAGEN", type="string", length=400)
+     */
+    private $IMAGEN;
+
+    /**
     * @var InfoSucursal
     *
     * @ORM\ManyToOne(targetEntity="InfoSucursal")
@@ -311,5 +318,29 @@ class InfoPromocion
     public function getSUCURSALID()
     {
         return $this->SUCURSAL_ID;
+    }
+
+    /**
+     * Set IMAGEN
+     *
+     * @param string $IMAGEN
+     *
+     * @return InfoPromocion
+     */
+    public function setIMAGEN($IMAGEN)
+    {
+        $this->IMAGEN = $IMAGEN;
+
+        return $this;
+    }
+
+    /**
+     * Get IMAGEN
+     *
+     * @return string
+     */
+    public function getIMAGEN()
+    {
+        return $this->IMAGEN;
     }
 }
