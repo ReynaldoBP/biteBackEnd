@@ -22,6 +22,13 @@ class InfoPromocion
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="IMAGEN", type="string", length=400)
+     */
+    private $IMAGEN;
+
+    /**
     * @var InfoSucursal
     *
     * @ORM\ManyToOne(targetEntity="InfoSucursal")
@@ -168,5 +175,148 @@ class InfoPromocion
     {
         return $this->ACEPTAGLOBAL;
     }
-}
 
+    /**
+     * Set ESTADO
+     *
+     * @param string $ESTADO
+     *
+     * @return InfoPromocion
+     */
+    public function setESTADO($ESTADO)
+    {
+        $this->ESTADO = $ESTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get ESTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->ESTADO;
+    }
+
+    /**
+     * Set USRCREACION
+     *
+     * @param string $USRCREACION
+     *
+     * @return InfoPromocion
+     */
+    public function setUSRCREACION($USRCREACION)
+    {
+        $this->USR_CREACION = $USRCREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRCREACION
+     *
+     * @return string
+     */
+    public function getUSRCREACION()
+    {
+        return $this->USR_CREACION;
+    }
+
+    /**
+     * Set FECREACION
+     *
+     * @param \DateTime $FECREACION
+     *
+     * @return InfoPromocion
+     */
+    public function setFECREACION($FECREACION)
+    {
+        $this->FE_CREACION = $FECREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FECREACION
+     *
+     * @return \DateTime
+     */
+    public function getFECREACION()
+    {
+        return $this->FE_CREACION;
+    }
+
+    /**
+     * Set USRMODIFICACION
+     *
+     * @param string $USRMODIFICACION
+     *
+     * @return InfoPromocion
+     */
+    public function setUSRMODIFICACION($USRMODIFICACION)
+    {
+        $this->USR_MODIFICACION = $USRMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRMODIFICACION
+     *
+     * @return string
+     */
+    public function getUSRMODIFICACION()
+    {
+        return $this->USR_MODIFICACION;
+    }
+
+    /**
+     * Set FEMODIFICACION
+     *
+     * @param \DateTime $FEMODIFICACION
+     *
+     * @return InfoPromocion
+     */
+    public function setFEMODIFICACION($FEMODIFICACION)
+    {
+        $this->FE_MODIFICACION = $FEMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FEMODIFICACION
+     *
+     * @return \DateTime
+     */
+    public function getFEMODIFICACION()
+    {
+        return $this->FE_MODIFICACION;
+    }
+
+    /**
+     * Set SUCURSALID
+     *
+     * @param \AppBundle\Entity\InfoSucursal $SUCURSALID
+     *
+     * @return InfoPromocion
+     */
+    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $SUCURSALID = null)
+    {
+        $this->SUCURSAL_ID = $SUCURSALID;
+
+        return $this;
+    }
+
+    /**
+     * Get SUCURSALID
+     *
+     * @return \AppBundle\Entity\InfoSucursal
+     */
+    public function getSUCURSALID()
+    {
+        return $this->SUCURSAL_ID;
+    }
+}

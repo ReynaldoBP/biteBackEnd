@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\AdmiTipoComida;
 use AppBundle\Entity\InfoPublicidad;
+use AppBundle\Controller\DefaultController;
 class InfoPublicidadController extends Controller
 {
     /**
@@ -234,17 +235,20 @@ class InfoPublicidadController extends Controller
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
         $arrayPublicidad          = array();
         $strMensajeError        = '';
         $strStatus              = 400;
         $objResponse            = new Response;
         try
         {
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
             $arrayParametros = array('intIdPublicidad'   => $intIdPublicidad,
                                     'intIdTipoComida'    => $intIdTipoComida,
                                     'strDescrPublicidad' => $strDescrPublicidad,
                                     'strEstado'          => $strEstado);
-            $arrayPublicidad = $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);
+            $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);
             if(isset($arrayPublicidad['error']) && !empty($arrayPublicidad['error']))
             {
                 $strStatus  = 404;
@@ -256,6 +260,16 @@ class InfoPublicidadController extends Controller
             $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
         $arrayPublicidad['error'] = $strMensajeError;
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayPublicidad['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPublicidad,

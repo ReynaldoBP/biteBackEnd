@@ -55,6 +55,8 @@ class ApiMovilController extends FOSRestController
                break;
                case 'getLoginMovil':$arrayRespuesta = $this->getLoginMovil($arrayData);
                break;
+               case 'getPublicidad':$arrayRespuesta = $this->getPublicidad($arrayData);
+               break;
                default:
                 $objResponse->setContent(json_encode(array(
                                                     'status'    => 400,
@@ -774,5 +776,64 @@ class ApiMovilController extends FOSRestController
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
-
+    /**
+     * Documentación para la función 'getPublicidad'
+     * Método encargado de retornar las publicidades según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 06-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getPublicidad($arrayData)
+    {
+        $intIdPublicidad        = $arrayData['idPublicidad'] ? $arrayData['idPublicidad']:'';
+        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
+        $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $conImagen              = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
+        $arrayPublicidad          = array();
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        try
+        {
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
+            $arrayParametros = array('intIdPublicidad'   => $intIdPublicidad,
+                                    'intIdTipoComida'    => $intIdTipoComida,
+                                    'strDescrPublicidad' => $strDescrPublicidad,
+                                    'strEstado'          => $strEstado);
+            $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);
+            if(isset($arrayPublicidad['error']) && !empty($arrayPublicidad['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayPublicidad['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayPublicidad['error'] = $strMensajeError;
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayPublicidad['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayPublicidad,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
 }
