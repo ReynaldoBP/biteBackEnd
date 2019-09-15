@@ -328,18 +328,18 @@ class ApiWebController extends FOSRestController
      */
     public function createPublicidad($arrayData)
     {
-        $intIdTipoComida        = $arrayData['"idTipoComida'] ? $arrayData['"idTipoComida']:'';
-        $strDescrPublicidad     = $arrayData['"descrPublicidad'] ? $arrayData['"descrPublicidad']:'';
+        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
+        $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
-        $strEdadMaxima          = $arrayData['"edadMaxima'] ? $arrayData['"edadMaxima']:'';
-        $strEdadMinima          = $arrayData['"edadMinima'] ? $arrayData['"edadMinima']:'';
-        $strGenero              = $arrayData['"genero'] ? $arrayData['"genero']:'';
-        $strPais                = $arrayData['"pais'] ? $arrayData['"pais']:'';
-        $strProvincia           = $arrayData['"provincia'] ? $arrayData['"provincia']:'';
-        $strCiudad              = $arrayData['"ciudad'] ? $arrayData['"ciudad']:'';
-        $strParroquia           = $arrayData['"parroquia'] ? $arrayData['"parroquia']:'';
-        $strEstado              = $arrayData['"estado'] ? $arrayData['"estado']:'ACTIVO';
-        $strUsuarioCreacion     = $arrayData['"usuarioCreacion'] ? $arrayData['"usuarioCreacion']:'';
+        $strEdadMaxima          = $arrayData['edadMaxima'] ? $arrayData['edadMaxima']:'';
+        $strEdadMinima          = $arrayData['edadMinima'] ? $arrayData['edadMinima']:'';
+        $strGenero              = $arrayData['genero'] ? $arrayData['genero']:'';
+        $strPais                = $arrayData['pais'] ? $arrayData['pais']:'';
+        $strProvincia           = $arrayData['provincia'] ? $arrayData['provincia']:'';
+        $strCiudad              = $arrayData['ciudad'] ? $arrayData['ciudad']:'';
+        $strParroquia           = $arrayData['parroquia'] ? $arrayData['parroquia']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
         $strStatus              = 400;
