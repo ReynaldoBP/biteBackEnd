@@ -25,7 +25,6 @@ class InfoPublicidadController extends Controller
      */
     public function createPublicidadAction(Request $request)
     {
-        $intIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'';
         $strEdadMaxima          = $request->query->get("edadMaxima") ? $request->query->get("edadMaxima"):'';
@@ -46,15 +45,11 @@ class InfoPublicidadController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                     'id'     => $intIdTipoComida);
-            $objTipoComida   = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametros);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
                 throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
             }
             $entityPublicidad = new InfoPublicidad();
-            $entityPublicidad->setTIPOCOMIDAID($objTipoComida);
             $entityPublicidad->setDESCRIPCION($strDescrPublicidad);
             $entityPublicidad->setIMAGEN($strImagen);
             $entityPublicidad->setEDADMAXIMA($strEdadMaxima);
@@ -109,7 +104,6 @@ class InfoPublicidadController extends Controller
     public function editPublicidadAction(Request $request)
     {
         $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
-        $intIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'';
         $strEdadMaxima          = $request->query->get("edadMaxima") ? $request->query->get("edadMaxima"):'';
@@ -134,17 +128,6 @@ class InfoPublicidadController extends Controller
             if(!is_object($objPublicidad) || empty($objPublicidad))
             {
                 throw new \Exception('No existe publicidad con la identificación enviada por parámetro.');
-            }
-            if(!empty($intIdTipoComida))
-            {
-                $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                        'id'     => $intIdTipoComida);
-                $objTipoComida   = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametros);
-                if(!is_object($objTipoComida) || empty($objTipoComida))
-                {
-                    throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
-                }
-                $objPublicidad->setTIPOCOMIDAID($objTipoComida);
             }
             if(!empty($strDescrPublicidad))
             {
@@ -231,7 +214,6 @@ class InfoPublicidadController extends Controller
     public function getPublicidadAction(Request $request)
     {
         $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
-        $intIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -245,7 +227,6 @@ class InfoPublicidadController extends Controller
             $objController    = new DefaultController();
             $objController->setContainer($this->container);
             $arrayParametros = array('intIdPublicidad'   => $intIdPublicidad,
-                                    'intIdTipoComida'    => $intIdTipoComida,
                                     'strDescrPublicidad' => $strDescrPublicidad,
                                     'strEstado'          => $strEstado);
             $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);

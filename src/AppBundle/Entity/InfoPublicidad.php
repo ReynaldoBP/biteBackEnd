@@ -22,16 +22,6 @@ class InfoPublicidad
     private $id;
 
     /**
-    * @var AdmiTipoComida
-    *
-    * @ORM\ManyToOne(targetEntity="AdmiTipoComida")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="TIPO_COMIDA_ID", referencedColumnName="ID_TIPO_COMIDA")
-    * })
-    */
-    private $TIPO_COMIDA_ID;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255, nullable=true)
@@ -377,30 +367,6 @@ class InfoPublicidad
     public function getFEMODIFICACION()
     {
         return $this->FE_MODIFICACION;
-    }
-
-    /**
-     * Set TIPOCOMIDAID
-     *
-     * @param \AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID
-     *
-     * @return InfoPublicidad
-     */
-    public function setTIPOCOMIDAID(\AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID = null)
-    {
-        $this->TIPO_COMIDA_ID = $TIPOCOMIDAID;
-
-        return $this;
-    }
-
-    /**
-     * Get TIPOCOMIDAID
-     *
-     * @return \AppBundle\Entity\AdmiTipoComida
-     */
-    public function getTIPOCOMIDAID()
-    {
-        return $this->TIPO_COMIDA_ID;
     }
 
     /**

@@ -1,0 +1,89 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * InfoPublicidadComida
+ *
+ * @ORM\Table(name="INFO_PUBLICIDAD_COMIDA")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoPublicidadComidaRepository")
+ */
+class InfoPublicidadComida
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_PUBLICIDAD_COMIDA", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var InfoPublicidad
+    *
+    * @ORM\ManyToOne(targetEntity="InfoPublicidad")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="PUBLICIDAD_ID", referencedColumnName="ID_PUBLICIDAD")
+    * })
+    */
+    private $PUBLICIDADID;
+
+    /**
+    * @var AdmiTipoComida
+    *
+    * @ORM\ManyToOne(targetEntity="AdmiTipoComida")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="TIPO_COMIDA_ID", referencedColumnName="ID_TIPO_COMIDA")
+    * })
+    */
+    private $TIPO_COMIDAID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=100)
+     */
+    private $ESTADO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_CREACION", type="string", length=255)
+     */
+    private $USRCREACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_CREACION", type="date")
+     */
+    private $FECREACION;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_MODIFICACION", type="string", length=255, nullable=true)
+     */
+    private $USRMODIFICACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_MODIFICACION", type="date", nullable=true)
+     */
+    private $FEMODIFICACION;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
