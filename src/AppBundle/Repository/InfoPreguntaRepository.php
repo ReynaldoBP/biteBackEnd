@@ -72,6 +72,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("OBLIGATORIA", '%' . trim($strTitulo) . '%');
             }
             $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO_PREGUNTA', 'ESTADO_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
@@ -163,6 +164,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("OBLIGATORIA", '%' . trim($strTitulo) . '%');
             }
             $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO_PREGUNTA', 'ESTADO_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
