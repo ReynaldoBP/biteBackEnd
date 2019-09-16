@@ -318,7 +318,6 @@ class ApiWebController extends FOSRestController
      */
     public function createPublicidad($arrayData)
     {
-        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
         $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
         $strEdadMaxima          = $arrayData['edadMaxima'] ? $arrayData['edadMaxima']:'';
@@ -344,15 +343,7 @@ class ApiWebController extends FOSRestController
             {
                 $strRutaImagen = $objController->subirfichero($imgBase64);
             }
-            $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                     'id'     => $intIdTipoComida);
-            $objTipoComida   = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametros);
-            if(!is_object($objTipoComida) || empty($objTipoComida))
-            {
-                throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
-            }
             $entityPublicidad = new InfoPublicidad();
-            $entityPublicidad->setTIPOCOMIDAID($objTipoComida);
             $entityPublicidad->setDESCRIPCION($strDescrPublicidad);
             $entityPublicidad->setIMAGEN($strRutaImagen);
             $entityPublicidad->setEDADMAXIMA($strEdadMaxima);
@@ -404,7 +395,6 @@ class ApiWebController extends FOSRestController
     public function editPublicidad($arrayData)
     {
         $intIdPublicidad        = $arrayData['idPublicidad'] ? $arrayData['idPublicidad']:'';
-        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
         $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
         $strEdadMaxima          = $arrayData['edadMaxima'] ? $arrayData['edadMaxima']:'';
@@ -434,17 +424,6 @@ class ApiWebController extends FOSRestController
             if(!is_object($objPublicidad) || empty($objPublicidad))
             {
                 throw new \Exception('No existe publicidad con la identificación enviada por parámetro.');
-            }
-            if(!empty($intIdTipoComida))
-            {
-                $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                        'id'     => $intIdTipoComida);
-                $objTipoComida   = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametros);
-                if(!is_object($objTipoComida) || empty($objTipoComida))
-                {
-                    throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
-                }
-                $objPublicidad->setTIPOCOMIDAID($objTipoComida);
             }
             if(!empty($strDescrPublicidad))
             {

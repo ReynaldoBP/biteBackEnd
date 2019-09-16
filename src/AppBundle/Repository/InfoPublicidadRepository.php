@@ -24,7 +24,6 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
     public function getPublicidadCriterio($arrayParametros)
     {
         $intIdPublicidad    = $arrayParametros['intIdPublicidad'] ? $arrayParametros['intIdPublicidad']:'';
-        $intIdTipoComida    = $arrayParametros['intIdTipoComida'] ? $arrayParametros['intIdTipoComida']:'';
         $strDescrPublicidad = $arrayParametros['strDescrPublicidad'] ? $arrayParametros['strDescrPublicidad']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayPublicidad    = array();
@@ -38,10 +37,9 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,
                                PB.PAIS,PB.PROVINCIA,PB.CIUDAD,PB.PARROQUIA,AC.CIUDAD_NOMBRE,AP.PARROQUIA_NOMBRE,
                                PB.ESTADO,PB.USR_CREACION,PB.FE_CREACION,PB.USR_MODIFICACION,PB.FE_MODIFICACION, 
-                               PB.IMAGEN, TC.ID_TIPO_COMIDA,TC.DESCRIPCION_TIPO_COMIDA ";
+                               PB.IMAGEN ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PUBLICIDAD PB 
-                                LEFT JOIN ADMI_TIPO_COMIDA TC ON TC.ID_TIPO_COMIDA=PB.TIPO_COMIDA_ID 
                                 LEFT JOIN ADMI_CIUDAD AC ON AC.ID_CIUDAD=PB.CIUDAD 
                                 LEFT JOIN ADMI_PARROQUIA AP ON AP.ID_PARROQUIA=PB.PARROQUIA ";
             $strWhere       = "WHERE PB.ESTADO in (:ESTADO) ";
@@ -52,12 +50,6 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND PB.ID_PUBLICIDAD =:ID_PUBLICIDAD ";
                 $objQuery->setParameter("ID_PUBLICIDAD", $intIdPublicidad);
                 $objQueryCount->setParameter("ID_PUBLICIDAD", $intIdPublicidad);
-            }
-            if(!empty($intIdTipoComida))
-            {
-                $strWhere .= " AND PB.TIPO_COMIDA_ID =:TIPO_COMIDA_ID ";
-                $objQuery->setParameter("TIPO_COMIDA_ID", $intIdTipoComida);
-                $objQueryCount->setParameter("TIPO_COMIDA_ID", $intIdTipoComida);
             }
             if(!empty($strDescrPublicidad))
             {
@@ -82,8 +74,6 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
-            $objRsmBuilder->addScalarResult('ID_TIPO_COMIDA', 'ID_TIPO_COMIDA', 'string');
-            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
