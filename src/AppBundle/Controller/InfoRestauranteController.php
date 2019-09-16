@@ -25,8 +25,6 @@ class InfoRestauranteController extends Controller
      */
     public function createRestauranteAction(Request $request)
     {
-        $strIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
-        $strIdentificacionUser  = $request->query->get("identificacionUsuario") ? $request->query->get("identificacionUsuario"):'';
         $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
         $strIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
@@ -57,15 +55,6 @@ class InfoRestauranteController extends Controller
             {
                 throw new \Exception('cantidad de dígitos incorrecto');
             }
-            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($strIdUsuario);
-            if(!is_object($objUsuario) || empty($objUsuario))
-            {
-                $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacionUser));
-                if(!is_object($objUsuario) || empty($objUsuario))
-                {
-                    throw new \Exception('Usuario no existe.');
-                }
-            }
             $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
@@ -81,7 +70,6 @@ class InfoRestauranteController extends Controller
                 throw new \Exception('Restaurante ya existente.');
             }
             $entityRestaurante = new InfoRestaurante();
-            $entityRestaurante->setUSUARIOID($objUsuario);
             $entityRestaurante->setTIPOCOMIDAID($objTipoComida);
             $entityRestaurante->setTIPOIDENTIFICACION(strtoupper($strTipoIdentificacion));
             $entityRestaurante->setIDENTIFICACION($strIdentificacion);

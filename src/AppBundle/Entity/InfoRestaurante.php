@@ -22,16 +22,6 @@ class InfoRestaurante
     private $id;
 
     /**
-    * @var InfoUsuario
-    *
-    * @ORM\ManyToOne(targetEntity="InfoUsuario")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="USUARIO_ID", referencedColumnName="ID_USUARIO")
-    * })
-    */
-    private $USUARIOID;
-
-    /**
     * @var AdmiTipoComida
     *
     * @ORM\ManyToOne(targetEntity="AdmiTipoComida")
@@ -467,30 +457,6 @@ class InfoRestaurante
     public function getFEMODIFICACION()
     {
         return $this->FEMODIFICACION;
-    }
-
-    /**
-     * Set USUARIOID
-     *
-     * @param \AppBundle\Entity\InfoUsuario $USUARIOID
-     *
-     * @return InfoRestaurante
-     */
-    public function setUSUARIOID(\AppBundle\Entity\InfoUsuario $USUARIOID = null)
-    {
-        $this->USUARIOID = $USUARIOID;
-
-        return $this;
-    }
-
-    /**
-     * Get USUARIOID
-     *
-     * @return \AppBundle\Entity\InfoUsuario
-     */
-    public function getUSUARIOID()
-    {
-        return $this->USUARIOID;
     }
 
     /**

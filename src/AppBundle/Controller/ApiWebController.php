@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoRestaurante;
 use AppBundle\Entity\AdmiTipoComida;
 use AppBundle\Controller\DefaultController;
-use AppBundle\Entity\InfoUsuario;
 use AppBundle\Entity\InfoPublicidad;
 use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
@@ -67,8 +66,6 @@ class ApiWebController extends FOSRestController
      */
     public function createRestaurante($arrayData)
     {
-        $strIdUsuario           = $arrayData['idUsuario'] ? $arrayData['idUsuario']:'';
-        $strIdentificacionUser  = $arrayData['identificacionUsuario'] ? $arrayData['identificacionUsuario']:'';
         $strTipoComida          = $arrayData['tipoComida'] ? $arrayData['tipoComida']:'';
         $strIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
         $strTipoIdentificacion  = $arrayData['tipoIdentificacion'] ? $arrayData['tipoIdentificacion']:'';
@@ -110,15 +107,6 @@ class ApiWebController extends FOSRestController
             {
                 throw new \Exception('cantidad de dígitos incorrecto');
             }
-            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($strIdUsuario);
-            if(!is_object($objUsuario) || empty($objUsuario))
-            {
-                $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('IDENTIFICACION'=>$strIdentificacionUser));
-                if(!is_object($objUsuario) || empty($objUsuario))
-                {
-                    throw new \Exception('Usuario no existe.');
-                }
-            }
             $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->find($strIdTipoComida);
             if(!is_object($objTipoComida) || empty($objTipoComida))
             {
@@ -134,7 +122,6 @@ class ApiWebController extends FOSRestController
                 throw new \Exception('Restaurante ya existente.');
             }
             $entityRestaurante = new InfoRestaurante();
-            $entityRestaurante->setUSUARIOID($objUsuario);
             $entityRestaurante->setTIPOCOMIDAID($objTipoComida);
             $entityRestaurante->setTIPOIDENTIFICACION(strtoupper($strTipoIdentificacion));
             $entityRestaurante->setIDENTIFICACION($strIdentificacion);
