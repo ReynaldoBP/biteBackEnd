@@ -19,7 +19,7 @@ class InfoUsuarioResRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arrayUsuarioRes
      * 
-     */    
+     */
     public function getRelacionUsResCriterio($arrayParametros)
     {
         $intIdUsuarioRes    = $arrayParametros['intIdUsuarioRes'] ? $arrayParametros['intIdUsuarioRes']:'';

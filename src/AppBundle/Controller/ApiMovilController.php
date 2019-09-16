@@ -791,44 +791,74 @@ class ApiMovilController extends FOSRestController
     public function getPublicidad($arrayData)
     {
         $intIdPublicidad        = $arrayData['idPublicidad'] ? $arrayData['idPublicidad']:'';
-        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
-        $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
+        $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdSucursal          = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $conImagen              = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
-        $arrayPublicidad          = array();
+        $arrayPublicidad        = array();
+        $arrayCliente           = array();
         $strMensajeError        = '';
         $strStatus              = 400;
         $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        $objController    = new DefaultController();
+        $objController->setContainer($this->container);
         try
         {
-            $objController    = new DefaultController();
-            $objController->setContainer($this->container);
-            $arrayParametros = array('intIdPublicidad'   => $intIdPublicidad,
-                                    'intIdTipoComida'    => $intIdTipoComida,
-                                    'strDescrPublicidad' => $strDescrPublicidad,
-                                    'strEstado'          => $strEstado);
-            $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);
-            if(isset($arrayPublicidad['error']) && !empty($arrayPublicidad['error']))
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!empty($objCliente))
+            {
+                $arrayCliente   = array('idCliente'      => $objCliente->getId(),
+                                        'identificacion' => $objCliente->getIDENTIFICACION(),
+                                        'nombre'         => $objCliente->getNOMBRE(),
+                                        'apellido'       => $objCliente->getAPELLIDO(),
+                                        'correo'         => $objCliente->getCORREO(),
+                                        'direccion'      => $objCliente->getDIRECCION(),
+                                        'edad'           => $objCliente->getEDAD(),
+                                        'genero'         => $objCliente->getGENERO(),
+                                        'idComida'       => $objCliente->getTIPOCLIENTEPUNTAJEID()->getId());
+            }
+            if(!empty($intIdSucursal))
+            {
+                $objSucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
+                if(!empty($objSucursal))
+                {
+                    $arraySucursal = array('idSucursal'  => $objSucursal->getId(),
+                                           'descripcion' => $objSucursal->getDESCRIPCION(),
+                                           'pais'        => $objSucursal->getPAIS(),
+                                           'ciudad'      => $objSucursal->getCIUDAD(),
+                                           'provincia'   => $objSucursal->getPROVINCIA(),
+                                           'parroquia'   => $objSucursal->getPARROQUIA());
+                }
+            }
+            $arrayParametros = array('PAIS'=>$arraySucursal['pais'],
+                                     'CIUDAD'=>$arraySucursal['ciudad'],
+                                     'PROVINCIA'=>$arraySucursal['provincia'],
+                                     'PARROQUIA'=>$arraySucursal['parroquia'],
+                                     'GENERO'=>$arrayCliente['genero']);
+            $objPublicidad   = $em->getRepository('AppBundle:InfoPublicidad')->findOneBy($arrayParametros);
+            if(!empty($objPublicidad))
+            {
+                $arrayPublicidad = array('idPublicidad' => $objPublicidad->getId(),
+                                         'descripcion'  => $objPublicidad->getDESCRIPCION(),
+                                         'imagen'       => $objPublicidad->getIMAGEN(),
+                                         'estado'       => $objPublicidad->getESTADO());
+            }
+            else
             {
                 $strStatus  = 404;
-                throw new \Exception($arrayPublicidad['error']);
+                throw new \Exception('No existen publicidades con la descripción enviada por parametros');
             }
         }
         catch(\Exception $ex)
         {
-            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError          ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $arrayPublicidad['error'] = $strMensajeError;
         }
-        $arrayPublicidad['error'] = $strMensajeError;
-        if($conImagen == 'SI')
+        if($conImagen == 'SI' && $arrayPublicidad['imagen'])
         {
-            foreach ($arrayPublicidad['resultados'] as &$item)
-            {
-                if($item['IMAGEN'])
-                {
-                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
-                }
-            }
+            $arrayPublicidad['imagen'] = $objController->getImgBase64($arrayPublicidad['imagen']);
         }
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
