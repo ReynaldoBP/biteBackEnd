@@ -252,7 +252,6 @@ class InfoPublicidadComidaController extends Controller
     public function deletePublicidadComidaAction(Request $request)
     {
         $intIdPubComida         = $request->query->get("idPubComida") ? $request->query->get("idPubComida"):'';
-        $intIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
         $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -264,16 +263,6 @@ class InfoPublicidadComidaController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            if(!empty($intIdTipoComida))
-            {
-                $arrayParametrosTC    = array('ESTADO' => 'ACTIVO',
-                                              'id'     => $intIdTipoComida);
-                $objTipoComida        = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametrosTC);
-                if(!is_object($objTipoComida) || empty($objTipoComida))
-                {
-                    throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
-                }
-            }
             if(!empty($intIdPublicidad))
             {
                 $arrayParametrosPub = array('ESTADO' => 'ACTIVO',
@@ -284,8 +273,7 @@ class InfoPublicidadComidaController extends Controller
                     throw new \Exception('No existe la publicidad con la descripción enviada por parámetro.');
                 }
             }
-            $arrayParametrosPubComida = array('PUBLICIDADID'  => $intIdPublicidad,
-                                              'TIPO_COMIDAID' => $intIdTipoComida);
+            $arrayParametrosPubComida = array('PUBLICIDADID'  => $intIdPublicidad);
             $objPubComida             = $em->getRepository('AppBundle:InfoPublicidadComida')->findOneBy($arrayParametrosPubComida);
             if(!is_object($objPubComida) || empty($objPubComida))
             {
