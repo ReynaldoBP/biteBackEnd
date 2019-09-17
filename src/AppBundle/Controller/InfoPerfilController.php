@@ -265,4 +265,98 @@ class InfoPerfilController extends Controller
         return $objResponse;
     }
 
+    /**
+     * @Route("/deletePerfil")
+     *
+     * Documentación para la función 'deletePerfil'
+     * Método encargado de eliminar los perfiles según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 10-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function deletePerfilAction(Request $request)
+    {
+        $intIdPerfil            = $request->query->get("idPerfil") ? $request->query->get("idPerfil"):'';
+        $intIdModulo            = $request->query->get("idModulo") ? $request->query->get("idModulo"):'';
+        $intIdAccion            = $request->query->get("idAccion") ? $request->query->get("idAccion"):'';
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
+        $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $strDatetimeActual      = new \DateTime('now');
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(!empty($intIdModulo))
+            {
+                $arrayParametrosModulo = array('id' => $intIdModulo);
+                $objModulo             = $em->getRepository('AppBundle:AdmiModulo')->findOneBy($arrayParametrosModulo);
+                if(!is_object($objModulo) || empty($objModulo))
+                {
+                    throw new \Exception('No existe el módulo con la descripción enviada por parámetro.');
+                }
+            }
+            if(!empty($intIdAccion))
+            {
+                $arrayParametrosAccion = array('id' => $intIdAccion);
+                $objAccion             = $em->getRepository('AppBundle:AdmiAccion')->findOneBy($arrayParametrosAccion);
+                if(!is_object($objAccion) || empty($objAccion))
+                {
+                    throw new \Exception('No existe el acción con la descripción enviada por parámetro.');
+                }
+            }
+            if(!empty($intIdUsuario))
+            {
+                $arrayParametrosUs = array('id' => $intIdUsuario);
+                $objUsuario        = $em->getRepository('AppBundle:InfoUsuario')->findOneBy($arrayParametrosUs);
+                if(!is_object($objUsuario) || empty($objUsuario))
+                {
+                    throw new \Exception('No existe el usuario con la descripción enviada por parámetro.');
+                }
+            }
+            $arrayParametrosPerfil = array ('MODULO_ID'  => $intIdModulo,
+                                            'ACCION_ID'  => $intIdAccion,
+                                            'USUARIO_ID' => $intIdUsuario);
+            $objPerfil = $em->getRepository('AppBundle:InfoPerfil')->findOneBy($arrayParametrosPerfil);
+            if(!is_object($objPerfil) || empty($objPerfil))
+            {
+                throw new \Exception('No existe Perfil con la descripción enviada por parámetro.');
+            }
+            $em->remove($objPerfil);
+            $em->flush();
+            $strMensajeError = 'Perfil eliminado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            
+            $strMensajeError = "Fallo al eliminar un Perfil, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+
 }

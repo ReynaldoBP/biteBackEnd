@@ -22,16 +22,6 @@ class InfoPublicidad
     private $id;
 
     /**
-    * @var AdmiTipoComida
-    *
-    * @ORM\ManyToOne(targetEntity="AdmiTipoComida")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="TIPO_COMIDA_ID", referencedColumnName="ID_TIPO_COMIDA")
-    * })
-    */
-    private $TIPO_COMIDA_ID;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255, nullable=true)
@@ -48,14 +38,14 @@ class InfoPublicidad
     /**
      * @var string
      *
-     * @ORM\Column(name="EDAD_MAXIMA", type="string", length=50, nullable=true)
+     * @ORM\Column(name="EDAD_MAXIMA", type="integer", nullable=true)
      */
     private $EDADMAXIMA;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="EDAD_MINIMA", type="string", length=50, nullable=true)
+     * @ORM\Column(name="EDAD_MINIMA", type="integer", nullable=true)
      */
     private $EDADMINIMA;
 
@@ -190,7 +180,7 @@ class InfoPublicidad
     /**
      * Set EDADMAXIMA
      *
-     * @param string $EDADMAXIMA
+     * @param int $EDADMAXIMA
      *
      * @return InfoPublicidad
      */
@@ -204,7 +194,7 @@ class InfoPublicidad
     /**
      * Get EDADMAXIMA
      *
-     * @return string
+     * @return int
      */
     public function getEDADMAXIMA()
     {
@@ -214,7 +204,7 @@ class InfoPublicidad
     /**
      * Set EDADMINIMA
      *
-     * @param string $EDADMINIMA
+     * @param int $EDADMINIMA
      *
      * @return InfoPublicidad
      */
@@ -228,7 +218,7 @@ class InfoPublicidad
     /**
      * Get EDADMINIMA
      *
-     * @return string
+     * @return int
      */
     public function getEDADMINIMA()
     {
@@ -380,26 +370,98 @@ class InfoPublicidad
     }
 
     /**
-     * Set TIPOCOMIDAID
+     * Set PAIS
      *
-     * @param \AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID
+     * @param string $PAIS
      *
      * @return InfoPublicidad
      */
-    public function setTIPOCOMIDAID(\AppBundle\Entity\AdmiTipoComida $TIPOCOMIDAID = null)
+    public function setPAIS($PAIS)
     {
-        $this->TIPO_COMIDA_ID = $TIPOCOMIDAID;
+        $this->PAIS = $PAIS;
 
         return $this;
     }
 
     /**
-     * Get TIPOCOMIDAID
+     * Get PAIS
      *
-     * @return \AppBundle\Entity\AdmiTipoComida
+     * @return string
      */
-    public function getTIPOCOMIDAID()
+    public function getPAIS()
     {
-        return $this->TIPO_COMIDA_ID;
+        return $this->PAIS;
+    }
+
+    /**
+     * Set PROVINCIA
+     *
+     * @param string $PROVINCIA
+     *
+     * @return InfoPublicidad
+     */
+    public function setPROVINCIA($PROVINCIA)
+    {
+        $this->PROVINCIA = $PROVINCIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PROVINCIA
+     *
+     * @return string
+     */
+    public function getPROVINCIA()
+    {
+        return $this->PROVINCIA;
+    }
+
+    /**
+     * Set CIUDAD
+     *
+     * @param string $CIUDAD
+     *
+     * @return InfoPublicidad
+     */
+    public function setCIUDAD($CIUDAD)
+    {
+        $this->CIUDAD = $CIUDAD;
+
+        return $this;
+    }
+
+    /**
+     * Get CIUDAD
+     *
+     * @return string
+     */
+    public function getCIUDAD()
+    {
+        return $this->CIUDAD;
+    }
+
+    /**
+     * Set PARROQUIA
+     *
+     * @param string $PARROQUIA
+     *
+     * @return InfoPublicidad
+     */
+    public function setPARROQUIA($PARROQUIA)
+    {
+        $this->PARROQUIA = $PARROQUIA;
+
+        return $this;
+    }
+
+    /**
+     * Get PARROQUIA
+     *
+     * @return string
+     */
+    public function getPARROQUIA()
+    {
+        return $this->PARROQUIA;
     }
 }

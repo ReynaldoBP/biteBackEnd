@@ -38,9 +38,9 @@ class InfoUsuarioResRepository extends \Doctrine\ORM\EntityRepository
                                 IRE.ID_RESTAURANTE,IRE.IDENTIFICACION,IRE.RAZON_SOCIAL,IRE.NOMBRE_COMERCIAL,
                                 IUS.ID_USUARIO,IUS.NOMBRES,IUS.APELLIDOS,IUS.CORREO,IUS.IDENTIFICACION AS IDENTIFICACION_US ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM massVisionDesa.INFO_USUARIO_RES IUR
-                                JOIN massVisionDesa.INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=IUR.RESTAURANTE_ID
-                                JOIN massVisionDesa.INFO_USUARIO IUS ON IUS.ID_USUARIO=IUR.USUARIO_ID ";
+            $strFrom        = "FROM INFO_USUARIO_RES IUR
+                                JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=IUR.RESTAURANTE_ID
+                                JOIN INFO_USUARIO IUS ON IUS.ID_USUARIO=IUR.USUARIO_ID ";
             $strWhere       = "WHERE IUR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
