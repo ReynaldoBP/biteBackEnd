@@ -171,7 +171,7 @@ class ApiMovilController extends FOSRestController
                               'estado'         => $entityCliente->getESTADO(),
                               'sector'         => $entityCliente->getSECTOR(),
                               'usrCreacion'    => $entityCliente->getUSRCREACION(),
-                              'feModificacion' => $entityCliente->getUSRCREACION(),
+                              'feCreacion'     => $entityCliente->getFECREACION(),
                               'mensaje'        => $strMensajeError);
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
