@@ -144,9 +144,18 @@ class UsuarioController extends Controller
             $em->getConnection()->commit();
             $em->getConnection()->close();
         }
+        $arrayUsuario    = array('id'             => $entityUsuario->getId(),
+                                 'identificacion' => $entityUsuario->getIDENTIFICACION(),
+                                 'nombres'        => $entityUsuario->getNOMBRES(),
+                                 'apellido'       => $entityUsuario->getAPELLIDOS(),
+                                 'correo'         => $entityUsuario->getCORREO(),
+                                 'estado'         => $entityUsuario->getESTADO(),
+                                 'usrCreacion'    => $entityUsuario->getUSRCREACION(),
+                                 'feCreacion'     => $entityUsuario->getFECREACION(),
+                                 'mensaje'        => $strMensajeError);
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $strMensajeError,
+                                            'resultado' => $arrayUsuario,
                                             'succes'    => true
                                             )
                                         ));

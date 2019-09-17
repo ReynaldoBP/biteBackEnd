@@ -377,9 +377,18 @@ class ApiWebController extends FOSRestController
             $em->getConnection()->commit();
             $em->getConnection()->close();
         }
+        $arrayPublicidad = array('id'             => $entityPublicidad->getId(),
+                                 'descripcion'    => $entityPublicidad->getDESCRIPCION(),
+                                 'edadMaxima'     => $entityPublicidad->getEDADMAXIMA(),
+                                 'edadMinima'     => $entityPublicidad->getEDADMINIMA(),
+                                 'genero'         => $entityPublicidad->getGENERO(),
+                                 'estado'         => $entityPublicidad->getESTADO(),
+                                 'usrCreacion'    => $entityPublicidad->getUSRCREACION(),
+                                 'feCreacion'     => $entityPublicidad->getFECREACION(),
+                                 'mensaje'        => $strMensajeError);
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $strMensajeError,
+                                            'resultado' => $arrayPublicidad,
                                             'succes'    => true
                                             )
                                         ));
