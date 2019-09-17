@@ -38,14 +38,14 @@ class InfoPublicidad
     /**
      * @var string
      *
-     * @ORM\Column(name="EDAD_MAXIMA", type="string", length=50, nullable=true)
+     * @ORM\Column(name="EDAD_MAXIMA", type="integer", nullable=true)
      */
     private $EDADMAXIMA;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="EDAD_MINIMA", type="string", length=50, nullable=true)
+     * @ORM\Column(name="EDAD_MINIMA", type="integer", nullable=true)
      */
     private $EDADMINIMA;
 
@@ -180,7 +180,7 @@ class InfoPublicidad
     /**
      * Set EDADMAXIMA
      *
-     * @param string $EDADMAXIMA
+     * @param int $EDADMAXIMA
      *
      * @return InfoPublicidad
      */
@@ -194,7 +194,7 @@ class InfoPublicidad
     /**
      * Get EDADMAXIMA
      *
-     * @return string
+     * @return int
      */
     public function getEDADMAXIMA()
     {
@@ -204,7 +204,7 @@ class InfoPublicidad
     /**
      * Set EDADMINIMA
      *
-     * @param string $EDADMINIMA
+     * @param int $EDADMINIMA
      *
      * @return InfoPublicidad
      */
@@ -218,7 +218,7 @@ class InfoPublicidad
     /**
      * Get EDADMINIMA
      *
-     * @return string
+     * @return int
      */
     public function getEDADMINIMA()
     {

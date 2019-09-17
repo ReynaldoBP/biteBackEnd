@@ -237,4 +237,87 @@ class InfoPublicidadComidaController extends Controller
         return $objResponse;
     }
 
+    /**
+     * @Route("/deletePublicidadComida")
+     *
+     * Documentación para la función 'deletePublicidadComida'
+     * Método encargado de eliminar las relaciones entre tipo de comida y publicidad 
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function deletePublicidadComidaAction(Request $request)
+    {
+        $intIdPubComida         = $request->query->get("idPubComida") ? $request->query->get("idPubComida"):'';
+        $intIdTipoComida        = $request->query->get("idTipoComida") ? $request->query->get("idTipoComida"):'';
+        $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(!empty($intIdTipoComida))
+            {
+                $arrayParametrosTC    = array('ESTADO' => 'ACTIVO',
+                                              'id'     => $intIdTipoComida);
+                $objTipoComida        = $em->getRepository('AppBundle:AdmiTipoComida')->findOneBy($arrayParametrosTC);
+                if(!is_object($objTipoComida) || empty($objTipoComida))
+                {
+                    throw new \Exception('No existe el tipo de comida con la descripción enviada por parámetro.');
+                }
+            }
+            if(!empty($intIdPublicidad))
+            {
+                $arrayParametrosPub = array('ESTADO' => 'ACTIVO',
+                                            'id'     => $intIdPublicidad);
+                $objPublicidad      = $em->getRepository('AppBundle:InfoPublicidad')->findOneBy($arrayParametrosPub);
+                if(!is_object($objPublicidad) || empty($objPublicidad))
+                {
+                    throw new \Exception('No existe la publicidad con la descripción enviada por parámetro.');
+                }
+            }
+            $arrayParametrosPubComida = array('PUBLICIDADID'  => $intIdPublicidad,
+                                              'TIPO_COMIDAID' => $intIdTipoComida);
+            $objPubComida             = $em->getRepository('AppBundle:InfoPublicidadComida')->findOneBy($arrayParametrosPubComida);
+            if(!is_object($objPubComida) || empty($objPubComida))
+            {
+                throw new \Exception('No existe una Relación entre Publicidad y Tipo de comida con la descripción enviada por parámetro.');
+            }
+            $em->remove($objPubComida);
+            $em->flush();
+            $strMensajeError = 'Relación entre Publicidad y Tipo de comida eliminado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            
+            $strMensajeError = "Fallo al eliminar una Relación entre Publicidad y Tipo de comida, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
 }

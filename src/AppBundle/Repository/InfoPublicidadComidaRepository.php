@@ -39,7 +39,7 @@ class InfoPublicidadComidaRepository extends \Doctrine\ORM\EntityRepository
                                 IPU.ID_PUBLICIDAD,IPU.DESCRIPCION,IPU.ESTADO AS ESTADO_PUBLICIDAD,
                                 ATC.ID_TIPO_COMIDA,ATC.DESCRIPCION_TIPO_COMIDA,ATC.ESTADO AS ESTADO_TIPO_COMIDA ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM massVisionDesa.INFO_PUBLICIDAD_COMIDA IPC
+            $strFrom        = "FROM INFO_PUBLICIDAD_COMIDA IPC
                                 JOIN INFO_PUBLICIDAD IPU ON IPU.ID_PUBLICIDAD=IPC.PUBLICIDAD_ID
                                 JOIN ADMI_TIPO_COMIDA ATC ON ATC.ID_TIPO_COMIDA=IPC.TIPO_COMIDA_ID ";
             $strWhere       = "WHERE IPC.ESTADO in (:ESTADO) ";

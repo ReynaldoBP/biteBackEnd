@@ -13,6 +13,7 @@ use AppBundle\Controller\DefaultController;
 use AppBundle\Entity\InfoPublicidad;
 use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
+use AppBundle\Entity\InfoCliente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -42,6 +43,8 @@ class ApiWebController extends FOSRestController
                 case 'createPromocion':$arrayRespuesta = $this->createPromocion($arrayData);
                 break;
                 case 'editPromocion':$arrayRespuesta = $this->editPromocion($arrayData);
+                break;
+                case 'getCliente':$arrayRespuesta = $this->getCliente($arrayData);
                 break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
@@ -664,6 +667,56 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+    /**
+     * Documentación para la función 'getCliente'
+     * Método encargado de retornar todos los clientes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 01-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getCliente($arrayData)
+    {
+        $intIdCliente      = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strIdentificacion = $arrayData['identificacion'] ? $arrayData['identificacion']:'';
+        $strNombres        = $arrayData['nombres'] ? $arrayData['nombres']:'';
+        $strApellidos      = $arrayData['apellidos'] ? $arrayData['apellidos']:'';
+        $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
+        $arrayCliente      = array();
+        $strMensajeError   = '';
+        $strStatus         = 400;
+        $objResponse       = new Response;
+        try
+        {
+            $arrayParametros = array('intIdCliente'     => $intIdCliente,
+                                    'strIdentificacion' => $strIdentificacion,
+                                    'strNombres'        => $strNombres,
+                                    'strApellidos'      => $strApellidos,
+                                    'strEstado'         => $strEstado
+                                    );
+            $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterio($arrayParametros);
+            if(isset($arrayCliente['error']) && !empty($arrayCliente['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCliente['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCliente['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCliente,
                                             'succes'    => true
                                             )
                                         ));
