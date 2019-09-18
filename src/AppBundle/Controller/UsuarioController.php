@@ -113,6 +113,11 @@ class UsuarioController extends Controller
             {
                 throw new \Exception('Usuario ya existente.');
             }
+            $objUsuario         = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('CORREO'=>$strCorreo));
+            if(is_object($objUsuario) && !empty($objUsuario))
+            {
+                throw new \Exception('Usuario ya existente.');
+            }
             $entityUsuario = new InfoUsuario();
             $entityUsuario->setTIPOROLID($objTipoRol);
             $entityUsuario->setIDENTIFICACION($strIdentificacion);
