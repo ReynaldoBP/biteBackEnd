@@ -815,8 +815,8 @@ class ApiMovilController extends FOSRestController
                                         'apellido'       => $objCliente->getAPELLIDO(),
                                         'correo'         => $objCliente->getCORREO(),
                                         'direccion'      => $objCliente->getDIRECCION(),
-                                        'edad'           => $objCliente->getEDAD(),
                                         'genero'         => $objCliente->getGENERO(),
+                                        'edad'           => $objCliente->getEDAD(),
                                         'idComida'       => $objCliente->getTIPOCLIENTEPUNTAJEID()->getId());
             }
             if(!empty($intIdSucursal))
@@ -832,23 +832,21 @@ class ApiMovilController extends FOSRestController
                                            'parroquia'   => $objSucursal->getPARROQUIA());
                 }
             }
-            $arrayParametros = array('PAIS'=>$arraySucursal['pais'],
-                                     'CIUDAD'=>$arraySucursal['ciudad'],
-                                     'PROVINCIA'=>$arraySucursal['provincia'],
-                                     'PARROQUIA'=>$arraySucursal['parroquia'],
-                                     'GENERO'=>$arrayCliente['genero']);
-            $objPublicidad   = $em->getRepository('AppBundle:InfoPublicidad')->findOneBy($arrayParametros);
-            if(!empty($objPublicidad))
+            $arrayParametros = array('PAIS'      => $arraySucursal['pais'],
+                                     'CIUDAD'    => $arraySucursal['ciudad'],
+                                     'PROVINCIA' => $arraySucursal['provincia'],
+                                     'PARROQUIA' => $arraySucursal['parroquia'],
+                                     'EDAD'      => $arrayCliente['edad'],
+                                     'GENERO'    => $arrayCliente['genero']);
+            $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterioMovil($arrayParametros);
+            if(empty($arrayPublicidad) || $arrayPublicidad['cantidad']==0)
             {
-                $arrayPublicidad = array('idPublicidad' => $objPublicidad->getId(),
-                                         'descripcion'  => $objPublicidad->getDESCRIPCION(),
-                                         'imagen'       => $objPublicidad->getIMAGEN(),
-                                         'estado'       => $objPublicidad->getESTADO());
-            }
-            else
-            {
-                $strStatus  = 404;
-                throw new \Exception('No existen publicidades con la descripción enviada por parametros');
+                $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterioMovil(array('GENERO' => 'TODOS'));
+                if(empty($arrayPublicidad))
+                {
+                    $strStatus  = 404;
+                    throw new \Exception('No existen publicidades con la descripción enviada por parametro222s');
+                }
             }
         }
         catch(\Exception $ex)
@@ -856,16 +854,21 @@ class ApiMovilController extends FOSRestController
             $strMensajeError          ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
             $arrayPublicidad['error'] = $strMensajeError;
         }
-        if($conImagen == 'SI' && $arrayPublicidad['imagen'])
+        if($conImagen == 'SI')
         {
-            $arrayPublicidad['imagen'] = $objController->getImgBase64($arrayPublicidad['imagen']);
+            foreach ($arrayPublicidad['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
         }
         $objResponse->setContent(json_encode(array(
-                                            'status'    => $strStatus,
-                                            'resultado' => $arrayPublicidad,
-                                            'succes'    => true
-                                            )
-                                        ));
+                                                    'status'    => $strStatus,
+                                                    'resultado' => $arrayPublicidad,
+                                                    'succes'    => true)
+                                            ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }

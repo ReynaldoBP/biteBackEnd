@@ -89,4 +89,106 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
         $arrayPublicidad['error'] = $strMensajeError;
         return $arrayPublicidad;
     }
+    /**
+     * Documentación para la función 'getPublicidadCriterio'
+     * Método encargado de retornar todos las publicaciones según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 05-09-2019
+     * 
+     * @return array  $arrayPublicidad
+     * 
+     */    
+    public function getPublicidadCriterioMovil($arrayParametros)
+    {
+        $intIdPais          = $arrayParametros['PAIS'] ? $arrayParametros['PAIS']:'';
+        $intIdCiudad        = $arrayParametros['CIUDAD'] ? $arrayParametros['CIUDAD']:'';
+        $intIdProvincia     = $arrayParametros['PROVINCIA'] ? $arrayParametros['PROVINCIA']:'';
+        $intIdParroquia     = $arrayParametros['PARROQUIA'] ? $arrayParametros['PARROQUIA']:'';
+        $strEdad            = $arrayParametros['EDAD'] ? $arrayParametros['EDAD']:'';
+        $strGenero          = $arrayParametros['GENERO'] ? $arrayParametros['GENERO']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO');
+        $arrayPublicidad    = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
+        $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
+        try
+        {
+            $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,
+                               PB.IMAGEN, PB.ESTADO,PB.USR_CREACION,PB.FE_CREACION,PB.USR_MODIFICACION,PB.FE_MODIFICACION ";
+            $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
+            $strFrom        = "FROM INFO_PUBLICIDAD PB ";
+            $strWhere       = "WHERE PB.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            $objQueryCount->setParameter("ESTADO",$strEstado);
+            if(!empty($strGenero) && $strGenero!= 'TODOS')
+            {
+                if(!empty($intIdPais))
+                {
+                    $strWhere .= " AND PB.PAIS =:PAIS ";
+                    $objQuery->setParameter("PAIS", $intIdPais);
+                    $objQueryCount->setParameter("PAIS", $intIdPais);
+                }
+                if(!empty($intIdCiudad))
+                {
+                    $strWhere .= " AND PB.CIUDAD =:CIUDAD ";
+                    $objQuery->setParameter("CIUDAD", $intIdCiudad);
+                    $objQueryCount->setParameter("CIUDAD", $intIdCiudad);
+                }
+                if(!empty($intIdProvincia))
+                {
+                    $strWhere .= " AND PB.PROVINCIA =:PROVINCIA ";
+                    $objQuery->setParameter("PROVINCIA", $intIdProvincia);
+                    $objQueryCount->setParameter("PROVINCIA", $intIdProvincia);
+                }
+                if(!empty($intIdParroquia))
+                {
+                    $strWhere .= " AND PB.PARROQUIA =:PARROQUIA ";
+                    $objQuery->setParameter("PARROQUIA", $intIdParroquia);
+                    $objQueryCount->setParameter("PARROQUIA", $intIdParroquia);
+                }
+                if(!empty($strEdad))
+                {
+                    $strWhere .= " AND PB.EDAD_MAXIMA >= :EDAD_MAXIMA AND PB.EDAD_MINIMA <= :EDAD_MINIMA ";
+                    $objQuery->setParameter("EDAD_MAXIMA", $strEdad);
+                    $objQuery->setParameter("EDAD_MINIMA", $strEdad);
+                    $objQueryCount->setParameter("EDAD_MAXIMA", $strEdad);
+                    $objQueryCount->setParameter("EDAD_MINIMA", $strEdad);
+                }
+            }
+            if(!empty($strGenero))
+            {
+                $strWhere .= " AND PB.GENERO =:GENERO ";
+                $objQuery->setParameter("GENERO", $strGenero);
+                $objQueryCount->setParameter("GENERO", $strGenero);
+            }
+            $objRsmBuilder->addScalarResult('ID_PUBLICIDAD', 'ID_PUBLICIDAD', 'string');
+            $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('EDAD_MAXIMA', 'EDAD_MAXIMA', 'string');
+            $objRsmBuilder->addScalarResult('EDAD_MINIMA', 'EDAD_MINIMA', 'string');
+            $objRsmBuilder->addScalarResult('GENERO', 'GENERO', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+            $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+            $strLimit     =" limit 1 ";
+            $strSql       = $strSelect.$strFrom.$strWhere.$strLimit;
+            $objQuery->setSQL($strSql);
+            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
+            $objQueryCount->setSQL($strSqlCount);
+            $arrayPublicidad['cantidad']   = $objQueryCount->getSingleScalarResult();
+            $arrayPublicidad['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayPublicidad['error'] = $strSql;
+        return $arrayPublicidad;
+    }
 }
