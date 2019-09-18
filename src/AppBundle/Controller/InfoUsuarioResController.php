@@ -235,5 +235,73 @@ class InfoUsuarioResController extends Controller
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
-
+    /**
+     * @Route("/deleteUsuarioRes")
+     *
+     * Documentación para la función 'deleteUsuarioRes'
+     * Método encargado de eliminar las relaciones entre el usuario y el restaurante
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function deleteUsuarioResAction(Request $request)
+    {
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(!empty($intIdUsuario))
+            {
+                $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->find($intIdUsuario);
+                if(!is_object($objUsuario) || empty($objUsuario))
+                {
+                    throw new \Exception('No existe el usuario con la descripción enviada por parámetro.');
+                }
+            }
+            $objUsuarioRes = $em->getRepository('AppBundle:InfoUsuarioRes')->findBy(array('USUARIOID'=>$intIdUsuario));
+            if(empty($objUsuarioRes))
+            {
+                throw new \Exception('No existe una Relación entre Usuario y Restaurante con la descripción enviada por parámetro.');
+            }
+            foreach($objUsuarioRes as $item)
+            {
+                $em->remove($item);
+            }
+            $em->flush();
+            $strMensajeError = 'Relación entre Usuario y Restaurante eliminado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al eliminar una Relación entre Usuario y Restaurante, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
 }
