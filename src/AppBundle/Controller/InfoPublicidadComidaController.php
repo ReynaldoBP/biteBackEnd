@@ -274,12 +274,16 @@ class InfoPublicidadComidaController extends Controller
                 }
             }
             $arrayParametrosPubComida = array('PUBLICIDADID'  => $intIdPublicidad);
-            $objPubComida             = $em->getRepository('AppBundle:InfoPublicidadComida')->findOneBy($arrayParametrosPubComida);
-            if(!is_object($objPubComida) || empty($objPubComida))
+            $objPubComida             = $em->getRepository('AppBundle:InfoPublicidadComida')->findBy($arrayParametrosPubComida);
+            if(empty($objPubComida))
             {
                 throw new \Exception('No existe una Relación entre Publicidad y Tipo de comida con la descripción enviada por parámetro.');
             }
-            $em->remove($objPubComida);
+	    foreach ($objPubComida as $item)
+            {
+		$em->remove($item);
+		
+	    }
             $em->flush();
             $strMensajeError = 'Relación entre Publicidad y Tipo de comida eliminado con exito.!';
         }
