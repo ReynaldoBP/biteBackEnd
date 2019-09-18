@@ -188,7 +188,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
         {
             $strMensajeError = $ex->getMessage();
         }
-        $arrayPublicidad['error'] = $strSql;
+        $arrayPublicidad['error'] = $strMensajeError;
         return $arrayPublicidad;
     }
 }

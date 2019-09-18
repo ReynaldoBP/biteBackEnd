@@ -854,19 +854,28 @@ class ApiMovilController extends FOSRestController
             $strMensajeError          ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
             $arrayPublicidad['error'] = $strMensajeError;
         }
-        if($conImagen == 'SI')
+        foreach ($arrayPublicidad['resultados'] as $item)
         {
-            foreach ($arrayPublicidad['resultados'] as &$item)
+            $arrayPublicidadMovil = array('ID_PUBLICIDAD'    => $item['ID_PUBLICIDAD'],
+                                          'IMAGEN'           => $item['IMAGEN'],
+                                          'DESCRIPCION'      => $item['DESCRIPCION'],
+                                          'EDAD_MAXIMA'      => $item['EDAD_MAXIMA'],
+                                          'EDAD_MINIMA'      => $item['EDAD_MINIMA'],
+                                          'GENERO'           => $item['GENERO'],
+                                          'ESTADO'           => $item['ESTADO'],
+                                          'USR_CREACION'     => $item['USR_CREACION'],
+                                          'FE_CREACION'      => $item['FE_CREACION'],
+                                          'USR_MODIFICACION' => $item['USR_MODIFICACION'],
+                                          'FE_MODIFICACION'  => $item['FE_MODIFICACION'],
+                                          'ERROR'            => $strMensajeError);
+            if(!empty($item['IMAGEN']) && $conImagen == 'SI')
             {
-                if($item['IMAGEN'])
-                {
-                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
-                }
+                $arrayPublicidadMovil['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
             }
         }
         $objResponse->setContent(json_encode(array(
                                                     'status'    => $strStatus,
-                                                    'resultado' => $arrayPublicidad,
+                                                    'resultado' => $arrayPublicidadMovil,
                                                     'succes'    => true)
                                             ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
