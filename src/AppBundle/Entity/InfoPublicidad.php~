@@ -38,6 +38,13 @@ class InfoPublicidad
     /**
      * @var string
      *
+     * @ORM\Column(name="ORIENTACION", type="string", length=50)
+     */
+    private $ORIENTACION;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="EDAD_MAXIMA", type="integer", nullable=true)
      */
     private $EDADMAXIMA;

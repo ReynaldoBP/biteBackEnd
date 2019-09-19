@@ -27,6 +27,7 @@ class InfoPublicidadController extends Controller
     {
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'';
+        $strOrientacion         = $request->query->get("orientacion") ? $request->query->get("orientacion"):'';
         $strEdadMaxima          = $request->query->get("edadMaxima") ? $request->query->get("edadMaxima"):'';
         $strEdadMinima          = $request->query->get("edadMinima") ? $request->query->get("edadMinima"):'';
         $strGenero              = $request->query->get("genero") ? $request->query->get("genero"):'';
@@ -52,6 +53,7 @@ class InfoPublicidadController extends Controller
             $entityPublicidad = new InfoPublicidad();
             $entityPublicidad->setDESCRIPCION($strDescrPublicidad);
             $entityPublicidad->setIMAGEN($strImagen);
+            $entityPublicidad->setORIENTACION($strOrientacion);
             $entityPublicidad->setEDADMAXIMA($strEdadMaxima);
             $entityPublicidad->setEDADMINIMA($strEdadMinima);
             $entityPublicidad->setGENERO($strGenero);
@@ -106,6 +108,7 @@ class InfoPublicidadController extends Controller
         $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'';
+        $strOrientacion         = $request->query->get("orientacion") ? $request->query->get("orientacion"):'';
         $strEdadMaxima          = $request->query->get("edadMaxima") ? $request->query->get("edadMaxima"):'';
         $strEdadMinima          = $request->query->get("edadMinima") ? $request->query->get("edadMinima"):'';
         $strGenero              = $request->query->get("genero") ? $request->query->get("genero"):'';
@@ -136,6 +139,10 @@ class InfoPublicidadController extends Controller
             if(!empty($strImagen))
             {
                 $objPublicidad->setIMAGEN($strImagen);
+            }
+            if(!empty($strOrientacion))
+            {
+                $objPublicidad->setORIENTACION($strOrientacion);
             }
             if(!empty($strEdadMaxima))
             {

@@ -323,6 +323,7 @@ class ApiWebController extends FOSRestController
     {
         $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $strOrientacion         = $arrayData['orientacion'] ? $arrayData['orientacion']:'';
         $strEdadMaxima          = $arrayData['edadMaxima'] ? $arrayData['edadMaxima']:'';
         $strEdadMinima          = $arrayData['edadMinima'] ? $arrayData['edadMinima']:'';
         $strGenero              = $arrayData['genero'] ? $arrayData['genero']:'';
@@ -349,6 +350,7 @@ class ApiWebController extends FOSRestController
             $entityPublicidad = new InfoPublicidad();
             $entityPublicidad->setDESCRIPCION($strDescrPublicidad);
             $entityPublicidad->setIMAGEN($strRutaImagen);
+            $entityPublicidad->setORIENTACION($strOrientacion);
             $entityPublicidad->setEDADMAXIMA($strEdadMaxima);
             $entityPublicidad->setEDADMINIMA($strEdadMinima);
             $entityPublicidad->setGENERO($strGenero);
@@ -409,6 +411,7 @@ class ApiWebController extends FOSRestController
         $intIdPublicidad        = $arrayData['idPublicidad'] ? $arrayData['idPublicidad']:'';
         $strDescrPublicidad     = $arrayData['descrPublicidad'] ? $arrayData['descrPublicidad']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $strOrientacion         = $arrayData['orientacion'] ? $arrayData['orientacion']:'';
         $strEdadMaxima          = $arrayData['edadMaxima'] ? $arrayData['edadMaxima']:'';
         $strEdadMinima          = $arrayData['edadMinima'] ? $arrayData['edadMinima']:'';
         $strGenero              = $arrayData['genero'] ? $arrayData['genero']:'';
@@ -444,6 +447,10 @@ class ApiWebController extends FOSRestController
             if(!empty($strRutaImagen))
             {
                 $objPublicidad->setIMAGEN($strRutaImagen);
+            }
+            if(!empty($strOrientacion))
+            {
+                $objPublicidad->setORIENTACION($strOrientacion);
             }
             if(!empty($strEdadMaxima))
             {

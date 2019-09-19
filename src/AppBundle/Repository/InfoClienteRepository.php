@@ -33,17 +33,23 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $objRsmBuilderCount = new ResultSetMappingBuilder($this->_em);
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
-        $strOrder           = ' ORDER BY IC.APELLIDO ASC';
+        $strOrder           = ' ORDER BY IC.NOMBRE ASC';
         try
         {
             $strSelect      = "SELECT IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
-                               IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
-                               IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION ";
+                                IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
+                                IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION,
+                                IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES, IFNULL(SUM(ICPG.CANTIDAD_PUNTOS),0) AS PUNTOS_GLOBALES ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_CLIENTE IC ";
+            $strFrom        = "FROM INFO_CLIENTE IC 
+                                LEFT JOIN INFO_CLIENTE_PUNTO ICP ON IC.ID_CLIENTE = ICP.CLIENTE_ID
+                                LEFT JOIN INFO_CLIENTE_PUNTO_GLOBAL ICPG ON IC.ID_CLIENTE = ICPG.CLIENTE_ID ";
             $strWhere       = "WHERE IC.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
+            $strGroup = "GROUP BY IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
+                            IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
+                            IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION ";
             if(!empty($intIdCliente))
             {
                 $strWhere .= " AND IC.ID_CLIENTE =:intIdCliente";
@@ -80,13 +86,14 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('TIPO_COMIDA', 'TIPO_COMIDA', 'string');
             $objRsmBuilder->addScalarResult('GENERO', 'GENERO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
-            $objRsmBuilder->addScalarResult('SECTOR', 'SECTOR', 'string');
+            $objRsmBuilder->addScalarResult('PUNTOS_RESTAURANTES', 'PUNTOS_RESTAURANTES', 'string');
+            $objRsmBuilder->addScalarResult('PUNTOS_GLOBALES', 'PUNTOS_GLOBALES', 'string');
             $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
-            $strSql       = $strSelect.$strFrom.$strWhere.$strOrder;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup.$strOrder;
             $objQuery->setSQL($strSql);
             $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
             $objQueryCount->setSQL($strSqlCount);
