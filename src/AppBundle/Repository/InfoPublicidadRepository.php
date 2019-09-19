@@ -34,7 +34,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,
+            $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,PB.ORIENTACION,
                                PB.PAIS,PB.PROVINCIA,PB.CIUDAD,PB.PARROQUIA,AC.CIUDAD_NOMBRE,AP.PARROQUIA_NOMBRE,
                                PB.ESTADO,PB.USR_CREACION,PB.FE_CREACION,PB.USR_MODIFICACION,PB.FE_MODIFICACION, 
                                PB.IMAGEN ";
@@ -59,6 +59,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             }
             $objRsmBuilder->addScalarResult('ID_PUBLICIDAD', 'ID_PUBLICIDAD', 'string');
             $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+            $objRsmBuilder->addScalarResult('ORIENTACION', 'ORIENTACION', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MAXIMA', 'EDAD_MAXIMA', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MINIMA', 'EDAD_MINIMA', 'string');
@@ -116,7 +117,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,
+            $strSelect      = "SELECT PB.ID_PUBLICIDAD,PB.DESCRIPCION, PB.EDAD_MAXIMA, PB.EDAD_MINIMA, PB.GENERO,PB.ORIENTACION,
                                PB.IMAGEN, PB.ESTADO,PB.USR_CREACION,PB.FE_CREACION,PB.USR_MODIFICACION,PB.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PUBLICIDAD PB ";
@@ -166,6 +167,7 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             }
             $objRsmBuilder->addScalarResult('ID_PUBLICIDAD', 'ID_PUBLICIDAD', 'string');
             $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+            $objRsmBuilder->addScalarResult('ORIENTACION', 'ORIENTACION', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MAXIMA', 'EDAD_MAXIMA', 'string');
             $objRsmBuilder->addScalarResult('EDAD_MINIMA', 'EDAD_MINIMA', 'string');

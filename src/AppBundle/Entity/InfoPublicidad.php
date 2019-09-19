@@ -38,6 +38,13 @@ class InfoPublicidad
     /**
      * @var string
      *
+     * @ORM\Column(name="ORIENTACION", type="string", length=50)
+     */
+    private $ORIENTACION;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="EDAD_MAXIMA", type="integer", nullable=true)
      */
     private $EDADMAXIMA;
@@ -463,5 +470,29 @@ class InfoPublicidad
     public function getPARROQUIA()
     {
         return $this->PARROQUIA;
+    }
+
+    /**
+     * Set ORIENTACION
+     *
+     * @param string $ORIENTACION
+     *
+     * @return InfoPublicidad
+     */
+    public function setORIENTACION($ORIENTACION)
+    {
+        $this->ORIENTACION = $ORIENTACION;
+
+        return $this;
+    }
+
+    /**
+     * Get ORIENTACION
+     *
+     * @return string
+     */
+    public function getORIENTACION()
+    {
+        return $this->ORIENTACION;
     }
 }

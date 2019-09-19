@@ -38,9 +38,11 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT IU.ID_USUARIO,IU.NOMBRES,IU.APELLIDOS,IU.CONTRASENIA, IU.IDENTIFICACION, IU.CORREO,IU.TIPO_ROL_ID,
-                               IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION ";
+                               IU.ESTADO,IU.PAIS,IU.CIUDAD,IU.USR_CREACION,IU.FE_CREACION,IU.USR_MODIFICACION,IU.FE_MODIFICACION,
+                               ATR.DESCRIPCION_TIPO_ROL,ATR.ID_TIPO_ROL ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_USUARIO IU ";
+            $strFrom        = "FROM INFO_USUARIO IU 
+                               JOIN ADMI_TIPO_ROL ATR ON IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL ";
             $strWhere       = "WHERE IU.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
@@ -70,14 +72,9 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strTipoRol))
             {
-                $strSelect .= " , ATR.DESCRIPCION_TIPO_ROL,ATR.ID_TIPO_ROL ";
-                $strFrom   .= " , ADMI_TIPO_ROL ATR ";
-                $strWhere  .= " AND IU.TIPO_ROL_ID=ATR.ID_TIPO_ROL
-                                AND ATR.ID_TIPO_ROL = :ID_TIPO_ROL";
+                $strWhere  .= " AND ATR.ID_TIPO_ROL = :ID_TIPO_ROL";
                 $objQuery->setParameter("ID_TIPO_ROL", $strTipoRol);
                 $objQueryCount->setParameter("ID_TIPO_ROL", $strTipoRol);
-                $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
-                $objRsmBuilder->addScalarResult('ID_TIPO_ROL', 'ID_TIPO_ROL', 'string');
             }
             $objRsmBuilder->addScalarResult('ID_USUARIO', 'ID_USUARIO', 'string');
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');
@@ -93,6 +90,8 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_ROL', 'DESCRIPCION_TIPO_ROL', 'string');
+            $objRsmBuilder->addScalarResult('ID_TIPO_ROL', 'ID_TIPO_ROL', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
