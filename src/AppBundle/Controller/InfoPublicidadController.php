@@ -223,6 +223,7 @@ class InfoPublicidadController extends Controller
         $intIdPublicidad        = $request->query->get("idPublicidad") ? $request->query->get("idPublicidad"):'';
         $strDescrPublicidad     = $request->query->get("descrPublicidad") ? $request->query->get("descrPublicidad"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strContador            = $request->query->get("strContador") ? $request->query->get("strContador"):'NO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
         $arrayPublicidad          = array();
@@ -235,6 +236,7 @@ class InfoPublicidadController extends Controller
             $objController->setContainer($this->container);
             $arrayParametros = array('intIdPublicidad'   => $intIdPublicidad,
                                     'strDescrPublicidad' => $strDescrPublicidad,
+                                    'strContador'        => $strContador,
                                     'strEstado'          => $strEstado);
             $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterio($arrayParametros);
             if(isset($arrayPublicidad['error']) && !empty($arrayPublicidad['error']))

@@ -1,0 +1,86 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * InfoClientePuntoGlobal
+ *
+ * @ORM\Table(name="INFO_CLIENTE_PUNTO_GLOBAL")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoClientePuntoGlobalRepository")
+ */
+class InfoClientePuntoGlobal
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_CLIENTE_PUNTO_GLOBAL", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var InfoCliente
+    *
+    * @ORM\ManyToOne(targetEntity="InfoCliente")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CLIENTE_ID", referencedColumnName="ID_CLIENTE")
+    * })
+    */
+    private $CLIENTE_ID;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer")
+     */
+    private $CANTIDADPUNTOS;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=100)
+     */
+    private $ESTADO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_CREACION", type="string", length=255)
+     */
+    private $USRCREACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_CREACION", type="date")
+     */
+    private $FECREACION;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_MODIFICACION", type="string", length=255, nullable=true)
+     */
+    private $USRMODIFICACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_MODIFICACION", type="date", nullable=true)
+     */
+    private $FEMODIFICACION;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
