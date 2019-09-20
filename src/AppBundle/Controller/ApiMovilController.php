@@ -20,6 +20,11 @@ use AppBundle\Entity\InfoRespuesta;
 use AppBundle\Entity\InfoPublicidad;
 use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
+use AppBundle\Entity\InfoLikeRes;
+use AppBundle\Entity\InfoClientePunto;
+use AppBundle\Entity\InfoContenidoSubido;
+use AppBundle\Entity\InfoRedesSociales;
+use AppBundle\Entity\InfoClientePuntoGlobal;
 use AppBundle\Entity\InfoOpcionRespuesta;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -59,6 +64,20 @@ class ApiMovilController extends FOSRestController
                case 'getLoginMovil':$arrayRespuesta = $this->getLoginMovil($arrayData);
                break;
                case 'getPublicidad':$arrayRespuesta = $this->getPublicidad($arrayData);
+               break;
+               case 'createLike':$arrayRespuesta = $this->createLike($arrayData);
+               break;
+               case 'deleteLike':$arrayRespuesta = $this->deleteLike($arrayData);
+               break;
+               case 'createPunto':$arrayRespuesta = $this->createPunto($arrayData);
+               break;
+               case 'createContenido':$arrayRespuesta = $this->createContenido($arrayData);
+               break;
+               case 'createRedesSociales':$arrayRespuesta = $this->createRedesSociales($arrayData);
+               break;
+               case 'getPromocion':$arrayRespuesta = $this->getPromocion($arrayData);
+               break;
+               case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -349,7 +368,7 @@ class ApiMovilController extends FOSRestController
                                     'strApellidos'      => $strApellidos,
                                     'strEstado'         => $strEstado
                                     );
-            $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterio($arrayParametros);
+            $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterioMovil($arrayParametros);
             if(isset($arrayCliente['error']) && !empty($arrayCliente['error']))
             {
                 $strStatus  = 404;
@@ -434,6 +453,7 @@ class ApiMovilController extends FOSRestController
     public function getRestaurante($arrayData)
     {
         $intIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strTipoComida          = $arrayData['tipoComida'] ? $arrayData['tipoComida']:'';
         $strTipoIdentificacion  = $arrayData['tipoIdentificacion'] ? $arrayData['tipoIdentificacion']:'';
         $strIdentificacion      = $arrayData['identificacion'] ? $arrayData['identificacion']:'';
@@ -453,6 +473,7 @@ class ApiMovilController extends FOSRestController
             $objController->setContainer($this->container);
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
                                     'intIdRestaurante'      => $intIdRestaurante,
+                                    'intIdCliente'          => $intIdCliente,
                                     'strTipoIdentificacion' => $strTipoIdentificacion,
                                     'strIdentificacion'     => $strIdentificacion,
                                     'strRazonSocial'        => $strRazonSocial,
@@ -705,7 +726,7 @@ class ApiMovilController extends FOSRestController
                                   'preguntaObl'     => $entityRespuesta->getPREGUNTAID()->getOBLIGATORIA(),
                                   'preguntaDesc'    => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
                                   'usrCreacion'     => $entityRespuesta->getUSRCREACION(),
-                                  'feModificacion'  => $entityRespuesta->getUSRCREACION());
+                                  'feModificacion'  => $entityRespuesta->getFECREACION());
         }
         $arrayRespuesta['mensaje'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
@@ -878,6 +899,487 @@ class ApiMovilController extends FOSRestController
                                                     'resultado' => $arrayPublicidadMovil,
                                                     'succes'    => true)
                                             ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createLike'
+     * Método encargado de crear todos los likes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createLike($arrayData)
+    {
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdRestaurante   = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
+            }
+            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($intIdRestaurante);
+            if(!is_object($objRestaurante) || empty($objRestaurante))
+            {
+                throw new \Exception('No existe restaurante con identificador enviado por parámetro.');
+            }
+
+            $entityLike = new InfoLikeRes();
+            $entityLike->setCLIENTEID($objCliente);
+            $entityLike->setRESTAURANTEID($objRestaurante);
+            $entityLike->setESTADO(strtoupper($strEstado));
+            $entityLike->setUSRCREACION($strUsuarioCreacion);
+            $entityLike->setFECREACION($strDatetimeActual);
+            $em->persist($entityLike);
+            $em->flush();
+            $strMensajeError = 'Like creada con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el like, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'deleteLike'
+     * Método encargado de deletiar todos los likes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function deleteLike($arrayData)
+    {
+        $intIdLike          = $arrayData['idLike'] ? $arrayData['idLike']:'';
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objLike = $em->getRepository('AppBundle:InfoLikeRes')->find($intIdLike);
+            if(!is_object($objLike) || empty($objLike))
+            {
+                throw new \Exception('No existe el Like con identificador enviada por parámetro.');
+            }
+            $em->remove($objLike);
+            $em->flush();
+            $strMensajeError = 'Like eliminado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al eliminar el like, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createPunto'
+     * Método encargado de crear todos los puntos según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createPunto($arrayData)
+    {
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
+        $intCantPuntos      = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdSucursal      = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
+            }
+            $objSucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
+            if(!is_object($objSucursal) || empty($objSucursal))
+            {
+                throw new \Exception('No existe sucursal con identificador enviado por parámetro.');
+            }
+
+            $entityCltPunto = new InfoClientePunto();
+            $entityCltPunto->setCLIENTEID($objCliente);
+            $entityCltPunto->setSUCURSALID($objSucursal);
+            $entityCltPunto->setCANTIDADPUNTOS($intCantPuntos);
+            $entityCltPunto->setESTADO(strtoupper($strEstado));
+            $entityCltPunto->setUSRCREACION($strUsuarioCreacion);
+            $entityCltPunto->setFECREACION($strDatetimeActual);
+            $em->persist($entityCltPunto);
+            $em->flush();
+            $strMensajeError = 'Punto creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el Punto, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayCltPunto = array('id'             => $entityCltPunto->getId(),
+                                  'cantPuntos'      => $entityCltPunto->getCANTIDADPUNTOS(),
+                                  'estado'          => $entityCltPunto->getESTADO(),
+                                  'usrCreacion'     => $entityCltPunto->getUSRCREACION(),
+                                  'feCreacion'      => $entityCltPunto->getFECREACION(),
+                                  'strMensajeError' => $strMensajeError
+                                );
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltPunto,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+    /**
+     * Documentación para la función 'createContenido'
+     * Método encargado de crear todos los contenidos según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createContenido($arrayData)
+    {
+        $intIdClientePto    = $arrayData['idClientePto'] ? $arrayData['idClientePto']:'';
+        $intIdEncuesta      = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
+        $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strImagen          = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        $objController      = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(!empty($strImagen))
+            {
+                $strRutaImagen = $objController->subirfichero($strImagen);
+            }
+            $objClientePto = $em->getRepository('AppBundle:InfoClientePunto')->find($intIdClientePto);
+            if(!is_object($objClientePto) || empty($objClientePto))
+            {
+                throw new \Exception('No existe el punto cliente con identificador enviada por parámetro.');
+            }
+            $objEncuesta = $em->getRepository('AppBundle:InfoEncuesta')->find($intIdEncuesta);
+            if(!is_object($objEncuesta) || empty($objEncuesta))
+            {
+                throw new \Exception('No existe encuesta con identificador enviado por parámetro.');
+            }
+
+            $entityContSub = new InfoContenidoSubido();
+            $entityContSub->setCLIENTEPUNTOID($objClientePto);
+            $entityContSub->setENCUESTAID($objEncuesta);
+            $entityContSub->setDESCRIPCION($strDescripcion);
+            $entityContSub->setIMAGEN($strRutaImagen);
+            $entityContSub->setESTADO(strtoupper($strEstado));
+            $entityContSub->setUSRCREACION($strUsuarioCreacion);
+            $entityContSub->setFECREACION($strDatetimeActual);
+            $em->persist($entityContSub);
+            $em->flush();
+            $strMensajeError = 'Contenido creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el Contenido, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayContenido = array('id'            => $entityContSub->getId(),
+                                  'cantPuntos'      => $entityContSub->getDESCRIPCION(),
+                                  'estado'          => $entityContSub->getESTADO(),
+                                  'usrCreacion'     => $entityContSub->getUSRCREACION(),
+                                  'feCreacion'      => $entityContSub->getFECREACION(),
+                                  'strMensajeError' => $strMensajeError
+                                );
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayContenido,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+    /**
+     * Documentación para la función 'createRedesSociales'
+     * Método encargado de crear todos las redes sociales según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createRedesSociales($arrayData)
+    {
+        $intIdContSubido    = $arrayData['idContSubido'] ? $arrayData['idContSubido']:'';
+        $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objContSubido = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContSubido);
+            if(!is_object($objContSubido) || empty($objContSubido))
+            {
+                throw new \Exception('No existe el contenido con identificador enviada por parámetro.');
+            }
+
+            $entityRedesSociales = new InfoRedesSociales();
+            $entityRedesSociales->setCONTENIDOSUBIDOID($objContSubido);
+            $entityRedesSociales->setDESCRIPCION($strDescripcion);
+            $entityRedesSociales->setESTADO(strtoupper($strEstado));
+            $entityRedesSociales->setUSRCREACION($strUsuarioCreacion);
+            $entityRedesSociales->setFECREACION($strDatetimeActual);
+            $em->persist($entityRedesSociales);
+            $em->flush();
+            $strMensajeError = 'Redes Sociales creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear las Redes Sociales, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayRedesSoc = array('id'             => $entityRedesSociales->getId(),
+                                  'descripcion'     => $entityRedesSociales->getDESCRIPCION(),
+                                  'idContSubido'    => $entityRedesSociales->getCONTENIDOSUBIDOID()->getId(),
+                                  'descContSubido'  => $entityRedesSociales->getCONTENIDOSUBIDOID()->getDESCRIPCION(),
+                                  'estado'          => $entityRedesSociales->getESTADO(),
+                                  'usrCreacion'     => $entityRedesSociales->getUSRCREACION(),
+                                  'feCreacion'      => $entityRedesSociales->getFECREACION(),
+                                  'strMensajeError' => $strMensajeError
+                                );
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRedesSoc,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getPromocion'
+     * Método encargado de listar las promociones según los parámetros recibidos.
+     *
+     * @author Kevin Baque
+     * @version 1.0 02-09-2019
+     *
+     * @return array  $objResponse
+     */
+    public function getPromocion($arrayData)
+    {
+        $intIdSucursal          = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $boolSucces             = true;
+        $arrayPromocion         = array();
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        $objController          = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            $objPromocion     = $em->getRepository('AppBundle:InfoPromocion')->findBy(array('ESTADO' => $strEstado));
+            if(empty($objPromocion) && !is_array($objPromocion))
+            {
+                throw new \Exception('La promoción a buscar no existe.');
+            }
+            foreach($objPromocion as $arrayItem)
+            {
+                if(!empty($arrayItem->getIMAGEN()))
+                {
+                    $strRutaImagen = $objController->getImgBase64($arrayItem->getIMAGEN());
+                }
+                $arrayPromocion []= array( 'idPromocion'   => $arrayItem->getId(),
+                                        'descripcion'      => $arrayItem->getDESCRIPCIONTIPOPROMOCION(),
+                                        'imagen'           => $strRutaImagen ? $strRutaImagen:'',
+                                        'imagen2'          => $arrayItem->getIMAGEN(),
+                                        'cantPuntos'       => $arrayItem->getCANTIDADPUNTOS(),
+                                        'aceptaGlobal'     => $arrayItem->getACEPTAGLOBAL(),
+                                        'estado'           => $arrayItem->getESTADO());
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $boolSucces              = false;
+            $strStatus               = 404;
+            $strMensaje              ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $arrayPromocion['error'] = $strMensaje;
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayPromocion,
+                                            'succes'    => $boolSucces
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createPuntoGlobal'
+     * Método encargado de crear todos los puntos globales según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createPuntoGlobal($arrayData)
+    {
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
+        $intCantPuntos      = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
+            }
+
+            $entityCltPunto = new InfoClientePuntoGlobal();
+            $entityCltPunto->setCLIENTEID($objCliente);
+            $entityCltPunto->setCANTIDADPUNTOS($intCantPuntos);
+            $entityCltPunto->setESTADO(strtoupper($strEstado));
+            $entityCltPunto->setUSRCREACION($strUsuarioCreacion);
+            $entityCltPunto->setFECREACION($strDatetimeActual);
+            $em->persist($entityCltPunto);
+            $em->flush();
+            $strMensajeError = 'Punto creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el Punto, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayCltPunto = array('id'             => $entityCltPunto->getId(),
+                                  'cantPuntos'      => $entityCltPunto->getCANTIDADPUNTOS(),
+                                  'estado'          => $entityCltPunto->getESTADO(),
+                                  'usrCreacion'     => $entityCltPunto->getUSRCREACION(),
+                                  'feCreacion'      => $entityCltPunto->getFECREACION(),
+                                  'strMensajeError' => $strMensajeError
+                                );
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltPunto,
+                                            'succes'    => true
+                                            )
+                                        ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }

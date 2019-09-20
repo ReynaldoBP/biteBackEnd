@@ -195,6 +195,7 @@ class InfoEncuestaController extends Controller
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strTitulo              = $request->query->get("titulo") ? $request->query->get("titulo"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strContador            = $request->query->get("strContador") ? $request->query->get("strContador"):'NO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
@@ -208,6 +209,7 @@ class InfoEncuestaController extends Controller
                                     'strIdEncuesta'     => $strIdEncuesta,
                                     'strDescripcion'    => $strDescripcion,
                                     'strTitulo'         => $strTitulo,
+                                    'strContador'       => $strContador,
                                     'strEstado'         => $strEstado
                                     );
             $arrayEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoEncuesta')->getEncuestaCriterio($arrayParametros);

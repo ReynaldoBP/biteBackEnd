@@ -29,6 +29,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $intIdRestaurante      = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
         $strTipoIdentificacion = $arrayParametros['strTipoIdentificacion'] ? $arrayParametros['strTipoIdentificacion']:'';
         $strRazonSocial        = $arrayParametros['strRazonSocial'] ? $arrayParametros['strRazonSocial']:'';
+        $strContador           = $arrayParametros['strContador'] ? $arrayParametros['strContador']:'NO';
         $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayRestaurante      = array();
         $strMensajeError       = '';
@@ -38,65 +39,68 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
-                                        IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
-                                        IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO ";
-            $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_RESTAURANTE IR,ADMI_TIPO_COMIDA ATC ";
-            $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
-            $objQuery->setParameter("ESTADO", $strEstado);
-            $objQueryCount->setParameter("ESTADO", $strEstado);
-            if(!empty($strRazonSocial))
+            if(!empty($strContador) && $strContador == 'SI')
             {
+                $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
+                $strFromCount   = "FROM INFO_RESTAURANTE IR ";
+                $strWhereCount  = "WHERE IR.ESTADO in (:ESTADO) ";
+                $objQueryCount->setParameter("ESTADO", $strEstado);
+                $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+                $strSqlCount  = $strSelectCount.$strFromCount.$strWhereCount;
+                $objQueryCount->setSQL($strSqlCount);
+                $arrayRestaurante['cantidad']   = $objQueryCount->getSingleScalarResult();
+            }
+            else
+            {
+                $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
+                                IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
+                                IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO ";
+                $strFrom        = "FROM INFO_RESTAURANTE IR,ADMI_TIPO_COMIDA ATC ";
+                $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
+                $objQuery->setParameter("ESTADO", $strEstado);
+                if(!empty($strRazonSocial))
+                {
                 $strWhere .= " AND lower(IR.RAZON_SOCIAL) like lower(:RAZON_SOCIAL)";
                 $objQuery->setParameter("RAZON_SOCIAL", '%' . trim($strRazonSocial) . '%');
-                $objQueryCount->setParameter("RAZON_SOCIAL", '%' . trim($strRazonSocial) . '%');
-            }
-            if(!empty($strTipoIdentificacion))
-            {
+                }
+                if(!empty($strTipoIdentificacion))
+                {
                 $strWhere .= " AND lower(IR.TIPO_IDENTIFICACION) like lower(:TIPO_IDENTIFICACION)";
                 $objQuery->setParameter("TIPO_IDENTIFICACION", '%' . trim($strTipoIdentificacion) . '%');
-                $objQueryCount->setParameter("TIPO_IDENTIFICACION", '%' . trim($strTipoIdentificacion) . '%');
-            }
-            if(!empty($strIdentificacion))
-            {
+                }
+                if(!empty($strIdentificacion))
+                {
                 $strWhere .= " AND IR.IDENTIFICACION =:IDENTIFICACION";
                 $objQuery->setParameter("IDENTIFICACION", $strIdentificacion);
-                $objQueryCount->setParameter("IDENTIFICACION", $strIdentificacion);
-            }
-            if(!empty($intIdRestaurante))
-            {
+                }
+                if(!empty($intIdRestaurante))
+                {
                 $strWhere .= " AND IR.ID_RESTAURANTE =:ID_RESTAURANTE";
                 $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
-                $objQueryCount->setParameter("ID_RESTAURANTE", $intIdRestaurante);
-            }
-            if(!empty($strTipoComida))
-            {
+                }
+                if(!empty($strTipoComida))
+                {
                 $strWhere  .= " AND ATC.ID_TIPO_COMIDA = :ID_TIPO_COMIDA";
                 $objQuery->setParameter("ID_TIPO_COMIDA", $strTipoComida);
-                $objQueryCount->setParameter("ID_TIPO_COMIDA", $strTipoComida);
+                }
+                $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');
+                $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
+                $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
+                $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
+                $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
+                $objRsmBuilder->addScalarResult('REPRESENTANTE_LEGAL', 'REPRESENTANTE_LEGAL', 'string');
+                $objRsmBuilder->addScalarResult('TIPO_COMIDA_ID', 'TIPO_COMIDA_ID', 'string');
+                $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
+                $objRsmBuilder->addScalarResult('DIRECCION_TRIBUTARIO', 'DIRECCION_TRIBUTARIO', 'string');
+                $objRsmBuilder->addScalarResult('URL_CATALOGO', 'URL_CATALOGO', 'string');
+                $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
+                $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+                $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+                $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
+                $strSql       = $strSelect.$strFrom.$strWhere;
+                $objQuery->setSQL($strSql);
+                $arrayRestaurante['resultados'] = $objQuery->getResult();
             }
-            $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');
-            $objRsmBuilder->addScalarResult('TIPO_IDENTIFICACION', 'TIPO_IDENTIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
-            $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
-            $objRsmBuilder->addScalarResult('REPRESENTANTE_LEGAL', 'REPRESENTANTE_LEGAL', 'string');
-            $objRsmBuilder->addScalarResult('TIPO_COMIDA_ID', 'TIPO_COMIDA_ID', 'string');
-            $objRsmBuilder->addScalarResult('DESCRIPCION_TIPO_COMIDA', 'DESCRIPCION_TIPO_COMIDA', 'string');
-            $objRsmBuilder->addScalarResult('DIRECCION_TRIBUTARIO', 'DIRECCION_TRIBUTARIO', 'string');
-            $objRsmBuilder->addScalarResult('URL_CATALOGO', 'URL_CATALOGO', 'string');
-            $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
-            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
-            $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
-	        $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
-            $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
-            $strSql       = $strSelect.$strFrom.$strWhere;
-            $objQuery->setSQL($strSql);
-            $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
-            $objQueryCount->setSQL($strSqlCount);
-            $arrayRestaurante['cantidad']   = $objQueryCount->getSingleScalarResult();
-            $arrayRestaurante['resultados'] = $objQuery->getResult();
         }
         catch(\Exception $ex)
         {
@@ -120,6 +124,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $strTipoComida         = $arrayParametros['strTipoComida'] ? $arrayParametros['strTipoComida']:'';
         $strIdentificacion     = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
         $intIdRestaurante      = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
+        $intIdCliente          = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
         $strTipoIdentificacion = $arrayParametros['strTipoIdentificacion'] ? $arrayParametros['strTipoIdentificacion']:'';
         $strRazonSocial        = $arrayParametros['strRazonSocial'] ? $arrayParametros['strRazonSocial']:'';
         $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
@@ -139,6 +144,13 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
+            if(!empty($intIdCliente))
+            {
+                $strSelect .= ",(SELECT COUNT(*) FROM INFO_LIKE_RES ILR WHERE ILR.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ESTADO='ACTIVO' AND CLIENTE_ID=:CLIENTE_ID) as CANT_PUNTOS ";
+                $objQuery->setParameter("CLIENTE_ID", $intIdCliente);
+                $objQueryCount->setParameter("CLIENTE_ID", $intIdCliente);
+                $objRsmBuilder->addScalarResult('CANT_PUNTOS', 'CANT_PUNTOS', 'string');
+            }
             if(!empty($strRazonSocial))
             {
                 $strWhere .= " AND lower(IR.RAZON_SOCIAL) like lower(:RAZON_SOCIAL)";
