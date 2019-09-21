@@ -14,6 +14,7 @@ use AppBundle\Entity\InfoPublicidad;
 use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
 use AppBundle\Entity\InfoCliente;
+use AppBundle\Entity\InfoClienteInfluencer;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -45,6 +46,12 @@ class ApiWebController extends FOSRestController
                 case 'editPromocion':$arrayRespuesta = $this->editPromocion($arrayData);
                 break;
                 case 'getCliente':$arrayRespuesta = $this->getCliente($arrayData);
+                break;
+                case 'createCltInfluencer':$arrayRespuesta = $this->createCltInfluencer($arrayData);
+                break;
+                case 'editCltInfluencer':$arrayRespuesta = $this->editCltInfluencer($arrayData);
+                break;
+                case 'getCltInfluencer':$arrayRespuesta = $this->getCltInfluencer($arrayData);
                 break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
@@ -735,6 +742,218 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCliente,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createCltInfluencer'
+     * Método encargado de crear los clt. influencer según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 21-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createCltInfluencer($arrayData)
+    {
+        $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        $objController          = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            if(!empty($imgBase64))
+            {
+                $strRutaImagen = $objController->subirfichero($imgBase64);
+            }
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('Cliente no existe.');
+            }
+            $entityCliente = new InfoClienteInfluencer();
+            $entityCliente->setCLIENTEID($objCliente);
+            if(!empty($strRutaImagen))
+            {
+                $entityCliente->setIMAGEN($strRutaImagen);
+            }
+            $entityCliente->setESTADO(strtoupper($strEstado));
+            $entityCliente->setUSRCREACION($strUsuarioCreacion);
+            $entityCliente->setFECREACION($strDatetimeActual);
+            $em->persist($entityCliente);
+            $em->flush();
+            $strMensajeError = 'Cliente Influencer creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al crear un Cliente Influencer, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'editCltInfluencer'
+     * Método encargado de crear los clt. influencer según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 21-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editCltInfluencer($arrayData)
+    {
+        $intIdCltInfluencer     = $arrayData['idCltInfluencer'] ? $arrayData['idCltInfluencer']:'';
+        $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        $objController          = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            if(!empty($imgBase64))
+            {
+                $strRutaImagen = $objController->subirfichero($imgBase64);
+            }
+            $em->getConnection()->beginTransaction();
+            $objCltInfluencer = $em->getRepository('AppBundle:InfoClienteInfluencer')->find($intIdCltInfluencer);
+            if(!is_object($objCltInfluencer) || empty($objCltInfluencer))
+            {
+                throw new \Exception('Cliente Influencer no existe.');
+            }
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('Cliente no existe.');
+            }
+            if(!empty($objCliente))
+            {
+                $objCltInfluencer->setCLIENTEID($objCliente);
+            }
+            if(!empty($strRutaImagen))
+            {
+                $objCltInfluencer->setIMAGEN($strRutaImagen);
+            }
+            if(!empty($strEstado))
+            {
+                $objCltInfluencer->setESTADO(strtoupper($strEstado));
+            }
+            
+            $objCltInfluencer->setUSRMODIFICACION($strUsuarioCreacion);
+            $objCltInfluencer->setFEMODIFICACION($strDatetimeActual);
+            $em->persist($objCltInfluencer);
+            $em->flush();
+            $strMensajeError = 'Cliente Influencer editado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al crear un Cliente Influencer, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getCltInfluencer'
+     * Método encargado de retornar todos los clientes Influencer según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 21-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getCltInfluencer($arrayData)
+    {
+        $intIdCltInfluencer = $arrayData['idCltInfluencer'] ? $arrayData['idCltInfluencer']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strContador        = $arrayData['strContador'] ? $arrayData['strContador']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'';
+        $conImagen          = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
+        $arrayCltInfluencer = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $objController      = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            $arrayParametros = array('intIdCliente'     => $intIdCliente,
+                                    'intIdCltInfluencer'=> $intIdCltInfluencer,
+                                    'strContador'       => $strContador,
+                                    'strEstado'         => $strEstado
+                                    );
+            $arrayCltInfluencer   = (array) $this->getDoctrine()->getRepository('AppBundle:InfoClienteInfluencer')->getCltInfluencerCriterio($arrayParametros);
+            if(isset($arrayCltInfluencer['error']) && !empty($arrayCltInfluencer['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltInfluencer['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltInfluencer['error'] = $strMensajeError;
+        if($conImagen == 'SI')
+        {
+            foreach ($arrayCltInfluencer['resultados'] as &$item)
+            {
+                if($item['IMAGEN'])
+                {
+                    $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                }
+            }
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltInfluencer,
                                             'succes'    => true
                                             )
                                         ));
