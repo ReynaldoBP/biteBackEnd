@@ -139,6 +139,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
                                         IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
                                         IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO ";
+            $strSelect     .= ",(SELECT COUNT(*) FROM INFO_LIKE_RES ILR_RES WHERE ILR_RES.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ILR_RES.ESTADO='ACTIVO') as CANT_LIKE ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_RESTAURANTE IR,ADMI_TIPO_COMIDA ATC ";
             $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
@@ -146,10 +147,10 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $objQueryCount->setParameter("ESTADO", $strEstado);
             if(!empty($intIdCliente))
             {
-                $strSelect .= ",(SELECT COUNT(*) FROM INFO_LIKE_RES ILR WHERE ILR.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ESTADO='ACTIVO' AND CLIENTE_ID=:CLIENTE_ID) as CANT_PUNTOS ";
+                $strSelect .= ",(SELECT COUNT(*) FROM INFO_LIKE_RES ILR WHERE ILR.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ESTADO='ACTIVO' AND CLIENTE_ID=:CLIENTE_ID) as CANT_LIKE_CLT ";
                 $objQuery->setParameter("CLIENTE_ID", $intIdCliente);
                 $objQueryCount->setParameter("CLIENTE_ID", $intIdCliente);
-                $objRsmBuilder->addScalarResult('CANT_PUNTOS', 'CANT_PUNTOS', 'string');
+                $objRsmBuilder->addScalarResult('CANT_LIKE_CLT', 'CANT_LIKE_CLT', 'string');
             }
             if(!empty($strRazonSocial))
             {
@@ -194,7 +195,8 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
             $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
-	        $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
+            $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
+            $objRsmBuilder->addScalarResult('CANT_LIKE', 'CANT_LIKE', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
