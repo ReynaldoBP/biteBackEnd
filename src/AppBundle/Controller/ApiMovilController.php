@@ -970,10 +970,12 @@ class ApiMovilController extends FOSRestController
         {
             $em->getConnection()->commit();
             $em->getConnection()->close();
+            $arrayLike = array('id' => $entityLike->getId());
         }
+        $arrayLike['mensaje'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $strMensajeError,
+                                            'resultado' => $arrayLike,
                                             'succes'    => true
                                             )
                                         ));
