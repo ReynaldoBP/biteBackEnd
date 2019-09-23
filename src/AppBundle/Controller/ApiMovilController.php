@@ -128,6 +128,11 @@ class ApiMovilController extends FOSRestController
         try
         {
             $em->getConnection()->beginTransaction();
+            $objClt         = $em->getRepository('AppBundle:InfoCliente')->findOneBy(array('CORREO'=>$strCorreo));
+            if(is_object($objClt) || !empty($objClt))
+            {
+                throw new \Exception('Cliente ya existente.');
+            }
             $arrayParametrosTipoCliente = array('ESTADO' => 'ACTIVO',
                                                 'id'     => $intIdTipoCLiente);
             $objTipoCliente             = $em->getRepository('AppBundle:AdmiTipoClientePuntaje')->findOneBy($arrayParametrosTipoCliente);
@@ -177,21 +182,21 @@ class ApiMovilController extends FOSRestController
         {
             $em->getConnection()->commit();
             $em->getConnection()->close();
+            $arrayCliente = array('id'             => $entityCliente->getId(),
+                                    'identificacion' => $entityCliente->getIDENTIFICACION(),
+                                    'nombre'         => $entityCliente->getNOMBRE(),
+                                    'apellido'       => $entityCliente->getAPELLIDO(),
+                                    'correo'         => $entityCliente->getCORREO(),
+                                    'direccion'      => $entityCliente->getDIRECCION(),
+                                    'edad'           => $entityCliente->getEDAD(),
+                                    'tipoComida'     => $entityCliente->getTIPOCOMIDA(),
+                                    'genero'         => $entityCliente->getGENERO(),
+                                    'estado'         => $entityCliente->getESTADO(),
+                                    'sector'         => $entityCliente->getSECTOR(),
+                                    'usrCreacion'    => $entityCliente->getUSRCREACION(),
+                                    'feCreacion'     => $entityCliente->getFECREACION());
         }
-        $arrayCliente = array('id'             => $entityCliente->getId(),
-                              'identificacion' => $entityCliente->getIDENTIFICACION(),
-                              'nombre'         => $entityCliente->getNOMBRE(),
-                              'apellido'       => $entityCliente->getAPELLIDO(),
-                              'correo'         => $entityCliente->getCORREO(),
-                              'direccion'      => $entityCliente->getDIRECCION(),
-                              'edad'           => $entityCliente->getEDAD(),
-                              'tipoComida'     => $entityCliente->getTIPOCOMIDA(),
-                              'genero'         => $entityCliente->getGENERO(),
-                              'estado'         => $entityCliente->getESTADO(),
-                              'sector'         => $entityCliente->getSECTOR(),
-                              'usrCreacion'    => $entityCliente->getUSRCREACION(),
-                              'feCreacion'     => $entityCliente->getFECREACION(),
-                              'mensaje'        => $strMensajeError);
+        $arrayCliente['mensaje'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCliente,
@@ -663,6 +668,7 @@ class ApiMovilController extends FOSRestController
     {
         $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdContenido     = $arrayData['idContenido'] ? $arrayData['idContenido']:'';
         $strRespuesta       = $arrayData['respuesta'] ? $arrayData['respuesta']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
@@ -689,11 +695,16 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
             }
-
+            $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
+            if(!is_object($objContenido) || empty($objContenido))
+            {
+                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+            }
             $entityRespuesta = new InfoRespuesta();
             $entityRespuesta->setRESPUESTA($strRespuesta);
             $entityRespuesta->setPREGUNTAID($objPregunta);
             $entityRespuesta->setCLIENTEID($objCliente);
+            $entityRespuesta->setCONTENIDOID($objContenido);
             $entityRespuesta->setESTADO(strtoupper($strEstado));
             $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
             $entityRespuesta->setFECREACION($strDatetimeActual);
@@ -1083,10 +1094,9 @@ class ApiMovilController extends FOSRestController
                                   'cantPuntos'      => $entityCltPunto->getCANTIDADPUNTOS(),
                                   'estado'          => $entityCltPunto->getESTADO(),
                                   'usrCreacion'     => $entityCltPunto->getUSRCREACION(),
-                                  'feCreacion'      => $entityCltPunto->getFECREACION(),
-                                  'strMensajeError' => $strMensajeError
-                                );
+                                  'feCreacion'      => $entityCltPunto->getFECREACION());
         }
+        $arrayCltPunto['strMensajeError'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltPunto,
@@ -1108,8 +1118,7 @@ class ApiMovilController extends FOSRestController
      */
     public function createContenido($arrayData)
     {
-        $intIdClientePto    = $arrayData['idClientePto'] ? $arrayData['idClientePto']:'';
-        $intIdEncuesta      = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strImagen          = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
@@ -1128,20 +1137,14 @@ class ApiMovilController extends FOSRestController
             {
                 $strRutaImagen = $objController->subirfichero($strImagen);
             }
-            $objClientePto = $em->getRepository('AppBundle:InfoClientePunto')->find($intIdClientePto);
-            if(!is_object($objClientePto) || empty($objClientePto))
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
             {
-                throw new \Exception('No existe el punto cliente con identificador enviada por parámetro.');
-            }
-            $objEncuesta = $em->getRepository('AppBundle:InfoEncuesta')->find($intIdEncuesta);
-            if(!is_object($objEncuesta) || empty($objEncuesta))
-            {
-                throw new \Exception('No existe encuesta con identificador enviado por parámetro.');
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
 
             $entityContSub = new InfoContenidoSubido();
-            $entityContSub->setCLIENTEPUNTOID($objClientePto);
-            $entityContSub->setENCUESTAID($objEncuesta);
+            $entityContSub->setCLIENTEID($objCliente);
             $entityContSub->setDESCRIPCION($strDescripcion);
             $entityContSub->setIMAGEN($strRutaImagen);
             $entityContSub->setESTADO(strtoupper($strEstado));
@@ -1168,10 +1171,9 @@ class ApiMovilController extends FOSRestController
                                   'cantPuntos'      => $entityContSub->getDESCRIPCION(),
                                   'estado'          => $entityContSub->getESTADO(),
                                   'usrCreacion'     => $entityContSub->getUSRCREACION(),
-                                  'feCreacion'      => $entityContSub->getFECREACION(),
-                                  'strMensajeError' => $strMensajeError
-                                );
+                                  'feCreacion'      => $entityContSub->getFECREACION());
         }
+        $arrayContenido['strMensajeError'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayContenido,
@@ -1240,10 +1242,10 @@ class ApiMovilController extends FOSRestController
                                   'descContSubido'  => $entityRedesSociales->getCONTENIDOSUBIDOID()->getDESCRIPCION(),
                                   'estado'          => $entityRedesSociales->getESTADO(),
                                   'usrCreacion'     => $entityRedesSociales->getUSRCREACION(),
-                                  'feCreacion'      => $entityRedesSociales->getFECREACION(),
-                                  'strMensajeError' => $strMensajeError
+                                  'feCreacion'      => $entityRedesSociales->getFECREACION()
                                 );
         }
+        $arrayRedesSoc[strMensajeError] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRedesSoc,
@@ -1370,10 +1372,10 @@ class ApiMovilController extends FOSRestController
                                   'cantPuntos'      => $entityCltPunto->getCANTIDADPUNTOS(),
                                   'estado'          => $entityCltPunto->getESTADO(),
                                   'usrCreacion'     => $entityCltPunto->getUSRCREACION(),
-                                  'feCreacion'      => $entityCltPunto->getFECREACION(),
-                                  'strMensajeError' => $strMensajeError
+                                  'feCreacion'      => $entityCltPunto->getFECREACION()
                                 );
         }
+        $arrayCltPunto['strMensajeError'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltPunto,

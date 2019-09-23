@@ -30,6 +30,7 @@ class InfoPromocionController extends Controller
         $intCantPuntos          = $request->query->get("cantPuntos") ? $request->query->get("cantPuntos"):'';
         $strAceptaGlobal        = $request->query->get("aceptaGlobal") ? $request->query->get("aceptaGlobal"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strPremio              = $request->query->get("premio") ? $request->query->get("premio"):'NO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
@@ -52,6 +53,7 @@ class InfoPromocionController extends Controller
             $entityPromocion->setDESCRIPCIONTIPOPROMOCION($strDescrPromocion);
             $entityPromocion->setCANTIDADPUNTOS($intCantPuntos);
             $entityPromocion->setACEPTAGLOBAL($strAceptaGlobal);
+            $entityPromocion->setPREMIO($strPremio);
             $entityPromocion->setESTADO(strtoupper($strEstado));
             $entityPromocion->setUSRCREACION($strUsuarioCreacion);
             $entityPromocion->setFECREACION($strDatetimeActual);
@@ -102,6 +104,7 @@ class InfoPromocionController extends Controller
         $intCantPuntos          = $request->query->get("cantPuntos") ? $request->query->get("cantPuntos"):'';
         $strAceptaGlobal        = $request->query->get("aceptaGlobal") ? $request->query->get("aceptaGlobal"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strPremio              = $request->query->get("premio") ? $request->query->get("premio"):'NO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
@@ -131,6 +134,10 @@ class InfoPromocionController extends Controller
             if(!empty($strDescrPromocion))
             {
                 $objPromocion->setDESCRIPCIONTIPOPROMOCION($strDescrPromocion);
+            }
+            if(!empty($strPremio))
+            {
+                $objPromocion->setPREMIO($strPremio);
             }
             if(!empty($intCantPuntos))
             {

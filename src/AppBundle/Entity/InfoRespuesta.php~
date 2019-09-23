@@ -42,6 +42,16 @@ class InfoRespuesta
     private $CLIENTE_ID;
 
     /**
+    * @var InfoContenidoSubido
+    *
+    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CONTENIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
+    * })
+    */
+    private $CONTENIDO_ID;
+    
+    /**
      * @var string
      *
      * @ORM\Column(name="RESPUESTA", type="string", length=255, nullable=true)

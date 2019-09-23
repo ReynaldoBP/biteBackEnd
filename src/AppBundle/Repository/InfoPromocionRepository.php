@@ -36,7 +36,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect      = "SELECT PR.ID_PROMOCION,PR.DESCRIPCION_TIPO_PROMOCION, PR.CANTIDAD_PUNTOS, PR.ACEPTA_GLOBAL,
                                PR.ESTADO,PR.USR_CREACION,PR.FE_CREACION,PR.USR_MODIFICACION,PR.FE_MODIFICACION, 
-                               PR.IMAGEN,ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,
+                               PR.PREMIO,PR.IMAGEN,ISUR.ID_SUCURSAL,ISUR.DESCRIPCION,
                                IRE.ID_RESTAURANTE,IRE.IDENTIFICACION,IRE.RAZON_SOCIAL,IRE.NOMBRE_COMERCIAL ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PROMOCION PR 
@@ -73,6 +73,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
             $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+            $objRsmBuilder->addScalarResult('PREMIO', 'PREMIO', 'string');
             $objRsmBuilder->addScalarResult('ID_SUCURSAL', 'ID_SUCURSAL', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'ID_RESTAURANTE', 'string');

@@ -539,6 +539,7 @@ class ApiWebController extends FOSRestController
         $intCantPuntos          = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
         $strAceptaGlobal        = $arrayData['aceptaGlobal'] ? $arrayData['aceptaGlobal']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strPremio              = $arrayData['premio'] ? $arrayData['premio']:'NO';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
@@ -565,6 +566,7 @@ class ApiWebController extends FOSRestController
             $entityPromocion->setSUCURSALID($objSucursal);
             $entityPromocion->setDESCRIPCIONTIPOPROMOCION($strDescrPromocion);
             $entityPromocion->setIMAGEN($strRutaImagen);
+            $entityPromocion->setPREMIO($strPremio);
             $entityPromocion->setCANTIDADPUNTOS($intCantPuntos);
             $entityPromocion->setACEPTAGLOBAL($strAceptaGlobal);
             $entityPromocion->setESTADO(strtoupper($strEstado));
@@ -615,6 +617,7 @@ class ApiWebController extends FOSRestController
         $intCantPuntos          = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
         $strAceptaGlobal        = $arrayData['aceptaGlobal'] ? $arrayData['aceptaGlobal']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strPremio              = $arrayData['premio'] ? $arrayData['premio']:'NO';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual      = new \DateTime('now');
         $strMensajeError        = '';
@@ -653,6 +656,10 @@ class ApiWebController extends FOSRestController
             if(!empty($strRutaImagen))
             {
                 $objPromocion->setIMAGEN($strRutaImagen);
+            }
+            if(!empty($strPremio))
+            {
+                $objPromocion->setPREMIO($strPremio);
             }
             if(!empty($intCantPuntos))
             {
