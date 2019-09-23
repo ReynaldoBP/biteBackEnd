@@ -46,6 +46,13 @@ class InfoPromocion
     private $DESCRIPCIONTIPOPROMOCION;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="PREMIO", type="string", length=2)
+     */
+    private $PREMIO;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer", nullable=true)
@@ -342,5 +349,29 @@ class InfoPromocion
     public function getIMAGEN()
     {
         return $this->IMAGEN;
+    }
+
+    /**
+     * Set PREMIO
+     *
+     * @param string $PREMIO
+     *
+     * @return InfoPromocion
+     */
+    public function setPREMIO($PREMIO)
+    {
+        $this->PREMIO = $PREMIO;
+
+        return $this;
+    }
+
+    /**
+     * Get PREMIO
+     *
+     * @return string
+     */
+    public function getPREMIO()
+    {
+        return $this->PREMIO;
     }
 }

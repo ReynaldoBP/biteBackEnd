@@ -42,6 +42,16 @@ class InfoRespuesta
     private $CLIENTE_ID;
 
     /**
+    * @var InfoContenidoSubido
+    *
+    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CONTENIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
+    * })
+    */
+    private $CONTENIDO_ID;
+    
+    /**
      * @var string
      *
      * @ORM\Column(name="RESPUESTA", type="string", length=255, nullable=true)
@@ -283,5 +293,29 @@ class InfoRespuesta
     public function getPREGUNTAID()
     {
         return $this->PREGUNTA_ID;
+    }
+
+    /**
+     * Set CONTENIDOID
+     *
+     * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
+     *
+     * @return InfoRespuesta
+     */
+    public function setCONTENIDOID(\AppBundle\Entity\InfoContenidoSubido $CONTENIDOID = null)
+    {
+        $this->CONTENIDO_ID = $CONTENIDOID;
+
+        return $this;
+    }
+
+    /**
+     * Get CONTENIDOID
+     *
+     * @return \AppBundle\Entity\InfoContenidoSubido
+     */
+    public function getCONTENIDOID()
+    {
+        return $this->CONTENIDO_ID;
     }
 }

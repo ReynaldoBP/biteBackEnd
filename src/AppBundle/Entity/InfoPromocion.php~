@@ -46,6 +46,13 @@ class InfoPromocion
     private $DESCRIPCIONTIPOPROMOCION;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="PREMIO", type="string", length=2)
+     */
+    private $PREMIO;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer", nullable=true)
@@ -318,5 +325,29 @@ class InfoPromocion
     public function getSUCURSALID()
     {
         return $this->SUCURSAL_ID;
+    }
+
+    /**
+     * Set IMAGEN
+     *
+     * @param string $IMAGEN
+     *
+     * @return InfoPromocion
+     */
+    public function setIMAGEN($IMAGEN)
+    {
+        $this->IMAGEN = $IMAGEN;
+
+        return $this;
+    }
+
+    /**
+     * Get IMAGEN
+     *
+     * @return string
+     */
+    public function getIMAGEN()
+    {
+        return $this->IMAGEN;
     }
 }

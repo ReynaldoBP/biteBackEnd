@@ -22,24 +22,14 @@ class InfoContenidoSubido
     private $id;
 
     /**
-    * @var InfoEncuesta
+    * @var InfoCliente
     *
-    * @ORM\ManyToOne(targetEntity="InfoEncuesta")
+    * @ORM\ManyToOne(targetEntity="InfoCliente")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="ENCUESTA_ID", referencedColumnName="ID_ENCUESTA")
+    * @ORM\JoinColumn(name="CLIENTE_ID", referencedColumnName="ID_CLIENTE")
     * })
     */
-    private $ENCUESTA_ID;
-
-    /**
-    * @var InfoClientePunto
-    *
-    * @ORM\ManyToOne(targetEntity="InfoClientePunto")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="CLIENTE_PUNTO_ID", referencedColumnName="ID_CLIENTE_PUNTO")
-    * })
-    */
-    private $CLIENTE_PUNTO_ID;
+    private $CLIENTE_ID;
 
     /**
      * @var string
@@ -268,51 +258,28 @@ class InfoContenidoSubido
         return $this->FEMODIFICACION;
     }
 
+
     /**
-     * Set ENCUESTAID
+     * Set CLIENTEID
      *
-     * @param \AppBundle\Entity\InfoEncuesta $ENCUESTAID
+     * @param \AppBundle\Entity\InfoCliente $CLIENTEID
      *
      * @return InfoContenidoSubido
      */
-    public function setENCUESTAID(\AppBundle\Entity\InfoEncuesta $ENCUESTAID = null)
+    public function setCLIENTEID(\AppBundle\Entity\InfoCliente $CLIENTEID = null)
     {
-        $this->ENCUESTA_ID = $ENCUESTAID;
+        $this->CLIENTE_ID = $CLIENTEID;
 
         return $this;
     }
 
     /**
-     * Get ENCUESTAID
+     * Get CLIENTEID
      *
-     * @return \AppBundle\Entity\InfoEncuesta
+     * @return \AppBundle\Entity\InfoCliente
      */
-    public function getENCUESTAID()
+    public function getCLIENTEID()
     {
-        return $this->ENCUESTA_ID;
-    }
-
-    /**
-     * Set CLIENTEPUNTOID
-     *
-     * @param \AppBundle\Entity\InfoClientePunto $CLIENTEPUNTOID
-     *
-     * @return InfoContenidoSubido
-     */
-    public function setCLIENTEPUNTOID(\AppBundle\Entity\InfoClientePunto $CLIENTEPUNTOID = null)
-    {
-        $this->CLIENTE_PUNTO_ID = $CLIENTEPUNTOID;
-
-        return $this;
-    }
-
-    /**
-     * Get CLIENTEPUNTOID
-     *
-     * @return \AppBundle\Entity\InfoClientePunto
-     */
-    public function getCLIENTEPUNTOID()
-    {
-        return $this->CLIENTE_PUNTO_ID;
+        return $this->CLIENTE_ID;
     }
 }
