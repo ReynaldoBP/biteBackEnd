@@ -51,6 +51,13 @@ class InfoPregunta
     /**
      * @var string
      *
+     * @ORM\Column(name="EN_CENTRO_COMERCIAL", type="string", length=2)
+     */
+    private $EN_CENTRO_COMERCIAL;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="OBLIGATORIA", type="string", length=50, nullable=true)
      */
     private $OBLIGATORIA;
@@ -290,5 +297,29 @@ class InfoPregunta
     public function getENCUESTAID()
     {
         return $this->ENCUESTA_ID;
+    }
+
+    /**
+     * Set OPCIONRESPUESTAID
+     *
+     * @param \AppBundle\Entity\InfoOpcionRespuesta $OPCIONRESPUESTAID
+     *
+     * @return InfoPregunta
+     */
+    public function setOPCIONRESPUESTAID(\AppBundle\Entity\InfoOpcionRespuesta $OPCIONRESPUESTAID = null)
+    {
+        $this->OPCION_RESPUESTA_ID = $OPCIONRESPUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get OPCIONRESPUESTAID
+     *
+     * @return \AppBundle\Entity\InfoOpcionRespuesta
+     */
+    public function getOPCIONRESPUESTAID()
+    {
+        return $this->OPCION_RESPUESTA_ID;
     }
 }

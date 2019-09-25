@@ -27,6 +27,7 @@ class InfoPreguntaController extends Controller
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $intIdOpcionRespuesta   = $request->query->get("idOpcionRespuesta") ? $request->query->get("idOpcionRespuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
+        $strCentroComercial     = $request->query->get("centroComercial") ? $request->query->get("centroComercial"):'NO';
         $strObligatoria         = $request->query->get("obligatoria") ? $request->query->get("obligatoria"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -53,6 +54,7 @@ class InfoPreguntaController extends Controller
             $entityPregunta->setENCUESTAID($objEncuesta);
             $entityPregunta->setOPCIONRESPUESTAID($objOpcionRespuesta);
             $entityPregunta->setDESCRIPCION($strDescripcion);
+            $entityPregunta->setENCENTROCOMERCIAL($strCentroComercial);
             $entityPregunta->setOBLIGATORIA($strObligatoria);
             $entityPregunta->setESTADO(strtoupper($strEstado));
             $entityPregunta->setUSRCREACION($strUsuarioCreacion);
@@ -102,6 +104,7 @@ class InfoPreguntaController extends Controller
         $intIdOpcionRespuesta   = $request->query->get("idOpcionRespuesta") ? $request->query->get("idOpcionRespuesta"):'';
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
+        $strCentroComercial     = $request->query->get("centroComercial") ? $request->query->get("centroComercial"):'';
         $strObligatoria         = $request->query->get("obligatoria") ? $request->query->get("obligatoria"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -140,6 +143,10 @@ class InfoPreguntaController extends Controller
             if(!empty($strDescripcion))
             {
                 $objPregunta->setDESCRIPCION($strDescripcion);
+            }
+            if(!empty($strCentroComercial))
+            {
+                $objPregunta->setENCENTROCOMERCIAL($strCentroComercial);
             }
             if(!empty($strObligatoria))
             {
@@ -196,6 +203,7 @@ class InfoPreguntaController extends Controller
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strIdPregunta          = $request->query->get("idPregunta") ? $request->query->get("idPregunta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
+        $strCentroComercial     = $request->query->get("centroComercial") ? $request->query->get("centroComercial"):'';
         $strObligatoria         = $request->query->get("obligatoria") ? $request->query->get("obligatoria"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
@@ -210,6 +218,7 @@ class InfoPreguntaController extends Controller
             $arrayParametros = array('strIdPregunta'    => $strIdPregunta,
                                     'strIdEncuesta'     => $strIdEncuesta,
                                     'strDescripcion'    => $strDescripcion,
+                                    'strCentroComercial'=> $strCentroComercial,
                                     'strObligatoria'    => $strObligatoria,
                                     'strEstado'         => $strEstado
                                     );

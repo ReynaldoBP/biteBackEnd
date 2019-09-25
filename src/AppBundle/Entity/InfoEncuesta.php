@@ -22,16 +22,6 @@ class InfoEncuesta
     private $id;
 
     /**
-    * @var InfoRestaurante
-    *
-    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
-    * })
-    */
-    private $RESTAURANTE_ID;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
@@ -256,29 +246,5 @@ class InfoEncuesta
     public function getFEMODIFICACION()
     {
         return $this->FEMODIFICACION;
-    }
-
-    /**
-     * Set RESTAURANTEID
-     *
-     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
-     *
-     * @return InfoEncuesta
-     */
-    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
-    {
-        $this->RESTAURANTE_ID = $RESTAURANTEID;
-
-        return $this;
-    }
-
-    /**
-     * Get RESTAURANTEID
-     *
-     * @return \AppBundle\Entity\InfoRestaurante
-     */
-    public function getRESTAURANTEID()
-    {
-        return $this->RESTAURANTE_ID;
     }
 }

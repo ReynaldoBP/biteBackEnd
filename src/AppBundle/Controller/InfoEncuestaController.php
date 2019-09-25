@@ -25,7 +25,6 @@ class InfoEncuestaController extends Controller
      */
     public function createEncuestaAction(Request $request)
     {
-        $strIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strTitulo              = $request->query->get("titulo") ? $request->query->get("titulo"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -40,13 +39,7 @@ class InfoEncuestaController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
-            if(!is_object($objRestaurante) || empty($objRestaurante))
-            {
-                throw new \Exception('No existe restaurante con la parámetros enviados.');
-            }
             $entityEncuesta = new InfoEncuesta();
-            $entityEncuesta->setRESTAURANTEID($objRestaurante);
             $entityEncuesta->setDESCRIPCION($strDescripcion);
             $entityEncuesta->setTITULO($strTitulo);
             $entityEncuesta->setESTADO(strtoupper($strEstado));
@@ -73,10 +66,6 @@ class InfoEncuestaController extends Controller
         $arrayEncuesta = array( 'id'                        => $entityEncuesta->getId(),
                                 'descripcion'               => $entityEncuesta->getDESCRIPCION(),
                                 'titulo'                    => $entityEncuesta->getTITULO(),
-                                'idRestaurante'             => $entityEncuesta->getRESTAURANTEID()->getId(),
-                                'identificacionRestaurante' => $entityEncuesta->getRESTAURANTEID()->getIDENTIFICACION(),
-                                'razonSocialRestaurante'    => $entityEncuesta->getRESTAURANTEID()->getRAZONSOCIAL(),
-                                'estadoRestaurante'         => $entityEncuesta->getRESTAURANTEID()->getESTADO(),
                                 'estadoEncuesta'            => $entityEncuesta->getESTADO(),
                                 'usrCreacion'               => $entityEncuesta->getUSRCREACION(),
                                 'feModificacion'            => $entityEncuesta->getUSRCREACION(),
@@ -105,7 +94,6 @@ class InfoEncuestaController extends Controller
      */
     public function editEncuestaAction(Request $request)
     {
-        $strIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strTitulo              = $request->query->get("titulo") ? $request->query->get("titulo"):'';
@@ -124,15 +112,6 @@ class InfoEncuestaController extends Controller
             if(!is_object($objEncuesta) || empty($objEncuesta))
             {
                 throw new \Exception('No existe encuesta con la identificación enviada por parámetro.');
-            }
-            if(!empty($strIdRestaurante))
-            {
-                $objRestaurante  = $em->getRepository('AppBundle:InfoRestaurante')->find($strIdRestaurante);
-                if(!is_object($objRestaurante) || empty($objRestaurante))
-                {
-                    throw new \Exception('No existe restaurante con la descripción enviada por parámetro.');
-                }
-                $objEncuesta->setRESTAURANTEID($objRestaurante);
             }
             if(!empty($strDescripcion))
             {
@@ -190,7 +169,6 @@ class InfoEncuestaController extends Controller
      */
     public function getEncuestaAction(Request $request)
     {
-        $strIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strTitulo              = $request->query->get("titulo") ? $request->query->get("titulo"):'';
@@ -205,8 +183,7 @@ class InfoEncuestaController extends Controller
         $em                     = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('strIdRestaurante' => $strIdRestaurante,
-                                    'strIdEncuesta'     => $strIdEncuesta,
+            $arrayParametros = array('strIdEncuesta'     => $strIdEncuesta,
                                     'strDescripcion'    => $strDescripcion,
                                     'strTitulo'         => $strTitulo,
                                     'strContador'       => $strContador,

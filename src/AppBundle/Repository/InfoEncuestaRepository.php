@@ -23,7 +23,6 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getEncuestaCriterio($arrayParametros)
     {
-        $strIdRestaurante      = $arrayParametros['strIdRestaurante'] ? $arrayParametros['strIdRestaurante']:'';
         $strIdEncuesta         = $arrayParametros['strIdEncuesta'] ? $arrayParametros['strIdEncuesta']:'';
         $strDescripcion        = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
         $strTitulo             = $arrayParametros['strTitulo'] ? $arrayParametros['strTitulo']:'';
@@ -51,18 +50,12 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
             }
             else
             {
-                $strSelect      = "SELECT EC.ID_ENCUESTA,EC.RESTAURANTE_ID,EC.DESCRIPCION,EC.TITULO,EC.ESTADO AS ESTADO_ENCUESTA, 
-                                IR.IDENTIFICACION,IR.RAZON_SOCIAL, IR.ESTADO AS ESTADO_RESTAURANTE,
+                $strSelect      = "SELECT EC.ID_ENCUESTA,EC.DESCRIPCION,EC.TITULO,EC.ESTADO AS ESTADO_ENCUESTA, 
                                 EC.USR_CREACION, EC.FE_CREACION,EC.USR_MODIFICACION,EC.FE_MODIFICACION ";
-                $strFrom        = "FROM INFO_ENCUESTA EC, INFO_RESTAURANTE IR ";
-                $strWhere       = "WHERE EC.ESTADO in (:ESTADO) AND EC.RESTAURANTE_ID=IR.ID_RESTAURANTE ";
+                $strFrom        = "FROM INFO_ENCUESTA EC ";
+                $strWhere       = "WHERE EC.ESTADO in (:ESTADO) ";
                 $objQuery->setParameter("ESTADO", $strEstado);
-                
-                if(!empty($strIdRestaurante))
-                {
-                    $strWhere .= " AND EC.RESTAURANTE_ID =:RESTAURANTE_ID";
-                    $objQuery->setParameter("RESTAURANTE_ID", $strIdRestaurante);
-                }
+
                 if(!empty($strIdEncuesta))
                 {
                     $strWhere .= " AND EC.ID_ENCUESTA =:ID_ENCUESTA";
@@ -79,14 +72,9 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
                     $objQuery->setParameter("TITULO", '%' . trim($strTitulo) . '%');
                 }
                 $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
-                $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
                 $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
                 $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
                 $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
-                $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-                $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
-                $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
-                $objRsmBuilder->addScalarResult('ESTADO_RESTAURANTE', 'ESTADO_RESTAURANTE', 'string');
                 $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
                 $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
                 $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
@@ -131,20 +119,13 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $strOrder           = ' ORDER BY EC.FE_CREACION ASC';
         try
         {
-            $strSelect      = "SELECT EC.ID_ENCUESTA,EC.RESTAURANTE_ID,EC.DESCRIPCION,EC.TITULO,EC.ESTADO AS ESTADO_ENCUESTA, 
-                                      IR.IDENTIFICACION,IR.RAZON_SOCIAL, IR.ESTADO AS ESTADO_RESTAURANTE,
+            $strSelect      = "SELECT EC.ID_ENCUESTA,EC.DESCRIPCION,EC.TITULO,EC.ESTADO AS ESTADO_ENCUESTA, 
                                       EC.USR_CREACION, EC.FE_CREACION,EC.USR_MODIFICACION,EC.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_ENCUESTA EC, INFO_RESTAURANTE IR ";
-            $strWhere       = "WHERE EC.ESTADO in (:ESTADO) AND EC.RESTAURANTE_ID=IR.ID_RESTAURANTE ";
+            $strFrom        = "FROM INFO_ENCUESTA EC ";
+            $strWhere       = "WHERE EC.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
-            if(!empty($strIdRestaurante))
-            {
-                $strWhere .= " AND EC.RESTAURANTE_ID =:RESTAURANTE_ID";
-                $objQuery->setParameter("RESTAURANTE_ID", $strIdRestaurante);
-                $objQueryCount->setParameter("RESTAURANTE_ID", $strIdRestaurante);
-            }
             if(!empty($strIdEncuesta))
             {
                 $strWhere .= " AND EC.ID_ENCUESTA =:ID_ENCUESTA";
@@ -164,14 +145,9 @@ class InfoEncuestaRepository extends \Doctrine\ORM\EntityRepository
                 $objQueryCount->setParameter("TITULO", '%' . trim($strTitulo) . '%');
             }
             $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
-            $objRsmBuilder->addScalarResult('RESTAURANTE_ID', 'RESTAURANTE_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
-            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
-            $objRsmBuilder->addScalarResult('NUMERO_CONTACTO', 'NUMERO_CONTACTO', 'string');
-            $objRsmBuilder->addScalarResult('ESTADO_RESTAURANTE', 'ESTADO_RESTAURANTE', 'string');
             $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
