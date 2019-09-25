@@ -22,16 +22,6 @@ class InfoEncuesta
     private $id;
 
     /**
-    * @var InfoRestaurante
-    *
-    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
-    * })
-    */
-    private $RESTAURANTE_ID;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255)
@@ -161,5 +151,100 @@ class InfoEncuesta
     {
         return $this->ESTADO;
     }
-}
 
+    /**
+     * Set USRCREACION
+     *
+     * @param string $USRCREACION
+     *
+     * @return InfoEncuesta
+     */
+    public function setUSRCREACION($USRCREACION)
+    {
+        $this->USRCREACION = $USRCREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRCREACION
+     *
+     * @return string
+     */
+    public function getUSRCREACION()
+    {
+        return $this->USRCREACION;
+    }
+
+    /**
+     * Set FECREACION
+     *
+     * @param \DateTime $FECREACION
+     *
+     * @return InfoEncuesta
+     */
+    public function setFECREACION($FECREACION)
+    {
+        $this->FECREACION = $FECREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FECREACION
+     *
+     * @return \DateTime
+     */
+    public function getFECREACION()
+    {
+        return $this->FECREACION;
+    }
+
+    /**
+     * Set USRMODIFICACION
+     *
+     * @param string $USRMODIFICACION
+     *
+     * @return InfoEncuesta
+     */
+    public function setUSRMODIFICACION($USRMODIFICACION)
+    {
+        $this->USRMODIFICACION = $USRMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRMODIFICACION
+     *
+     * @return string
+     */
+    public function getUSRMODIFICACION()
+    {
+        return $this->USRMODIFICACION;
+    }
+
+    /**
+     * Set FEMODIFICACION
+     *
+     * @param \DateTime $FEMODIFICACION
+     *
+     * @return InfoEncuesta
+     */
+    public function setFEMODIFICACION($FEMODIFICACION)
+    {
+        $this->FEMODIFICACION = $FEMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FEMODIFICACION
+     *
+     * @return \DateTime
+     */
+    public function getFEMODIFICACION()
+    {
+        return $this->FEMODIFICACION;
+    }
+}

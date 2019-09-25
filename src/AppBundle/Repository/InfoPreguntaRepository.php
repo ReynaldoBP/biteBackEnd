@@ -27,6 +27,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         $strIdEncuesta         = $arrayParametros['strIdEncuesta'] ? $arrayParametros['strIdEncuesta']:'';
         $strDescripcion        = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
         $strObligatoria        = $arrayParametros['strObligatoria'] ? $arrayParametros['strObligatoria']:'';
+        $strCentroComercial    = $arrayParametros['strCentroComercial'] ? $arrayParametros['strCentroComercial']:'';
         $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayEncuesta         = array();
         $strMensajeError       = '';
@@ -38,7 +39,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
-                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,
+                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA, EC.EN_CENTRO_COMERCIAL,
                                       IOR.ID_OPCION_RESPUESTA,IOR.TIPO_RESPUESTA,IOR.DESCRIPCION AS DESCRIPCION_OPCION_RESPUESTA,IOR.VALOR AS VALOR_OPCION_RESPUESTA, 
                                       IOR.ESTADO AS ESTADO_OPCION_RESPUESTA,
                                       PE.USR_CREACION, PE.FE_CREACION,PE.USR_MODIFICACION,PE.FE_MODIFICACION ";
@@ -59,6 +60,12 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("ID_ENCUESTA", $strIdEncuesta);
                 $objQueryCount->setParameter("ID_ENCUESTA", $strIdEncuesta);
             }
+            if(!empty($strCentroComercial))
+            {
+                $strWhere .= " AND EC.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
+                $objQuery->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
+                $objQueryCount->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
+            }
             if(!empty($strDescripcion))
             {
                 $strWhere .= " AND lower(PE.DESCRIPCION) like lower(:DESCRIPCION)";
@@ -75,6 +82,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ESTADO_PREGUNTA', 'ESTADO_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('EN_CENTRO_COMERCIAL', 'EN_CENTRO_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_ENCUESTA', 'DESCRIPCION_ENCUESTA', 'string');
@@ -118,6 +126,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         $strIdPregunta         = $arrayParametros['strIdPregunta'] ? $arrayParametros['strIdPregunta']:'';
         $strIdEncuesta         = $arrayParametros['strIdEncuesta'] ? $arrayParametros['strIdEncuesta']:'';
         $strDescripcion        = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
+        $strCentroComercial    = $arrayParametros['strCentroComercial'] ? $arrayParametros['strCentroComercial']:'';
         $strObligatoria        = $arrayParametros['strObligatoria'] ? $arrayParametros['strObligatoria']:'';
         $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayEncuesta         = array();
@@ -130,7 +139,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
-                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,
+                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,EC.EN_CENTRO_COMERCIAL,
                                       IOR.ID_OPCION_RESPUESTA,IOR.TIPO_RESPUESTA,IOR.DESCRIPCION AS DESCRIPCION_OPCION_RESPUESTA,IOR.VALOR AS VALOR_OPCION_RESPUESTA, 
                                       IOR.ESTADO AS ESTADO_OPCION_RESPUESTA,
                                       PE.USR_CREACION, PE.FE_CREACION,PE.USR_MODIFICACION,PE.FE_MODIFICACION ";
@@ -157,6 +166,12 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
                 $objQueryCount->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
             }
+            if(!empty($strCentroComercial))
+            {
+                $strWhere .= " AND EC.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
+                $objQuery->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
+                $objQueryCount->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
+            }
             if(!empty($strObligatoria))
             {
                 $strWhere .= " AND lower(PE.OBLIGATORIA) like lower(:OBLIGATORIA)";
@@ -167,6 +182,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ESTADO_PREGUNTA', 'ESTADO_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('EN_CENTRO_COMERCIAL', 'EN_CENTRO_COMERCIAL', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_ENCUESTA', 'DESCRIPCION_ENCUESTA', 'string');

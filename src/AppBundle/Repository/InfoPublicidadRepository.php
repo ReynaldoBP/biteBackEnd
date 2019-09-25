@@ -186,8 +186,9 @@ class InfoPublicidadRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
             $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
+            $strOrderRand =" order by rand() ";
             $strLimit     =" limit 1 ";
-            $strSql       = $strSelect.$strFrom.$strWhere.$strLimit;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strOrderRand.$strLimit;
             $objQuery->setSQL($strSql);
             $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
             $objQueryCount->setSQL($strSqlCount);

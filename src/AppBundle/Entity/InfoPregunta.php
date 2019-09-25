@@ -51,6 +51,13 @@ class InfoPregunta
     /**
      * @var string
      *
+     * @ORM\Column(name="EN_CENTRO_COMERCIAL", type="string", length=2)
+     */
+    private $EN_CENTRO_COMERCIAL;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="OBLIGATORIA", type="string", length=50, nullable=true)
      */
     private $OBLIGATORIA;
@@ -314,5 +321,29 @@ class InfoPregunta
     public function getOPCIONRESPUESTAID()
     {
         return $this->OPCION_RESPUESTA_ID;
+    }
+
+    /**
+     * Set ENCENTROCOMERCIAL
+     *
+     * @param string $ENCENTROCOMERCIAL
+     *
+     * @return InfoPregunta
+     */
+    public function setENCENTROCOMERCIAL($ENCENTROCOMERCIAL)
+    {
+        $this->EN_CENTRO_COMERCIAL = $ENCENTROCOMERCIAL;
+
+        return $this;
+    }
+
+    /**
+     * Get ENCENTROCOMERCIAL
+     *
+     * @return string
+     */
+    public function getENCENTROCOMERCIAL()
+    {
+        return $this->EN_CENTRO_COMERCIAL;
     }
 }
