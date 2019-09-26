@@ -554,9 +554,9 @@ class ApiMovilController extends FOSRestController
         $em                     = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('RESTAURANTE_ID' => $strIdRestaurante,
+            $arrayParametros = array(
                                      'ESTADO'         => $strEstado);
-            $objEncuesta     = $em->getRepository('AppBundle:InfoEncuesta')->findBy($arrayParametros);
+            $objEncuesta     = $em->getRepository('AppBundle:InfoEncuesta')->findBy($arrayParametros);            
             if(empty($objEncuesta) && !is_array($objEncuesta))
             {
                 throw new \Exception('La encuesta a buscar no existe.');
@@ -564,8 +564,9 @@ class ApiMovilController extends FOSRestController
             foreach($objEncuesta as $arrayItem)
             {
                 $arrayParametrosPreg = array('ESTADO'     => 'ACTIVO',
-                                             'ENCUESTA_ID' => $arrayItem->getId());
-                $objPregunta         = $em->getRepository('AppBundle:InfoPregunta')->findBy($arrayParametrosPreg);
+                                             'ENCUESTA_ID' => $arrayItem->getId());                
+                $objPregunta         = 
+$em->getRepository('AppBundle:InfoPregunta')->findBy($arrayParametrosPreg);
                 if(!empty($objPregunta) && is_array($objPregunta))
                 {
                     foreach($objPregunta as $arrayItemPregunta)
@@ -581,9 +582,6 @@ class ApiMovilController extends FOSRestController
                 }
                 $arrayEncuesta = array( 'descripcionEncuesta' => $arrayItem->getDESCRIPCION(),
                                         'tituloEncuesta'      => $arrayItem->getTITULO(),
-                                        'identificacion'      => $arrayItem->getRESTAURANTEID()->getIDENTIFICACION(),
-                                        'razonSocial'         => $arrayItem->getRESTAURANTEID()->getRAZONSOCIAL(),
-                                        'nombreComercial'     => $arrayItem->getRESTAURANTEID()->getNOMBRECOMERCIAL(),
                                         'preguntas'           => $arrayPregunta);
             }
         }
