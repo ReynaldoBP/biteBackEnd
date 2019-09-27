@@ -172,7 +172,7 @@ class InfoEncuestaController extends Controller
         $strIdEncuesta          = $request->query->get("idEncuesta") ? $request->query->get("idEncuesta"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strTitulo              = $request->query->get("titulo") ? $request->query->get("titulo"):'';
-        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
+        $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strContador            = $request->query->get("strContador") ? $request->query->get("strContador"):'NO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $strDatetimeActual      = new \DateTime('now');

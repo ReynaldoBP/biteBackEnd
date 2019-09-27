@@ -52,6 +52,16 @@ class InfoClienteEncuesta
     private $RESTAURANTE_ID;
 
     /**
+    * @var InfoContenidoSubido
+    *
+    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CONTENIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
+    * })
+    */
+    private $CONTENIDO_ID;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=100)
@@ -95,5 +105,196 @@ class InfoClienteEncuesta
     {
         return $this->id;
     }
-}
 
+    /**
+     * Set ESTADO
+     *
+     * @param string $ESTADO
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setESTADO($ESTADO)
+    {
+        $this->ESTADO = $ESTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get ESTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->ESTADO;
+    }
+
+    /**
+     * Set USRCREACION
+     *
+     * @param string $USRCREACION
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setUSRCREACION($USRCREACION)
+    {
+        $this->USRCREACION = $USRCREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRCREACION
+     *
+     * @return string
+     */
+    public function getUSRCREACION()
+    {
+        return $this->USRCREACION;
+    }
+
+    /**
+     * Set FECREACION
+     *
+     * @param \DateTime $FECREACION
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setFECREACION($FECREACION)
+    {
+        $this->FECREACION = $FECREACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FECREACION
+     *
+     * @return \DateTime
+     */
+    public function getFECREACION()
+    {
+        return $this->FECREACION;
+    }
+
+    /**
+     * Set USRMODIFICACION
+     *
+     * @param string $USRMODIFICACION
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setUSRMODIFICACION($USRMODIFICACION)
+    {
+        $this->USRMODIFICACION = $USRMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get USRMODIFICACION
+     *
+     * @return string
+     */
+    public function getUSRMODIFICACION()
+    {
+        return $this->USRMODIFICACION;
+    }
+
+    /**
+     * Set FEMODIFICACION
+     *
+     * @param \DateTime $FEMODIFICACION
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setFEMODIFICACION($FEMODIFICACION)
+    {
+        $this->FEMODIFICACION = $FEMODIFICACION;
+
+        return $this;
+    }
+
+    /**
+     * Get FEMODIFICACION
+     *
+     * @return \DateTime
+     */
+    public function getFEMODIFICACION()
+    {
+        return $this->FEMODIFICACION;
+    }
+
+    /**
+     * Set ENCUESTAID
+     *
+     * @param \AppBundle\Entity\InfoEncuesta $ENCUESTAID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setENCUESTAID(\AppBundle\Entity\InfoEncuesta $ENCUESTAID = null)
+    {
+        $this->ENCUESTA_ID = $ENCUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get ENCUESTAID
+     *
+     * @return \AppBundle\Entity\InfoEncuesta
+     */
+    public function getENCUESTAID()
+    {
+        return $this->ENCUESTA_ID;
+    }
+
+    /**
+     * Set CLIENTEID
+     *
+     * @param \AppBundle\Entity\InfoCliente $CLIENTEID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setCLIENTEID(\AppBundle\Entity\InfoCliente $CLIENTEID = null)
+    {
+        $this->CLIENTE_ID = $CLIENTEID;
+
+        return $this;
+    }
+
+    /**
+     * Get CLIENTEID
+     *
+     * @return \AppBundle\Entity\InfoCliente
+     */
+    public function getCLIENTEID()
+    {
+        return $this->CLIENTE_ID;
+    }
+
+    /**
+     * Set RESTAURANTEID
+     *
+     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
+    {
+        $this->RESTAURANTE_ID = $RESTAURANTEID;
+
+        return $this;
+    }
+
+    /**
+     * Get RESTAURANTEID
+     *
+     * @return \AppBundle\Entity\InfoRestaurante
+     */
+    public function getRESTAURANTEID()
+    {
+        return $this->RESTAURANTE_ID;
+    }
+}
