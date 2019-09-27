@@ -695,11 +695,17 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe la Encuesta con la descripción enviada por parámetro.');
             }
+            $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
+            if(!is_object($objContenido) || empty($objContenido))
+            {
+            throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+            }
             $entityCltEncuesta = new InfoClienteEncuesta();
             $entityCltEncuesta->setCLIENTEID($objCliente);
             $entityCltEncuesta->setRESTAURANTEID($objRestaurante);
             $entityCltEncuesta->setENCUESTAID($objEncuesta);
             $entityCltEncuesta->setESTADO(strtoupper($strEstado));
+            $entityCltEncuesta->setCONTENIDOID($objContenido);
             $entityCltEncuesta->setUSRCREACION($strUsuarioCreacion);
             $entityCltEncuesta->setFECREACION($strDatetimeActual);
             $em->persist($entityCltEncuesta);
@@ -724,11 +730,6 @@ class ApiMovilController extends FOSRestController
                 {
                 throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
                 }
-                $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
-                if(!is_object($objContenido) || empty($objContenido))
-                {
-                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
-                }
                 $objCltEncuesta  = $em->getRepository('AppBundle:InfoClienteEncuesta')->find($intIdCltEncuesta);
                 if(!is_object($objCltEncuesta) || empty($objCltEncuesta))
                 {
@@ -739,7 +740,6 @@ class ApiMovilController extends FOSRestController
                 $entityRespuesta->setPREGUNTAID($objPregunta);
                 $entityRespuesta->setCLTENCUESTAID($objCltEncuesta);
                 $entityRespuesta->setCLIENTEID($objCliente);
-                $entityRespuesta->setCONTENIDOID($objContenido);
                 $entityRespuesta->setESTADO(strtoupper($strEstado));
                 $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
                 $entityRespuesta->setFECREACION($strDatetimeActual);

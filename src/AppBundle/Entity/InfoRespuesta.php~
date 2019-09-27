@@ -52,16 +52,6 @@ class InfoRespuesta
     private $CLIENTE_ID;
 
     /**
-    * @var InfoContenidoSubido
-    *
-    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="CONTENIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
-    * })
-    */
-    private $CONTENIDO_ID;
-    
-    /**
      * @var string
      *
      * @ORM\Column(name="RESPUESTA", type="string", length=255, nullable=true)
@@ -306,26 +296,26 @@ class InfoRespuesta
     }
 
     /**
-     * Set CONTENIDOID
+     * Set CLTENCUESTAID
      *
-     * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
+     * @param \AppBundle\Entity\InfoClienteEncuesta $CLTENCUESTAID
      *
      * @return InfoRespuesta
      */
-    public function setCONTENIDOID(\AppBundle\Entity\InfoContenidoSubido $CONTENIDOID = null)
+    public function setCLTENCUESTAID(\AppBundle\Entity\InfoClienteEncuesta $CLTENCUESTAID = null)
     {
-        $this->CONTENIDO_ID = $CONTENIDOID;
+        $this->CLT_ENCUESTA_ID = $CLTENCUESTAID;
 
         return $this;
     }
 
     /**
-     * Get CONTENIDOID
+     * Get CLTENCUESTAID
      *
-     * @return \AppBundle\Entity\InfoContenidoSubido
+     * @return \AppBundle\Entity\InfoClienteEncuesta
      */
-    public function getCONTENIDOID()
+    public function getCLTENCUESTAID()
     {
-        return $this->CONTENIDO_ID;
+        return $this->CLT_ENCUESTA_ID;
     }
 }

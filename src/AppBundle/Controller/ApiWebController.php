@@ -15,6 +15,7 @@ use AppBundle\Entity\InfoPromocion;
 use AppBundle\Entity\InfoSucursal;
 use AppBundle\Entity\InfoCliente;
 use AppBundle\Entity\InfoClienteInfluencer;
+use AppBundle\Entity\InfoClienteEncuesta;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -52,6 +53,8 @@ class ApiWebController extends FOSRestController
                 case 'editCltInfluencer':$arrayRespuesta = $this->editCltInfluencer($arrayData);
                 break;
                 case 'getCltInfluencer':$arrayRespuesta = $this->getCltInfluencer($arrayData);
+                break;
+                case 'getClienteEncuesta':$arrayRespuesta = $this->getClienteEncuesta($arrayData);
                 break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
@@ -961,6 +964,47 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltInfluencer,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getClienteEncuesta'
+     * Método encargado de retornar todos las relaciones entre clt. y encuestas 
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 27-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getClienteEncuesta($arrayData)
+    {
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
+                                                      ->getClienteEncuesta(array('strEstado' => $strEstado));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltEncuesta,
                                             'succes'    => true
                                             )
                                         ));

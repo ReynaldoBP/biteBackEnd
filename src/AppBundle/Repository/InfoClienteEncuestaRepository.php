@@ -1,7 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
-
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 /**
  * InfoClienteEncuestaRepository
  *
@@ -10,4 +10,44 @@ namespace AppBundle\Repository;
  */
 class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getClienteEncuesta'
+     * Método encargado de retornar las relaciones entre cliente y encuesta según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 27-09-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */    
+    public function getClienteEncuesta($arrayParametros)
+    {
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT ICE.ENCUESTA_ID,IE.TITULO, COUNT(*) AS CANTIDAD ";
+            $strFrom        = "FROM INFO_CLIENTE_ENCUESTA ICE
+                                INNER JOIN INFO_ENCUESTA IE
+                                ON IE.ID_ENCUESTA=ICE.ENCUESTA_ID ";
+            $strWhere       = "WHERE IE.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+
+            $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
 }
