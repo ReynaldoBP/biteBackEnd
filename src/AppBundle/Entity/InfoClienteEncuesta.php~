@@ -1,0 +1,99 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * InfoClienteEncuesta
+ *
+ * @ORM\Table(name="INFO_CLIENTE_ENCUESTA")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoClienteEncuestaRepository")
+ */
+class InfoClienteEncuesta
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_CLT_ENCUESTA", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var InfoEncuesta
+    *
+    * @ORM\ManyToOne(targetEntity="InfoEncuesta")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="ENCUESTA_ID", referencedColumnName="ID_ENCUESTA")
+    * })
+    */
+    private $ENCUESTA_ID;
+
+    /**
+    * @var InfoCliente
+    *
+    * @ORM\ManyToOne(targetEntity="InfoCliente")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CLIENTE_ID", referencedColumnName="ID_CLIENTE")
+    * })
+    */
+    private $CLIENTE_ID;
+
+    /**
+    * @var InfoRestaurante
+    *
+    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
+    * })
+    */
+    private $RESTAURANTE_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=100)
+     */
+    private $ESTADO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_CREACION", type="string", length=255)
+     */
+    private $USRCREACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_CREACION", type="date")
+     */
+    private $FECREACION;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_MODIFICACION", type="string", length=255, nullable=true)
+     */
+    private $USRMODIFICACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_MODIFICACION", type="date", nullable=true)
+     */
+    private $FEMODIFICACION;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+

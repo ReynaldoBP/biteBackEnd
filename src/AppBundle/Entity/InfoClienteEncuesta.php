@@ -5,41 +5,31 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * InfoRespuesta
+ * InfoClienteEncuesta
  *
- * @ORM\Table(name="INFO_RESPUESTA")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoRespuestaRepository")
+ * @ORM\Table(name="INFO_CLIENTE_ENCUESTA")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoClienteEncuestaRepository")
  */
-class InfoRespuesta
+class InfoClienteEncuesta
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="ID_RESPUESTA", type="integer")
+     * @ORM\Column(name="ID_CLT_ENCUESTA", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-    * @var InfoPregunta
+    * @var InfoEncuesta
     *
-    * @ORM\ManyToOne(targetEntity="InfoPregunta")
+    * @ORM\ManyToOne(targetEntity="InfoEncuesta")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="PREGUNTA_ID", referencedColumnName="ID_PREGUNTA")
+    * @ORM\JoinColumn(name="ENCUESTA_ID", referencedColumnName="ID_ENCUESTA")
     * })
     */
-    private $PREGUNTA_ID;
-
-    /**
-    * @var InfoClienteEncuesta
-    *
-    * @ORM\ManyToOne(targetEntity="InfoClienteEncuesta")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="CLT_ENCUESTA_ID", referencedColumnName="ID_CLT_ENCUESTA")
-    * })
-    */
-    private $CLT_ENCUESTA_ID;
+    private $ENCUESTA_ID;
 
     /**
     * @var InfoCliente
@@ -52,21 +42,14 @@ class InfoRespuesta
     private $CLIENTE_ID;
 
     /**
-    * @var InfoContenidoSubido
+    * @var InfoRestaurante
     *
-    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
+    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="CONTENIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
+    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
     * })
     */
-    private $CONTENIDO_ID;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="RESPUESTA", type="string", length=255, nullable=true)
-     */
-    private $RESPUESTA;
+    private $RESTAURANTE_ID;
 
     /**
      * @var string
@@ -114,45 +97,21 @@ class InfoRespuesta
     }
 
     /**
-     * Set RESPUESTA
+     * Set ESTADO
      *
-     * @param string $RESPUESTA
+     * @param string $ESTADO
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
-    public function setRESPUESTA($RESPUESTA)
+    public function setESTADO($ESTADO)
     {
-        $this->RESPUESTA = $RESPUESTA;
+        $this->ESTADO = $ESTADO;
 
         return $this;
     }
 
     /**
-     * Get RESPUESTA
-     *
-     * @return string
-     */
-    public function getRESPUESTA()
-    {
-        return $this->RESPUESTA;
-    }
-
-    /**
-     * Set eSTADO
-     *
-     * @param string $eSTADO
-     *
-     * @return InfoRespuesta
-     */
-    public function setESTADO($eSTADO)
-    {
-        $this->ESTADO = $eSTADO;
-
-        return $this;
-    }
-
-    /**
-     * Get eSTADO
+     * Get ESTADO
      *
      * @return string
      */
@@ -166,7 +125,7 @@ class InfoRespuesta
      *
      * @param string $USRCREACION
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
     public function setUSRCREACION($USRCREACION)
     {
@@ -190,7 +149,7 @@ class InfoRespuesta
      *
      * @param \DateTime $FECREACION
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
     public function setFECREACION($FECREACION)
     {
@@ -214,7 +173,7 @@ class InfoRespuesta
      *
      * @param string $USRMODIFICACION
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
     public function setUSRMODIFICACION($USRMODIFICACION)
     {
@@ -238,7 +197,7 @@ class InfoRespuesta
      *
      * @param \DateTime $FEMODIFICACION
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
     public function setFEMODIFICACION($FEMODIFICACION)
     {
@@ -258,11 +217,35 @@ class InfoRespuesta
     }
 
     /**
+     * Set ENCUESTAID
+     *
+     * @param \AppBundle\Entity\InfoEncuesta $ENCUESTAID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setENCUESTAID(\AppBundle\Entity\InfoEncuesta $ENCUESTAID = null)
+    {
+        $this->ENCUESTA_ID = $ENCUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get ENCUESTAID
+     *
+     * @return \AppBundle\Entity\InfoEncuesta
+     */
+    public function getENCUESTAID()
+    {
+        return $this->ENCUESTA_ID;
+    }
+
+    /**
      * Set CLIENTEID
      *
      * @param \AppBundle\Entity\InfoCliente $CLIENTEID
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
     public function setCLIENTEID(\AppBundle\Entity\InfoCliente $CLIENTEID = null)
     {
@@ -282,50 +265,26 @@ class InfoRespuesta
     }
 
     /**
-     * Set PREGUNTAID
+     * Set RESTAURANTEID
      *
-     * @param \AppBundle\Entity\InfoPregunta $PREGUNTAID
+     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
      *
-     * @return InfoRespuesta
+     * @return InfoClienteEncuesta
      */
-    public function setPREGUNTAID(\AppBundle\Entity\InfoPregunta $PREGUNTAID = null)
+    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
     {
-        $this->PREGUNTA_ID = $PREGUNTAID;
+        $this->RESTAURANTE_ID = $RESTAURANTEID;
 
         return $this;
     }
 
     /**
-     * Get PREGUNTAID
+     * Get RESTAURANTEID
      *
-     * @return \AppBundle\Entity\InfoPregunta
+     * @return \AppBundle\Entity\InfoRestaurante
      */
-    public function getPREGUNTAID()
+    public function getRESTAURANTEID()
     {
-        return $this->PREGUNTA_ID;
-    }
-
-    /**
-     * Set CONTENIDOID
-     *
-     * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
-     *
-     * @return InfoRespuesta
-     */
-    public function setCONTENIDOID(\AppBundle\Entity\InfoContenidoSubido $CONTENIDOID = null)
-    {
-        $this->CONTENIDO_ID = $CONTENIDOID;
-
-        return $this;
-    }
-
-    /**
-     * Get CONTENIDOID
-     *
-     * @return \AppBundle\Entity\InfoContenidoSubido
-     */
-    public function getCONTENIDOID()
-    {
-        return $this->CONTENIDO_ID;
+        return $this->RESTAURANTE_ID;
     }
 }

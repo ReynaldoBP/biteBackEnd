@@ -26,6 +26,7 @@ use AppBundle\Entity\InfoContenidoSubido;
 use AppBundle\Entity\InfoRedesSociales;
 use AppBundle\Entity\InfoClientePuntoGlobal;
 use AppBundle\Entity\InfoOpcionRespuesta;
+use AppBundle\Entity\InfoClienteEncuesta;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -537,7 +538,6 @@ class ApiMovilController extends FOSRestController
      */
     public function getEncuesta($arrayData)
     {
-        $strIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
         $strIdEncuesta          = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
         $strDescripcion         = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
         $strTitulo              = $arrayData['titulo'] ? $arrayData['titulo']:'';
@@ -554,9 +554,8 @@ class ApiMovilController extends FOSRestController
         $em                     = $this->getDoctrine()->getEntityManager();
         try
         {
-            $arrayParametros = array('RESTAURANTE_ID' => $strIdRestaurante,
-                                     'ESTADO'         => $strEstado);
-            $objEncuesta     = $em->getRepository('AppBundle:InfoEncuesta')->findBy($arrayParametros);
+            $arrayParametros = array('ESTADO'         => $strEstado);
+            $objEncuesta     = $em->getRepository('AppBundle:InfoEncuesta')->findBy($arrayParametros);            
             if(empty($objEncuesta) && !is_array($objEncuesta))
             {
                 throw new \Exception('La encuesta a buscar no existe.');
@@ -581,9 +580,6 @@ class ApiMovilController extends FOSRestController
                 }
                 $arrayEncuesta = array( 'descripcionEncuesta' => $arrayItem->getDESCRIPCION(),
                                         'tituloEncuesta'      => $arrayItem->getTITULO(),
-                                        'identificacion'      => $arrayItem->getRESTAURANTEID()->getIDENTIFICACION(),
-                                        'razonSocial'         => $arrayItem->getRESTAURANTEID()->getRAZONSOCIAL(),
-                                        'nombreComercial'     => $arrayItem->getRESTAURANTEID()->getNOMBRECOMERCIAL(),
                                         'preguntas'           => $arrayPregunta);
             }
         }
@@ -658,6 +654,7 @@ class ApiMovilController extends FOSRestController
     /**
      * Documentación para la función 'createRespuesta'
      * Método encargado de crear todas las respuesta según los parámetros recibidos.
+     * Adicional crear las relaciones entre clt. y encuestas.
      * 
      * @author Kevin Baque
      * @version 1.0 04-09-2019
@@ -666,8 +663,10 @@ class ApiMovilController extends FOSRestController
      */
     public function createRespuesta($arrayData)
     {
-        $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdRestaurante   = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $intIdEncuesta      = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
+        $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
         $intIdContenido     = $arrayData['idContenido'] ? $arrayData['idContenido']:'';
         $strRespuesta       = $arrayData['respuesta'] ? $arrayData['respuesta']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
@@ -681,36 +680,73 @@ class ApiMovilController extends FOSRestController
         try
         {
             $em->getConnection()->beginTransaction();
-            $arrayParametrosClt = array('ESTADO' => 'ACTIVO',
-                                        'id'     => $intIdCliente);
-            $objCliente         = $em->getRepository('AppBundle:InfoCliente')->findOneBy($arrayParametrosClt);
+            $objCliente     = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
             if(!is_object($objCliente) || empty($objCliente))
             {
-                throw new \Exception('No existe cliente con la descripción enviada por parámetro.');
+                throw new \Exception('No existe el cliente con la descripción enviada por parámetro.');
             }
-            $arrayParametrosPreg = array('ESTADO' => 'ACTIVO',
-                                         'id'     => $intIdPregunta);
-            $objPregunta    = $em->getRepository('AppBundle:InfoPregunta')->findOneBy($arrayParametrosPreg);
-            if(!is_object($objPregunta) || empty($objPregunta))
+            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($intIdRestaurante);
+            if(!is_object($objRestaurante) || empty($objRestaurante))
             {
-                throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
+                throw new \Exception('No existe el Restaurante con la descripción enviada por parámetro.');
             }
-            $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
-            if(!is_object($objContenido) || empty($objContenido))
+            $objEncuesta   = $em->getRepository('AppBundle:InfoEncuesta')->find($intIdEncuesta);
+            if(!is_object($objEncuesta) || empty($objEncuesta))
             {
-                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+                throw new \Exception('No existe la Encuesta con la descripción enviada por parámetro.');
             }
-            $entityRespuesta = new InfoRespuesta();
-            $entityRespuesta->setRESPUESTA($strRespuesta);
-            $entityRespuesta->setPREGUNTAID($objPregunta);
-            $entityRespuesta->setCLIENTEID($objCliente);
-            $entityRespuesta->setCONTENIDOID($objContenido);
-            $entityRespuesta->setESTADO(strtoupper($strEstado));
-            $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
-            $entityRespuesta->setFECREACION($strDatetimeActual);
-            $em->persist($entityRespuesta);
+            $entityCltEncuesta = new InfoClienteEncuesta();
+            $entityCltEncuesta->setCLIENTEID($objCliente);
+            $entityCltEncuesta->setRESTAURANTEID($objRestaurante);
+            $entityCltEncuesta->setENCUESTAID($objEncuesta);
+            $entityCltEncuesta->setESTADO(strtoupper($strEstado));
+            $entityCltEncuesta->setUSRCREACION($strUsuarioCreacion);
+            $entityCltEncuesta->setFECREACION($strDatetimeActual);
+            $em->persist($entityCltEncuesta);
             $em->flush();
-            $strMensajeError = 'Respuesta creada con exito.!';
+            $intIdCltEncuesta = $entityCltEncuesta->getId();
+            if(empty($intIdCltEncuesta))
+            {
+                $em->getConnection()->rollback();
+                throw new \Exception('No ingreso la relación entre Cliente y encuesta, con la descripción enviada por parámetro.');
+            }
+            else
+            {
+                if ($em->getConnection()->isTransactionActive())
+                {
+                    $em->getConnection()->commit();
+                    $em->getConnection()->close();
+                }
+                $arrayParametrosPreg = array('ESTADO' => 'ACTIVO',
+                                             'id'     => $intIdPregunta);
+                $objPregunta    = $em->getRepository('AppBundle:InfoPregunta')->findOneBy($arrayParametrosPreg);
+                if(!is_object($objPregunta) || empty($objPregunta))
+                {
+                throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
+                }
+                $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
+                if(!is_object($objContenido) || empty($objContenido))
+                {
+                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+                }
+                $objCltEncuesta  = $em->getRepository('AppBundle:InfoClienteEncuesta')->find($intIdCltEncuesta);
+                if(!is_object($objCltEncuesta) || empty($objCltEncuesta))
+                {
+                throw new \Exception('No existe la relación cliente encuesta con la descripción enviada por parámetro.');
+                }
+                $entityRespuesta = new InfoRespuesta();
+                $entityRespuesta->setRESPUESTA($strRespuesta);
+                $entityRespuesta->setPREGUNTAID($objPregunta);
+                $entityRespuesta->setCLTENCUESTAID($objCltEncuesta);
+                $entityRespuesta->setCLIENTEID($objCliente);
+                $entityRespuesta->setCONTENIDOID($objContenido);
+                $entityRespuesta->setESTADO(strtoupper($strEstado));
+                $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
+                $entityRespuesta->setFECREACION($strDatetimeActual);
+                $em->persist($entityRespuesta);
+                $em->flush();
+                $strMensajeError = 'Respuesta creada con exito.!';
+            }
         }
         catch(\Exception $ex)
         {

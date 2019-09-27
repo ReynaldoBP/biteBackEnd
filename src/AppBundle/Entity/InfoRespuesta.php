@@ -32,6 +32,16 @@ class InfoRespuesta
     private $PREGUNTA_ID;
 
     /**
+    * @var InfoClienteEncuesta
+    *
+    * @ORM\ManyToOne(targetEntity="InfoClienteEncuesta")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CLT_ENCUESTA_ID", referencedColumnName="ID_CLT_ENCUESTA")
+    * })
+    */
+    private $CLT_ENCUESTA_ID;
+
+    /**
     * @var InfoCliente
     *
     * @ORM\ManyToOne(targetEntity="InfoCliente")
@@ -317,5 +327,29 @@ class InfoRespuesta
     public function getCONTENIDOID()
     {
         return $this->CONTENIDO_ID;
+    }
+
+    /**
+     * Set CLTENCUESTAID
+     *
+     * @param \AppBundle\Entity\InfoClienteEncuesta $CLTENCUESTAID
+     *
+     * @return InfoRespuesta
+     */
+    public function setCLTENCUESTAID(\AppBundle\Entity\InfoClienteEncuesta $CLTENCUESTAID = null)
+    {
+        $this->CLT_ENCUESTA_ID = $CLTENCUESTAID;
+
+        return $this;
+    }
+
+    /**
+     * Get CLTENCUESTAID
+     *
+     * @return \AppBundle\Entity\InfoClienteEncuesta
+     */
+    public function getCLTENCUESTAID()
+    {
+        return $this->CLT_ENCUESTA_ID;
     }
 }

@@ -128,7 +128,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
         $strLatitud            = $arrayParametros['latitud'] ? $arrayParametros['latitud']:'';
         $strLongitud           = $arrayParametros['longitud'] ? $arrayParametros['longitud']:'';
         $strMetros             = $arrayParametros['metros'] ? $arrayParametros['metros']:5;
-        $strEstado             = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strEstado             = $arrayParametros['estado'] ? $arrayParametros['estado']:array('ACTIVO');
         $arraySucursal         = array();
         $strMensajeError       = '';
         $objRsmBuilder         = new ResultSetMappingBuilder($this->_em);
