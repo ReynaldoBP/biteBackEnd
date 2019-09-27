@@ -127,7 +127,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $intIdCliente          = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
         $strTipoIdentificacion = $arrayParametros['strTipoIdentificacion'] ? $arrayParametros['strTipoIdentificacion']:'';
         $strRazonSocial        = $arrayParametros['strRazonSocial'] ? $arrayParametros['strRazonSocial']:'';
-        $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strEstado             = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO');
         $arrayRestaurante      = array();
         $strMensajeError       = '';
         $objRsmBuilder         = new ResultSetMappingBuilder($this->_em);
