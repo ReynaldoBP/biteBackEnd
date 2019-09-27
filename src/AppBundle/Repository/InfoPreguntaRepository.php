@@ -39,7 +39,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
-                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA, EC.EN_CENTRO_COMERCIAL,
+                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA, PE.EN_CENTRO_COMERCIAL,
                                       IOR.ID_OPCION_RESPUESTA,IOR.TIPO_RESPUESTA,IOR.DESCRIPCION AS DESCRIPCION_OPCION_RESPUESTA,IOR.VALOR AS VALOR_OPCION_RESPUESTA, 
                                       IOR.ESTADO AS ESTADO_OPCION_RESPUESTA,
                                       PE.USR_CREACION, PE.FE_CREACION,PE.USR_MODIFICACION,PE.FE_MODIFICACION ";
@@ -62,7 +62,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strCentroComercial))
             {
-                $strWhere .= " AND EC.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
+                $strWhere .= " AND PE.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
                 $objQuery->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
                 $objQueryCount->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
             }
@@ -139,7 +139,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
-                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,EC.EN_CENTRO_COMERCIAL,
+                                      EC.ID_ENCUESTA,EC.DESCRIPCION AS DESCRIPCION_ENCUESTA, EC.ESTADO AS ESTADO_ENCUESTA,PE.EN_CENTRO_COMERCIAL,
                                       IOR.ID_OPCION_RESPUESTA,IOR.TIPO_RESPUESTA,IOR.DESCRIPCION AS DESCRIPCION_OPCION_RESPUESTA,IOR.VALOR AS VALOR_OPCION_RESPUESTA, 
                                       IOR.ESTADO AS ESTADO_OPCION_RESPUESTA,
                                       PE.USR_CREACION, PE.FE_CREACION,PE.USR_MODIFICACION,PE.FE_MODIFICACION ";
@@ -168,7 +168,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strCentroComercial))
             {
-                $strWhere .= " AND EC.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
+                $strWhere .= " AND PE.EN_CENTRO_COMERCIAL =:EN_CENTRO_COMERCIAL";
                 $objQuery->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
                 $objQueryCount->setParameter("EN_CENTRO_COMERCIAL", $strCentroComercial);
             }
