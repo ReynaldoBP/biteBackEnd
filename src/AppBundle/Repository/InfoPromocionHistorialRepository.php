@@ -74,7 +74,7 @@ class InfoPromocionHistorialRepository extends \Doctrine\ORM\EntityRepository
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         try
         {
-            $strSelect      = "SELECT ICH.ID_CLIENTE_PUNTO_HISTORIAL,ICH.ESTADO AS ESTADO_PROMOCION_HISTORIAL,ICH.CLIENTE_ID
+            $strSelect      = "SELECT ICH.ID_CLIENTE_PUNTO_HISTORIAL,ICH.ESTADO AS ESTADO_PROMOCION_HISTORIAL,ICH.CLIENTE_ID,
                                 IPROMO.ID_PROMOCION,IPROMO.DESCRIPCION_TIPO_PROMOCION,IPROMO.ESTADO AS ESTADO_PROMOCION,
                                 IRE.ID_RESTAURANTE,IRE.NOMBRE_COMERCIAL,IRE.ESTADO AS ESTADO_RESTAURANTE ";
             $strFrom        = "FROM INFO_CLIENTE_PROMOCION_HISTORIAL ICH
@@ -88,7 +88,7 @@ class InfoPromocionHistorialRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO",$strEstado);
             if(!empty($intIdRestaurante))
             {
-                $strWhere .= " AND IRE.ID_RESTAURANTE =:ID_RESTAURANTE";
+                $strWhere .= " AND IRE.ID_RESTAURANTE =:ID_RESTAURANTE ";
                 $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
             }
             $objRsmBuilder->addScalarResult('ID_CLIENTE_PUNTO_HISTORIAL', 'ID_CLIENTE_PUNTO_HISTORIAL', 'string');
