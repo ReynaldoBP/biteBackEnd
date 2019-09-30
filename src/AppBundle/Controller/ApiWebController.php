@@ -59,6 +59,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
                 break;
+                case 'getPromocionHistorial':$arrayRespuesta = $this->getPromocionHistorial($arrayData);
+                break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1078,6 +1080,54 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getPromocionHistorial'
+     * Método encargado de listar el historial de la promoción según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 30-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getPromocionHistorial($arrayData)
+    {
+        $intIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $arrayPromocionHist = $em->getRepository('AppBundle:InfoPromocionHistorial')
+                                     ->getPromocionCriterioWeb(array('intIdRestaurante' => $intIdRestaurante,
+                                                                     'ESTADO'           => $strEstado));
+            if(!is_array($arrayPromocionHist) || empty($arrayPromocionHist))
+            {
+                throw new \Exception('Promoción no existe o ha sido completada.');
+            }
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al listar Historial de la promoción, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayPromocionHist,
                                             'succes'    => true
                                             )
                                         ));
