@@ -27,6 +27,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         $strTipoComida         = $arrayParametros['strTipoComida'] ? $arrayParametros['strTipoComida']:'';
         $strIdentificacion     = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
         $intIdRestaurante      = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
+        $intIdUsuario          = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $strTipoIdentificacion = $arrayParametros['strTipoIdentificacion'] ? $arrayParametros['strTipoIdentificacion']:'';
         $strRazonSocial        = $arrayParametros['strRazonSocial'] ? $arrayParametros['strRazonSocial']:'';
         $strContador           = $arrayParametros['strContador'] ? $arrayParametros['strContador']:'NO';
@@ -55,8 +56,10 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
                 $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
                                 IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
                                 IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO ";
-                $strFrom        = "FROM INFO_RESTAURANTE IR,ADMI_TIPO_COMIDA ATC ";
-                $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
+                $strFrom        = "FROM INFO_RESTAURANTE IR
+                                    JOIN ADMI_TIPO_COMIDA ATC
+                                    ON IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA ";
+                $strWhere       = "WHERE IR.ESTADO in (:ESTADO) ";
                 $objQuery->setParameter("ESTADO", $strEstado);
                 if(!empty($strRazonSocial))
                 {
@@ -77,6 +80,13 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
                 {
                 $strWhere .= " AND IR.ID_RESTAURANTE =:ID_RESTAURANTE";
                 $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
+                }
+                if(!empty($intIdUsuario))
+                {
+                $strFrom .= " JOIN INFO_USUARIO_RES IUR 
+                                ON IR.ID_RESTAURANTE = IUR.RESTAURANTE_ID ";
+                $strWhere .= " AND IUR.USUARIO_ID =:USUARIO_ID";
+                $objQuery->setParameter("USUARIO_ID", $intIdUsuario);
                 }
                 if(!empty($strTipoComida))
                 {
