@@ -16,6 +16,7 @@ use AppBundle\Entity\InfoSucursal;
 use AppBundle\Entity\InfoCliente;
 use AppBundle\Entity\InfoClienteInfluencer;
 use AppBundle\Entity\InfoClienteEncuesta;
+use AppBundle\Entity\InfoPromocionHistorial;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -55,6 +56,8 @@ class ApiWebController extends FOSRestController
                 case 'getCltInfluencer':$arrayRespuesta = $this->getCltInfluencer($arrayData);
                 break;
                 case 'getClienteEncuesta':$arrayRespuesta = $this->getClienteEncuesta($arrayData);
+                break;
+                case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
                 break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
@@ -983,6 +986,8 @@ class ApiWebController extends FOSRestController
     public function getClienteEncuesta($arrayData)
     {
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'';
+        $strMes             = $arrayData['mes'] ? $arrayData['mes']:'';
+        $strAnio            = $arrayData['anio'] ? $arrayData['anio']:'';
         $arrayCltEncuesta   = array();
         $strMensajeError    = '';
         $strStatus          = 400;
@@ -990,7 +995,9 @@ class ApiWebController extends FOSRestController
         try
         {
             $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
-                                                      ->getClienteEncuesta(array('strEstado' => $strEstado));
+                                                      ->getClienteEncuesta(array('strEstado' => $strEstado,
+                                                                                 'strMes'    => $strMes,
+                                                                                 'strAnio'   => $strAnio));
             if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
             {
                 $strStatus  = 404;
@@ -1005,6 +1012,72 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'editPromocionHistorial'
+     * Método encargado de editar el historial de la promoción según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 30-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editPromocionHistorial($arrayData)
+    {
+        $intIdPromocionHist     = $arrayData['idPromocionHist'] ? $arrayData['idPromocionHist']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'COMPLETADO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $arrayPromocionHist = $em->getRepository('AppBundle:InfoPromocionHistorial')->findBy(array('id'     => $intIdPromocionHist,
+                                                                                                       'ESTADO' => 'PENDIENTE'));
+            if(!is_array($arrayPromocionHist) || empty($arrayPromocionHist))
+            {
+                throw new \Exception('Promoción no existe o ha sido completada.');
+            }
+            foreach($arrayPromocionHist as $arrayItem)
+            {
+                $intIdPromocionHist = $arrayItem->getId();
+            }
+            $objPromocionHist = $em->getRepository('AppBundle:InfoPromocionHistorial')->find($intIdPromocionHist);
+            if(!empty($strEstado))
+            {
+                $objPromocionHist->setESTADO(strtoupper($strEstado));
+            }
+            $objPromocionHist->setUSRMODIFICACION($strUsuarioCreacion);
+            $objPromocionHist->setFEMODIFICACION($strDatetimeActual);
+            $em->persist($objPromocionHist);
+            $em->flush();
+            $strMensajeError = 'Historial de la promoción editado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al editar Historial de la promoción, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
                                             'succes'    => true
                                             )
                                         ));

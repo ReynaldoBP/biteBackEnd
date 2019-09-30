@@ -23,6 +23,8 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
     public function getClienteEncuesta($arrayParametros)
     {
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
         $arrayCltEncuesta   = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -34,12 +36,22 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
                                 INNER JOIN INFO_ENCUESTA IE
                                 ON IE.ID_ENCUESTA=ICE.ENCUESTA_ID ";
             $strWhere       = "WHERE IE.ESTADO in (:ESTADO) ";
+            $strGroupBy     = " GROUP BY ICE.ENCUESTA_ID ";
             $objQuery->setParameter("ESTADO",$strEstado);
-
+            if(!empty($strMes))
+            {
+                $strWhere .= " AND EXTRACT(MONTH FROM ICE.FE_CREACION) = :strMes ";
+                $objQuery->setParameter("strMes", $strMes);
+            }
+            if(!empty($strAnio))
+            {
+                $strWhere .= " AND EXTRACT(YEAR FROM ICE.FE_CREACION) = :strAnio ";
+                $objQuery->setParameter("strAnio", $strAnio);
+            }
             $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
             $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
             $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
-            $strSql       = $strSelect.$strFrom.$strWhere;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
             $objQuery->setSQL($strSql);
             $arrayCltEncuesta['resultados'] = $objQuery->getResult();
         }

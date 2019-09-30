@@ -250,6 +250,7 @@ class InfoRestauranteController extends Controller
     public function getRestauranteAction(Request $request)
     {
         $intIdRestaurante       = $request->query->get("idRestaurante") ? $request->query->get("idRestaurante"):'';
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strTipoComida          = $request->query->get("tipoComida") ? $request->query->get("tipoComida"):'';
         $strTipoIdentificacion  = $request->query->get("tipoIdentificacion") ? $request->query->get("tipoIdentificacion"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
@@ -269,6 +270,7 @@ class InfoRestauranteController extends Controller
             $objController->setContainer($this->container);
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
                                     'intIdRestaurante'      => $intIdRestaurante,
+                                    'intIdUsuario'          => $intIdUsuario,
                                     'strTipoIdentificacion' => $strTipoIdentificacion,
                                     'strIdentificacion'     => $strIdentificacion,
                                     'strRazonSocial'        => $strRazonSocial,

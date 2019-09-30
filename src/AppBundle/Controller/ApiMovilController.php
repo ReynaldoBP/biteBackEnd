@@ -27,6 +27,7 @@ use AppBundle\Entity\InfoRedesSociales;
 use AppBundle\Entity\InfoClientePuntoGlobal;
 use AppBundle\Entity\InfoOpcionRespuesta;
 use AppBundle\Entity\InfoClienteEncuesta;
+use AppBundle\Entity\InfoPromocionHistorial;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -79,6 +80,8 @@ class ApiMovilController extends FOSRestController
                case 'getPromocion':$arrayRespuesta = $this->getPromocion($arrayData);
                break;
                case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);
+               break;
+               case 'createPromocionHistorial':$arrayRespuesta = $this->createPromocionHistorial($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -1417,6 +1420,120 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltPunto,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createPromocionHistorial'
+     * Método encargado de crear el historial de las promociones según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 29-09-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createPromocionHistorial($arrayData)
+    {
+        $intIdPromocion     = $arrayData['idPromocion'] ? $arrayData['idPromocion']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $intCantidadPuntos  = 0;
+        $intCantPuntospromo = 0;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
+            }
+            //consultar el estado a buscar
+            $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'=>$intIdCliente));
+            if(!is_array($arrayCltPunto) || empty($arrayCltPunto))
+            {
+                throw new \Exception('El cliente a buscar no tiene puntajes.');
+            }
+            foreach($arrayCltPunto as $arrayItem)
+            {
+                $intCantidadPuntos = $intCantidadPuntos + $arrayItem->getCANTIDADPUNTOS();
+            }
+            $objPromocion = $em->getRepository('AppBundle:InfoPromocion')->find($intIdPromocion);
+            if(!is_object($objPromocion) || empty($objPromocion))
+            {
+                throw new \Exception('No existe la Promoción con identificador enviada por parámetro.');
+            }
+            $intCantPuntospromo = $objPromocion->getCANTIDADPUNTOS();
+            if($intCantPuntospromo<=$intCantidadPuntos)
+            {
+                $arrayPromociones   = $this->getDoctrine()->getRepository('AppBundle:InfoPromocionHistorial')
+                                        ->getPromoHistorialCriterio(array('intIdCliente'=>$intIdCliente,
+                                                                          'strEstado'   =>'PENDIENTE'));
+                if(isset($arrayPromociones['error']) && !empty($arrayPromociones['error']))
+                {
+                    $strStatus  = 404;
+                    throw new \Exception($arrayPromociones['error']);
+                }
+                $intCantidadPromocion = $arrayPromociones['resultados'];
+                //(puntajeCliente-puntjaePromocionesVigente) > puntajePromocion
+                $intSumaPuntajeClt    = $intCantidadPuntos - $intCantidadPromocion;
+                if($intSumaPuntajeClt >= $intCantPuntospromo)
+                {
+                    $entityPromocionHist = new InfoPromocionHistorial();
+                    $entityPromocionHist->setCLIENTEID($objCliente);
+                    $entityPromocionHist->setPROMOCIONID($objPromocion);
+                    $entityPromocionHist->setESTADO(strtoupper($strEstado));
+                    $entityPromocionHist->setUSRCREACION($strUsuarioCreacion);
+                    $entityPromocionHist->setFECREACION($strDatetimeActual);
+                    $em->persist($entityPromocionHist);
+                    $em->flush();
+                    $strMensajeError = 'Historial de la Promoción creado con exito.!';
+                }
+                else
+                {
+                    $intResultado = $intCantPuntospromo - $intCantidadPuntos;
+                    throw new \Exception('Puntaje reservado. Se está procesando una promoción.');
+                }
+            }
+            else
+            {
+                $intResultado = $intCantPuntospromo - $intCantidadPuntos;
+                throw new \Exception('Cantidad de puntos insuficiente. Al momento ud. cuenta con '.$intCantidadPuntos.' puntos, por lo cual le hace falta: '.$intResultado.' puntos.');
+            }
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el Historial de la Promoción, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayPromocionHist = array('id'             => $entityPromocionHist->getId(),
+                                        'idCliente'      => $entityPromocionHist->getCLIENTEID()->getId(),
+                                        'idPromocion'    => $entityPromocionHist->getPROMOCIONID()->getId(),
+                                        'estado'         => $entityPromocionHist->getESTADO(),
+                                        'usrCreacion'    => $entityPromocionHist->getUSRCREACION(),
+                                        'feCreacion'     => $entityPromocionHist->getFECREACION()
+                                );
+        }
+        $arrayPromocionHist['strMensajeError'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayPromocionHist,
                                             'succes'    => true
                                             )
                                         ));
