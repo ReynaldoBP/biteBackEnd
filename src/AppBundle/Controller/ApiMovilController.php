@@ -1160,6 +1160,7 @@ class ApiMovilController extends FOSRestController
     public function createContenido($arrayData)
     {
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strImagen          = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
@@ -1183,9 +1184,14 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
-
+            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->find($intIdRedSocial);
+            if(!is_object($objRedSocial) || empty($objRedSocial))
+            {
+                throw new \Exception('No existe la red social con identificador enviada por parámetro.');
+            }
             $entityContSub = new InfoContenidoSubido();
             $entityContSub->setCLIENTEID($objCliente);
+            $entityContSub->setREDESSOCIALESID($objRedSocial);
             $entityContSub->setDESCRIPCION($strDescripcion);
             $entityContSub->setIMAGEN($strRutaImagen);
             $entityContSub->setESTADO(strtoupper($strEstado));
@@ -1236,7 +1242,6 @@ class ApiMovilController extends FOSRestController
      */
     public function createRedesSociales($arrayData)
     {
-        $intIdContSubido    = $arrayData['idContSubido'] ? $arrayData['idContSubido']:'';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
@@ -1248,14 +1253,8 @@ class ApiMovilController extends FOSRestController
         try
         {
             $em->getConnection()->beginTransaction();
-            $objContSubido = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContSubido);
-            if(!is_object($objContSubido) || empty($objContSubido))
-            {
-                throw new \Exception('No existe el contenido con identificador enviada por parámetro.');
-            }
 
             $entityRedesSociales = new InfoRedesSociales();
-            $entityRedesSociales->setCONTENIDOSUBIDOID($objContSubido);
             $entityRedesSociales->setDESCRIPCION($strDescripcion);
             $entityRedesSociales->setESTADO(strtoupper($strEstado));
             $entityRedesSociales->setUSRCREACION($strUsuarioCreacion);
@@ -1279,8 +1278,6 @@ class ApiMovilController extends FOSRestController
             $em->getConnection()->close();
             $arrayRedesSoc = array('id'             => $entityRedesSociales->getId(),
                                   'descripcion'     => $entityRedesSociales->getDESCRIPCION(),
-                                  'idContSubido'    => $entityRedesSociales->getCONTENIDOSUBIDOID()->getId(),
-                                  'descContSubido'  => $entityRedesSociales->getCONTENIDOSUBIDOID()->getDESCRIPCION(),
                                   'estado'          => $entityRedesSociales->getESTADO(),
                                   'usrCreacion'     => $entityRedesSociales->getUSRCREACION(),
                                   'feCreacion'      => $entityRedesSociales->getFECREACION()

@@ -32,6 +32,16 @@ class InfoContenidoSubido
     private $CLIENTE_ID;
 
     /**
+    * @var InfoRedesSociales
+    *
+    * @ORM\ManyToOne(targetEntity="InfoRedesSociales")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="REDES_SOCIALES_ID", referencedColumnName="ID_REDES_SOCIALES")
+    * })
+    */
+    private $REDES_SOCIALES_ID;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255, nullable=true)
@@ -258,4 +268,28 @@ class InfoContenidoSubido
         return $this->FEMODIFICACION;
     }
 
+
+    /**
+     * Set CLIENTEID
+     *
+     * @param \AppBundle\Entity\InfoCliente $CLIENTEID
+     *
+     * @return InfoContenidoSubido
+     */
+    public function setCLIENTEID(\AppBundle\Entity\InfoCliente $CLIENTEID = null)
+    {
+        $this->CLIENTE_ID = $CLIENTEID;
+
+        return $this;
+    }
+
+    /**
+     * Get CLIENTEID
+     *
+     * @return \AppBundle\Entity\InfoCliente
+     */
+    public function getCLIENTEID()
+    {
+        return $this->CLIENTE_ID;
+    }
 }

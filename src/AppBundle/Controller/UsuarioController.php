@@ -123,7 +123,10 @@ class UsuarioController extends Controller
             $entityUsuario->setIDENTIFICACION($strIdentificacion);
             $entityUsuario->setNOMBRES($strNombres);
             $entityUsuario->setAPELLIDOS($strApellidos);
-            $entityUsuario->setCONTRASENIA(md5($strContrasenia));
+            if(!empty($strContrasenia))
+            {
+                $entityUsuario->setCONTRASENIA(md5($strContrasenia));
+            }
             $entityUsuario->setIMAGEN($strImagen);
             $entityUsuario->setCORREO($strCorreo);
             $entityUsuario->setESTADO(strtoupper($strEstado));

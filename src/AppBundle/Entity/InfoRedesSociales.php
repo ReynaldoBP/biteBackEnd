@@ -22,16 +22,6 @@ class InfoRedesSociales
     private $id;
 
     /**
-    * @var InfoContenidoSubido
-    *
-    * @ORM\ManyToOne(targetEntity="InfoContenidoSubido")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="CONTENIDO_SUBIDO_ID", referencedColumnName="ID_CONTENIDO_SUBIDO")
-    * })
-    */
-    private $CONTENIDO_SUBIDO_ID;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="DESCRIPCION", type="string", length=255, nullable=true)
@@ -225,29 +215,5 @@ class InfoRedesSociales
     public function getFEMODIFICACION()
     {
         return $this->FEMODIFICACION;
-    }
-
-    /**
-     * Set CONTENIDOSUBIDOID
-     *
-     * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOSUBIDOID
-     *
-     * @return InfoRedesSociales
-     */
-    public function setCONTENIDOSUBIDOID(\AppBundle\Entity\InfoContenidoSubido $CONTENIDOSUBIDOID = null)
-    {
-        $this->CONTENIDO_SUBIDO_ID = $CONTENIDOSUBIDOID;
-
-        return $this;
-    }
-
-    /**
-     * Get CONTENIDOSUBIDOID
-     *
-     * @return \AppBundle\Entity\InfoContenidoSubido
-     */
-    public function getCONTENIDOSUBIDOID()
-    {
-        return $this->CONTENIDO_SUBIDO_ID;
     }
 }
