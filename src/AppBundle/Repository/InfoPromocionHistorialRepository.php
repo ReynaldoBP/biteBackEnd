@@ -68,6 +68,7 @@ class InfoPromocionHistorialRepository extends \Doctrine\ORM\EntityRepository
     {
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('PENDIENTE');
         $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
+        $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
         $arrayPromocion     = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -90,6 +91,11 @@ class InfoPromocionHistorialRepository extends \Doctrine\ORM\EntityRepository
             {
                 $strWhere .= " AND IRE.ID_RESTAURANTE =:ID_RESTAURANTE ";
                 $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
+            }
+            if(!empty($intIdCliente))
+            {
+                $strWhere .= " AND ICH.CLIENTE_ID =:CLIENTE_ID ";
+                $objQuery->setParameter("CLIENTE_ID", $intIdCliente);
             }
             $objRsmBuilder->addScalarResult('ID_CLIENTE_PUNTO_HISTORIAL', 'ID_CLIENTE_PUNTO_HISTORIAL', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_PROMOCION_HISTORIAL', 'ESTADO_PROMOCION_HISTORIAL', 'string');

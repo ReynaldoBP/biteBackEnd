@@ -31,27 +31,22 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         try
         {
-            $strSelect      = "SELECT ICE.ENCUESTA_ID,IE.TITULO, COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_CLIENTE_ENCUESTA ICE
-                                INNER JOIN INFO_ENCUESTA IE
-                                ON IE.ID_ENCUESTA=ICE.ENCUESTA_ID ";
+            $strSelect      = "SELECT IE.ID_ENCUESTA, IE.TITULO,
+                                IFNULL( (SELECT COUNT(*) 
+                                            FROM INFO_CLIENTE_ENCUESTA ICE
+                                            WHERE ICE.ENCUESTA_ID = IE.ID_ENCUESTA 
+                                            AND EXTRACT(MONTH FROM ICE.FE_CREACION) = :strMes
+                                            AND EXTRACT(YEAR  FROM ICE.FE_CREACION) = :strAnio
+                                            GROUP BY ICE.ENCUESTA_ID) ,0) AS CANTIDAD ";
+            $strFrom        = "FROM INFO_ENCUESTA IE ";
             $strWhere       = "WHERE IE.ESTADO in (:ESTADO) ";
-            $strGroupBy     = " GROUP BY ICE.ENCUESTA_ID ";
             $objQuery->setParameter("ESTADO",$strEstado);
-            if(!empty($strMes))
-            {
-                $strWhere .= " AND EXTRACT(MONTH FROM ICE.FE_CREACION) = :strMes ";
-                $objQuery->setParameter("strMes", $strMes);
-            }
-            if(!empty($strAnio))
-            {
-                $strWhere .= " AND EXTRACT(YEAR FROM ICE.FE_CREACION) = :strAnio ";
-                $objQuery->setParameter("strAnio", $strAnio);
-            }
-            $objRsmBuilder->addScalarResult('ENCUESTA_ID', 'ENCUESTA_ID', 'string');
+            $objQuery->setParameter("strMes", $strMes);
+            $objQuery->setParameter("strAnio", $strAnio);
+            $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
             $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
             $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
-            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
+            $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
             $arrayCltEncuesta['resultados'] = $objQuery->getResult();
         }
