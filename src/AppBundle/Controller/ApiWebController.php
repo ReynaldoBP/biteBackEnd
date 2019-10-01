@@ -725,6 +725,7 @@ class ApiWebController extends FOSRestController
     {
         $intIdCliente      = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strIdentificacion = $arrayData['identificacion'] ? $arrayData['identificacion']:'';
+        $intIdRestaurante  = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
         $strNombres        = $arrayData['nombres'] ? $arrayData['nombres']:'';
         $strApellidos      = $arrayData['apellidos'] ? $arrayData['apellidos']:'';
         $strContador       = $arrayData['strContador'] ? $arrayData['strContador']:'';
@@ -737,6 +738,7 @@ class ApiWebController extends FOSRestController
         {
             $arrayParametros = array('intIdCliente'     => $intIdCliente,
                                     'strIdentificacion' => $strIdentificacion,
+                                    'intIdRestaurante'  => $intIdRestaurante,
                                     'strNombres'        => $strNombres,
                                     'strApellidos'      => $strApellidos,
                                     'strContador'       => $strContador,

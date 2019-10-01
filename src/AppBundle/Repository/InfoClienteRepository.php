@@ -120,6 +120,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
     public function getClienteCriterio($arrayParametros)
     {
         $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
+        $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
         $strIdentificacion  = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
         $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
         $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
@@ -153,8 +154,11 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                                 IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION,
                                 IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES, IFNULL(SUM(ICPG.CANTIDAD_PUNTOS),0) AS PUNTOS_GLOBALES ";
                 $strFrom        = "FROM INFO_CLIENTE IC 
-                                LEFT JOIN INFO_CLIENTE_PUNTO ICP ON IC.ID_CLIENTE = ICP.CLIENTE_ID
-                                LEFT JOIN INFO_CLIENTE_PUNTO_GLOBAL ICPG ON IC.ID_CLIENTE = ICPG.CLIENTE_ID ";
+                                LEFT JOIN INFO_CLIENTE_PUNTO ICP         ON IC.ID_CLIENTE       = ICP.CLIENTE_ID
+                                LEFT JOIN INFO_CLIENTE_PUNTO_GLOBAL ICPG ON IC.ID_CLIENTE       = ICPG.CLIENTE_ID 
+                                LEFT JOIN INFO_SUCURSAL ISUR             ON ISUR.ID_SUCURSAL    = ICP.SUCURSAL_ID
+                                LEFT JOIN INFO_RESTAURANTE IRES          ON IRES.ID_RESTAURANTE = ISUR.RESTAURANTE_ID
+                                ";
                 $strWhere       = "WHERE IC.ESTADO in (:ESTADO) ";
                 $objQuery->setParameter("ESTADO",$strEstado);
                 $strGroup = "GROUP BY IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
@@ -164,6 +168,11 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                 {
                 $strWhere .= " AND IC.ID_CLIENTE =:intIdCliente";
                 $objQuery->setParameter("intIdCliente", $intIdCliente);
+                }
+                if(!empty($intIdRestaurante))
+                {
+                    $strWhere .= " AND IRES.ID_RESTAURANTE =:intIdRestaurante";
+                    $objQuery->setParameter("intIdRestaurante", $intIdRestaurante);
                 }
                 if(!empty($strNombres))
                 {
