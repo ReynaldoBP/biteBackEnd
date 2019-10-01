@@ -1098,6 +1098,7 @@ class ApiWebController extends FOSRestController
     public function getPromocionHistorial($arrayData)
     {
         $intIdRestaurante       = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual      = new \DateTime('now');
@@ -1110,6 +1111,7 @@ class ApiWebController extends FOSRestController
             $em->getConnection()->beginTransaction();
             $arrayPromocionHist = $em->getRepository('AppBundle:InfoPromocionHistorial')
                                      ->getPromocionCriterioWeb(array('intIdRestaurante' => $intIdRestaurante,
+                                                                     'intIdCliente'     => $intIdCliente,
                                                                      'ESTADO'           => $strEstado));
             if(!is_array($arrayPromocionHist) || empty($arrayPromocionHist))
             {
