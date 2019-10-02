@@ -75,6 +75,8 @@ class ApiMovilController extends FOSRestController
                break;
                case 'createContenido':$arrayRespuesta = $this->createContenido($arrayData);
                break;
+               case 'editContenido':$arrayRespuesta = $this->editContenido($arrayData);
+               break;
                case 'createRedesSociales':$arrayRespuesta = $this->createRedesSociales($arrayData);
                break;
                case 'getPromocion':$arrayRespuesta = $this->getPromocion($arrayData);
@@ -1147,7 +1149,76 @@ class ApiMovilController extends FOSRestController
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }
-
+    /**
+     * Documentación para la función 'editContenido'
+     * Método encargado de editar todos los contenidos según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 02-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editContenido($arrayData)
+    {
+        $intIdContenido     = $arrayData['idContenido'] ? $arrayData['idContenido']:'';
+        $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'NO COMPARTIDO';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objContenido = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
+            if(!is_object($objContenido) || empty($objContenido))
+            {
+                throw new \Exception('No existe el contenido con identificador enviada por parámetro.');
+            }
+            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->findOneBy(array('DESCRIPCION' => $intIdRedSocial,
+                                                                                               'ESTADO'      => 'ACTIVO'));
+            if(!is_object($objRedSocial) || empty($objRedSocial))
+            {
+                throw new \Exception('No existe la red social con identificador enviada por parámetro.');
+            }
+            else
+            {
+                $objContenido->setREDESSOCIALESID($objRedSocial);
+                $em->persist($objContenido);
+                $em->flush();
+                $strMensajeError = 'Contenido editado con exito.!';
+            }
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al editar el Contenido, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+            $arrayContenido = array('id'            => $objContenido->getId(),
+                                  'cantPuntos'      => $objContenido->getDESCRIPCION(),
+                                  'estado'          => $objContenido->getESTADO(),
+                                  'usrCreacion'     => $objContenido->getUSRCREACION(),
+                                  'feCreacion'      => $objContenido->getFECREACION());
+        }
+        $arrayContenido['strMensajeError'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayContenido,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
     /**
      * Documentación para la función 'createContenido'
      * Método encargado de crear todos los contenidos según los parámetros recibidos.
@@ -1160,7 +1231,7 @@ class ApiMovilController extends FOSRestController
     public function createContenido($arrayData)
     {
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
-        $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'';
+        $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'NO COMPARTIDO';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strImagen          = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
@@ -1184,7 +1255,8 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
-            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->find($intIdRedSocial);
+            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->findOneBy(array('DESCRIPCION' => $intIdRedSocial,
+                                                                                               'ESTADO'      => 'ACTIVO'));
             if(!is_object($objRedSocial) || empty($objRedSocial))
             {
                 throw new \Exception('No existe la red social con identificador enviada por parámetro.');
