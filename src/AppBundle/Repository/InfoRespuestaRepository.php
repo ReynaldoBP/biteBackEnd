@@ -12,6 +12,61 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
+     * Documentación para la función 'getRespuestaDashboard'
+     * Método encargado de retornar las respuestas de los clientes
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 02-10-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */    
+    public function getRespuestaDashboard($arrayParametros)
+    {
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT C.DESCRIPCION AS RED_SOCIAL, A.FE_CREACION, A.CLIENTE_ID, 
+                                D.TITULO, B.IMAGEN, A.ESTADO, A.ID_CLT_ENCUESTA ";
+            $strFrom        = "FROM INFO_CLIENTE_ENCUESTA A 
+                                INNER JOIN INFO_CONTENIDO_SUBIDO B 
+                                    ON A.CONTENIDO_ID = B.`ID_CONTENIDO_SUBIDO`
+                                INNER JOIN INFO_REDES_SOCIALES C 
+                                    ON C.ID_REDES_SOCIALES = B.REDES_SOCIALES_ID
+                                INNER JOIN INFO_ENCUESTA D 
+                                    ON A.ENCUESTA_ID = D.ID_ENCUESTA ";
+            $strWhere       = "WHERE A.ESTADO in (:ESTADO)
+                                AND EXTRACT(YEAR FROM A.FE_CREACION ) = :strAnio 
+                                AND EXTRACT(MONTH FROM A.FE_CREACION ) = :strMes ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            $objQuery->setParameter("strMes", $strMes);
+            $objQuery->setParameter("strAnio", $strAnio);
+            $objRsmBuilder->addScalarResult('RED_SOCIAL', 'RED_SOCIAL', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('CLIENTE_ID', 'CLIENTE_ID', 'string');
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('ID_CLT_ENCUESTA', 'ID_CLT_ENCUESTA', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayRespuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        return $arrayRespuesta;
+    }
+    /**
      * Documentación para la función 'getRespuestaCriterio'
      * Método encargado de retornar las respuestas de los clientes
      * según los parámetros recibidos.
