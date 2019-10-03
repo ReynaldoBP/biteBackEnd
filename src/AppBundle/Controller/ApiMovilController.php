@@ -131,6 +131,7 @@ class ApiMovilController extends FOSRestController
         $strStatus          = 400;
         $objResponse        = new Response;
         $em                 = $this->getDoctrine()->getEntityManager();
+        $strEstado          = (!empty($strAutenticacionRS) && $strAutenticacionRS == 'N') ? 'INACTIVO':$strContrasenia;
         try
         {
             $em->getConnection()->beginTransaction();
@@ -201,6 +202,39 @@ class ApiMovilController extends FOSRestController
                                     'sector'         => $entityCliente->getSECTOR(),
                                     'usrCreacion'    => $entityCliente->getUSRCREACION(),
                                     'feCreacion'     => $entityCliente->getFECREACION());
+            if($strAutenticacionRS == 'N')
+            {
+                $strEstadoClt      = 'editCliente?idCliente='.$entityCliente->getId();
+                $strActivaClt      = 'http://127.0.0.1/bitteBackEnd/web/'.md5($strEstadoClt);
+                $strActivaCltLocal = "http://127.0.0.1/bitteBackEnd/web/editCliente?idCliente=".$entityCliente->getId();
+                $strActivaCltProd = "http://bitte.app/bitteCore/web/editCliente?idCliente=".$entityCliente->getId();
+                $strAsunto        = 'Clave temporal Bitte';
+                $strContrasenia   = uniqid();
+                $strMensajeCorreo = '<div class="">Bienvenida Usuario Administrador Restaurante:</div>
+                <div class="">&nbsp;</div>
+                <div class="">BITTE le da la bienvenida a su sistema de an&aacute;lisis de datos de satisfacci&oacute;n cliente. BITE le va a permitir conocer la satisfacci&oacute;n de sus clientes bajo diferentes variables y a su vez le permitir&aacute; hacer distintos comparativos para conocer el impacto de mejoras que implemente en su restaurante. A su vez, BITTE permite a los usuarios del app compartir imagenes en redes sociales, que permitir&aacute;n a su establecimiento tener un marketing viral, tanto los datos de veces compartidas las imagen como el alcance de cada imagen, son datos estad&iacute;sticos, que dependiendo de su plan, su restaurante podr&aacute; conocer.&nbsp;</div>
+                <div class="">&nbsp;</div>
+                <div class="">Es hora de premiar a su clientela fija reconoci&eacute;ndolos con premios que usted ya estableci&oacute; y podr&aacute; controlar, permitiendo crear un vinculo mas cercano con sus clientes.&nbsp;</div>
+                <div class="">&nbsp;</div>
+                <div class="">Nuestro equipo de asistencia estar&aacute; disponible para usted para lo que necesite. Por favor complete su registro de establecimiento y comience a recolectar las opiniones de sus clientes de manera ordenada para un an&aacute;lisis y tabulaci&oacute;n din&aacute;mica.&nbsp;</div>
+                <div class="">&nbsp;</div>
+                <div class="">
+                <div>
+                <div><strong>Estás a un paso de comenzar, solamente debes activar tu cuenta.&nbsp;</strong></div>
+                <div><a href='.$strActivaCltProd.'>Activar mi cuenta</a></div>
+                <div>&nbsp;</div>
+                </div>
+                </div>
+                <div class="">Bienvenido al mundo BITTE.</div>';
+                $strRemitente     = 'notificaciones_bitte@massvision.tv';
+                $arrayParametros  = array('strAsunto'          => $strAsunto,
+                                            'strMensajeCorreo' => $strMensajeCorreo,
+                                            'strRemitente'     => $strRemitente,
+                                            'strDestinatario'  => $strCorreo);
+                $objController    = new DefaultController();
+                $objController->setContainer($this->container);
+                $objController->enviaCorreo($arrayParametros);
+            }
         }
         $arrayCliente['mensaje'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
@@ -811,7 +845,8 @@ class ApiMovilController extends FOSRestController
         $objResponse        = new Response;
         try
         {
-            $arrayParametros = array('CORREO' => $strCorreo);
+            $arrayParametros = array('CORREO' => $strCorreo,
+                                     'ESTADO' => 'ACTIVO');
             if($strAutenticacionRS == 'N')
             {
                 $arrayParametros['CONTRASENIA'] = md5($strPass);
