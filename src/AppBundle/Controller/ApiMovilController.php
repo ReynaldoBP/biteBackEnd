@@ -442,6 +442,10 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 28-08-2019
      * 
+     * @author Nestor Naula
+     * @version 1.1 04-10-2019 -  Se agrega la imagen a las coordenadas
+     * @since 1.0
+     * 
      * @return array  $objResponse
      */
     public function getSucursalPorUbicacion($arrayData)
@@ -449,14 +453,18 @@ class ApiMovilController extends FOSRestController
         $strLatitud        = $arrayData['latitud'] ? $arrayData['latitud']:'';
         $strLongitud       = $arrayData['longitud'] ? $arrayData['longitud']:'';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
+        $conImagen         = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
         $arraySucursal     = array();
         $strMensajeError   = '';
         $strStatus         = 400;
         $strMetros         = 0;
+        $intIterador       = 0;
         $objResponse       = new Response;
         $strDescripcion    = 'CANTIDAD_DISTANCIA';
+        $arrayRespuesta    = array();
         try
         {
+            $objController   = new DefaultController();
             $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
                                                                                                                'DESCRIPCION'  => $strDescripcion));
             $arrayParametros = array('latitud' => $strLatitud,
@@ -465,6 +473,28 @@ class ApiMovilController extends FOSRestController
                                     'metros'   => $objParametro->getVALOR2()
                                     );
             $arraySucursal   = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')->getSucursalPorUbicacion($arrayParametros);
+            foreach ($arraySucursal["resultados"] as &$item)
+            {
+                $arraySucursalRes   = $this->getDoctrine()->getRepository('AppBundle:InfoSucursal')
+                                                          ->findOneById($item["ID_SUCURSAL"]);
+
+                $arrayParametrosRes = array('intIdRestaurante'      => $arraySucursalRes->getRESTAURANTEID());
+                $arrayRestaurante   = $this->getDoctrine()->getRepository('AppBundle:InfoRestaurante')->getRestauranteCriterioMovil($arrayParametrosRes);
+                
+                if($conImagen == 'SI')
+                {
+                    if(!empty($arrayRestaurante["resultados"]['IMAGEN']))
+                    {
+                        $arraySucursal["resultados"][$intIterador]["IMAGEN"] = $objController->getImgBase64($arrayRestaurante["resultados"]['IMAGEN']);
+                    }
+                    else
+                    {
+                        $arraySucursal["resultados"][$intIterador]["IMAGEN"] =  null;
+                    }
+                } 
+                $intIterador = $intIterador +1;                               
+            }
+            
             if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))
             {
                 $strStatus  = 404;
@@ -708,6 +738,7 @@ class ApiMovilController extends FOSRestController
         $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
         $intIdContenido     = $arrayData['idContenido'] ? $arrayData['idContenido']:'';
         $strRespuesta       = $arrayData['respuesta'] ? $arrayData['respuesta']:'';
+        $arrayPregunta      = $arrayData['arrayPregunta'] ? $arrayData['arrayPregunta']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
@@ -762,28 +793,45 @@ class ApiMovilController extends FOSRestController
                     $em->getConnection()->commit();
                     $em->getConnection()->close();
                 }
-                $arrayParametrosPreg = array('ESTADO' => 'ACTIVO',
-                                             'id'     => $intIdPregunta);
-                $objPregunta    = $em->getRepository('AppBundle:InfoPregunta')->findOneBy($arrayParametrosPreg);
-                if(!is_object($objPregunta) || empty($objPregunta))
-                {
-                throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
-                }
                 $objCltEncuesta  = $em->getRepository('AppBundle:InfoClienteEncuesta')->find($intIdCltEncuesta);
                 if(!is_object($objCltEncuesta) || empty($objCltEncuesta))
                 {
-                throw new \Exception('No existe la relación cliente encuesta con la descripción enviada por parámetro.');
+                    throw new \Exception('No existe la relación cliente encuesta con la descripción enviada por parámetro.');
                 }
-                $entityRespuesta = new InfoRespuesta();
-                $entityRespuesta->setRESPUESTA($strRespuesta);
-                $entityRespuesta->setPREGUNTAID($objPregunta);
-                $entityRespuesta->setCLTENCUESTAID($objCltEncuesta);
-                $entityRespuesta->setCLIENTEID($objCliente);
-                $entityRespuesta->setESTADO(strtoupper($strEstado));
-                $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
-                $entityRespuesta->setFECREACION($strDatetimeActual);
-                $em->persist($entityRespuesta);
-                $em->flush();
+                foreach ($arrayPregunta as $intIdPregunta => $strRespuesta) 
+                {
+                    $arrayParametrosPreg = array('ESTADO' => 'ACTIVO',
+                                                 'id'     => $intIdPregunta);
+                    $objPregunta    = $em->getRepository('AppBundle:InfoPregunta')->findOneBy($arrayParametrosPreg);
+                    if(!is_object($objPregunta) || empty($objPregunta))
+                    {
+                        throw new \Exception('No existe la pregunta con la descripción enviada por parámetro.');
+                    }
+                    $entityRespuesta = new InfoRespuesta();
+                    $entityRespuesta->setRESPUESTA($strRespuesta);
+                    $entityRespuesta->setPREGUNTAID($objPregunta);
+                    $entityRespuesta->setCLTENCUESTAID($objCltEncuesta);
+                    $entityRespuesta->setCLIENTEID($objCliente);
+                    $entityRespuesta->setESTADO(strtoupper($strEstado));
+                    $entityRespuesta->setUSRCREACION($strUsuarioCreacion);
+                    $entityRespuesta->setFECREACION($strDatetimeActual);
+                    $em->persist($entityRespuesta);
+                    $em->flush();
+                    /*$arrayRespuesta ['respuesta'][] = array('idRespuesta'     => $entityRespuesta->getId(),
+                                                            'intIdCltEncuesta'=> $intIdCltEncuesta,
+                                                            'respuesta'       => $entityRespuesta->getRESPUESTA(),
+                                                            'estadoRespuesta' => $entityRespuesta->getESTADO(),
+                                                            'nombreClt'       => $entityRespuesta->getCLIENTEID()->getNOMBRE(),
+                                                            'apellidoClt'     => $entityRespuesta->getCLIENTEID()->getAPELLIDO(),
+                                                            'correoClt'       => $entityRespuesta->getCLIENTEID()->getCORREO(),
+                                                            'direccionClt'    => $entityRespuesta->getCLIENTEID()->getDIRECCION(),
+                                                            'idPregunta'      => $entityRespuesta->getPREGUNTAID()->getId(),
+                                                            'preguntaDescrip' => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
+                                                            'preguntaObl'     => $entityRespuesta->getPREGUNTAID()->getOBLIGATORIA(),
+                                                            'preguntaDesc'    => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
+                                                            'usrCreacion'     => $entityRespuesta->getUSRCREACION(),
+                                                            'feModificacion'  => $entityRespuesta->getFECREACION());*/
+                }
                 $strMensajeError = 'Respuesta creada con exito.!';
             }
         }
@@ -800,25 +848,13 @@ class ApiMovilController extends FOSRestController
         {
             $em->getConnection()->commit();
             $em->getConnection()->close();
-            $arrayRespuesta = array('idRespuesta'   => $entityRespuesta->getId(),
-                                  'respuesta'       => $entityRespuesta->getRESPUESTA(),
-                                  'estadoRespuesta' => $entityRespuesta->getESTADO(),
-                                  'nombreClt'       => $entityRespuesta->getCLIENTEID()->getNOMBRE(),
-                                  'apellidoClt'     => $entityRespuesta->getCLIENTEID()->getAPELLIDO(),
-                                  'correoClt'       => $entityRespuesta->getCLIENTEID()->getCORREO(),
-                                  'direccionClt'    => $entityRespuesta->getCLIENTEID()->getDIRECCION(),
-                                  'idPregunta'      => $entityRespuesta->getPREGUNTAID()->getId(),
-                                  'preguntaDescrip' => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
-                                  'preguntaObl'     => $entityRespuesta->getPREGUNTAID()->getOBLIGATORIA(),
-                                  'preguntaDesc'    => $entityRespuesta->getPREGUNTAID()->getDESCRIPCION(),
-                                  'usrCreacion'     => $entityRespuesta->getUSRCREACION(),
-                                  'feModificacion'  => $entityRespuesta->getFECREACION());
         }
-        $arrayRespuesta['mensaje'] = $strMensajeError;
+        $arrayRespuesta['mensaje']          = $strMensajeError;
+        $arrayRespuesta['intIdCltEncuesta'] = $intIdCltEncuesta;
         $objResponse->setContent(json_encode(array(
-                                            'status'    => $strStatus,
-                                            'resultado' => $arrayRespuesta,
-                                            'succes'    => true
+                                                    'status'           => $strStatus,
+                                                    'resultado'        => $arrayRespuesta,
+                                                    'succes'           => true
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');

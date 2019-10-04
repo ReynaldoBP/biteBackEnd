@@ -213,7 +213,14 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $strSqlCount  = $strSelectCount.$strFrom.$strWhere;
             $objQueryCount->setSQL($strSqlCount);
             $arrayRestaurante['cantidad']   = $objQueryCount->getSingleScalarResult();
-            $arrayRestaurante['resultados'] = $objQuery->getResult();
+            if($arrayRestaurante['cantidad'] == 1)
+            {
+                $arrayRestaurante['resultados'] = $objQuery->getOneOrNullResult();
+            }
+            else
+            {
+                $arrayRestaurante['resultados'] = $objQuery->getResult();
+            } 
         }
         catch(\Exception $ex)
         {
