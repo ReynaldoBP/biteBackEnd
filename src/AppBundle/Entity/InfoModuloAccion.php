@@ -5,48 +5,41 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * InfoPerfil
+ * InfoModuloAccion
  *
- * @ORM\Table(name="INFO_PERFIL")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoPerfilRepository")
+ * @ORM\Table(name="INFO_MODULO_ACCION")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoModuloAccionRepository")
  */
-class InfoPerfil
+class InfoModuloAccion
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="ID_PERFIL", type="integer")
+     * @ORM\Column(name="ID_MODULO_ACCION", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-    * @var InfoModuloAccion
+    * @var AdmiModulo
     *
-    * @ORM\ManyToOne(targetEntity="InfoModuloAccion")
+    * @ORM\ManyToOne(targetEntity="AdmiModulo")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="MODULO_ACCION_ID", referencedColumnName="ID_MODULO_ACCION")
+    * @ORM\JoinColumn(name="MODULO_ID", referencedColumnName="ID_MODULO")
     * })
     */
-    private $MODULO_ACCION_ID;
+    private $MODULO_ID;
 
     /**
-    * @var InfoUsuario
+    * @var AdmiAccion
     *
-    * @ORM\ManyToOne(targetEntity="InfoUsuario")
+    * @ORM\ManyToOne(targetEntity="AdmiAccion")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="USUARIO_ID", referencedColumnName="ID_USUARIO")
+    * @ORM\JoinColumn(name="ACCION_ID", referencedColumnName="ID_ACCION")
     * })
     */
-    private $USUARIO_ID;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="DESCRIPCION", type="string", length=255)
-     */
-    private $DESCRIPCION;
+    private $ACCION_ID;
 
     /**
      * @var string
@@ -94,35 +87,11 @@ class InfoPerfil
     }
 
     /**
-     * Set DESCRIPCION
-     *
-     * @param string $DESCRIPCION
-     *
-     * @return InfoPerfil
-     */
-    public function setDESCRIPCION($DESCRIPCION)
-    {
-        $this->DESCRIPCION = $DESCRIPCION;
-
-        return $this;
-    }
-
-    /**
-     * Get DESCRIPCION
-     *
-     * @return string
-     */
-    public function getDESCRIPCION()
-    {
-        return $this->DESCRIPCION;
-    }
-
-    /**
      * Set ESTADO
      *
      * @param string $ESTADO
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setESTADO($ESTADO)
     {
@@ -146,7 +115,7 @@ class InfoPerfil
      *
      * @param string $USRCREACION
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setUSRCREACION($USRCREACION)
     {
@@ -170,7 +139,7 @@ class InfoPerfil
      *
      * @param \DateTime $FECREACION
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setFECREACION($FECREACION)
     {
@@ -194,7 +163,7 @@ class InfoPerfil
      *
      * @param string $USRMODIFICACION
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setUSRMODIFICACION($USRMODIFICACION)
     {
@@ -218,7 +187,7 @@ class InfoPerfil
      *
      * @param \DateTime $FEMODIFICACION
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setFEMODIFICACION($FEMODIFICACION)
     {
@@ -242,7 +211,7 @@ class InfoPerfil
      *
      * @param \AppBundle\Entity\AdmiModulo $MODULOID
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setMODULOID(\AppBundle\Entity\AdmiModulo $MODULOID = null)
     {
@@ -266,7 +235,7 @@ class InfoPerfil
      *
      * @param \AppBundle\Entity\AdmiAccion $ACCIONID
      *
-     * @return InfoPerfil
+     * @return InfoModuloAccion
      */
     public function setACCIONID(\AppBundle\Entity\AdmiAccion $ACCIONID = null)
     {
@@ -283,53 +252,5 @@ class InfoPerfil
     public function getACCIONID()
     {
         return $this->ACCION_ID;
-    }
-
-    /**
-     * Set USUARIOID
-     *
-     * @param \AppBundle\Entity\InfoUsuario $USUARIOID
-     *
-     * @return InfoPerfil
-     */
-    public function setUSUARIOID(\AppBundle\Entity\InfoUsuario $USUARIOID = null)
-    {
-        $this->USUARIO_ID = $USUARIOID;
-
-        return $this;
-    }
-
-    /**
-     * Get USUARIOID
-     *
-     * @return \AppBundle\Entity\InfoUsuario
-     */
-    public function getUSUARIOID()
-    {
-        return $this->USUARIO_ID;
-    }
-
-    /**
-     * Set MODULOACCIONID
-     *
-     * @param \AppBundle\Entity\InfoModuloAccion $MODULOACCIONID
-     *
-     * @return InfoPerfil
-     */
-    public function setMODULOACCIONID(\AppBundle\Entity\InfoModuloAccion $MODULOACCIONID = null)
-    {
-        $this->MODULO_ACCION_ID = $MODULOACCIONID;
-
-        return $this;
-    }
-
-    /**
-     * Get MODULOACCIONID
-     *
-     * @return \AppBundle\Entity\InfoModuloAccion
-     */
-    public function getMODULOACCIONID()
-    {
-        return $this->MODULO_ACCION_ID;
     }
 }

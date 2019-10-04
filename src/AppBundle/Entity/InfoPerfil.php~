@@ -22,24 +22,14 @@ class InfoPerfil
     private $id;
 
     /**
-    * @var AdmiModulo
+    * @var InfoModuloAccion
     *
-    * @ORM\ManyToOne(targetEntity="AdmiModulo")
+    * @ORM\ManyToOne(targetEntity="InfoModuloAccion")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="MODULO_ID", referencedColumnName="ID_MODULO")
+    * @ORM\JoinColumn(name="MODULO_ACCION_ID", referencedColumnName="ID_MODULO_ACCION")
     * })
     */
-    private $MODULO_ID;
-
-    /**
-    * @var AdmiAccion
-    *
-    * @ORM\ManyToOne(targetEntity="AdmiAccion")
-    * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="ACCION_ID", referencedColumnName="ID_ACCION")
-    * })
-    */
-    private $ACCION_ID;
+    private $MODULO_ACCION_ID;
 
     /**
     * @var InfoUsuario

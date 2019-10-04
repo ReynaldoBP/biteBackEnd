@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\InfoPerfil;
 use AppBundle\Entity\AdmiAccion;
 use AppBundle\Entity\AdmiModulo;
+use AppBundle\Entity\InfoModuloAccion;
 use AppBundle\Entity\InfoUsuario;
 class InfoPerfilController extends Controller
 {
@@ -26,8 +27,7 @@ class InfoPerfilController extends Controller
      */
     public function createPerfilAction(Request $request)
     {
-        $intIdModulo            = $request->query->get("idModulo") ? $request->query->get("idModulo"):'';
-        $intIdAccion            = $request->query->get("idAccion") ? $request->query->get("idAccion"):'';
+        $intIdModuloAccion      = $request->query->get("idModuloAccion") ? $request->query->get("idModuloAccion"):'';
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -40,19 +40,13 @@ class InfoPerfilController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            $arrayParametrosModulo = array('ESTADO' => 'ACTIVO',
-                                           'id'     => $intIdModulo);
-            $objModulo             = $em->getRepository('AppBundle:AdmiModulo')->findOneBy($arrayParametrosModulo);
-            if(!is_object($objModulo) || empty($objModulo))
+
+            $arrayParametros = array('ESTADO' => 'ACTIVO',
+                                     'id'     => $intIdModuloAccion);
+            $objModuloAccion = $em->getRepository('AppBundle:InfoModuloAccion')->findOneBy($arrayParametros);
+            if(!is_object($objModuloAccion) || empty($objModuloAccion))
             {
-                throw new \Exception('No existe el módulo con la descripción enviada por parámetro.');
-            }
-            $arrayParametrosAccion = array('ESTADO' => 'ACTIVO',
-                                           'id'     => $intIdAccion);
-            $objAccion             = $em->getRepository('AppBundle:AdmiAccion')->findOneBy($arrayParametrosAccion);
-            if(!is_object($objAccion) || empty($objAccion))
-            {
-                throw new \Exception('No existe el acción con la descripción enviada por parámetro.');
+                throw new \Exception('No existe la relación entre modulo y acción con la descripción enviada por parámetro.');
             }
             $arrayParametrosUs = array('ESTADO' => 'ACTIVO',
                                        'id'     => $intIdUsuario);
@@ -69,8 +63,7 @@ class InfoPerfilController extends Controller
                 throw new \Exception('Perfil ya existente.');
             }
             $entityPerfil = new InfoPerfil();
-            $entityPerfil->setMODULOID($objModulo);
-            $entityPerfil->setACCIONID($objAccion);
+            $entityPerfil->setMODULOACCIONID($objModuloAccion);
             $entityPerfil->setUSUARIOID($objUsuario);
             $entityPerfil->setDESCRIPCION($strDescripcion);
             $entityPerfil->setESTADO(strtoupper($strEstado));
@@ -117,9 +110,8 @@ class InfoPerfilController extends Controller
      */
     public function editPerfilAction(Request $request)
     {
+        $intIdModuloAccion      = $request->query->get("idModuloAccion") ? $request->query->get("idModuloAccion"):'';
         $intIdPerfil            = $request->query->get("idPerfil") ? $request->query->get("idPerfil"):'';
-        $intIdModulo            = $request->query->get("idModulo") ? $request->query->get("idModulo"):'';
-        $intIdAccion            = $request->query->get("idAccion") ? $request->query->get("idAccion"):'';
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -138,27 +130,16 @@ class InfoPerfilController extends Controller
             {
                 throw new \Exception('No existe Perfil con la descripción enviada por parámetro.');
             }
-            if(!empty($intIdModulo))
+            if(!empty($intIdModuloAccion))
             {
-                $arrayParametrosModulo = array('ESTADO' => 'ACTIVO',
-                                               'id'     => $intIdModulo);
-                $objModulo             = $em->getRepository('AppBundle:AdmiModulo')->findOneBy($arrayParametrosModulo);
-                if(!is_object($objModulo) || empty($objModulo))
+                $arrayParametros = array('ESTADO' => 'ACTIVO',
+                                         'id'     => $intIdModuloAccion);
+                $objModuloAccion = $em->getRepository('AppBundle:InfoModuloAccion')->findOneBy($arrayParametros);
+                if(!is_object($objModuloAccion) || empty($objModuloAccion))
                 {
-                    throw new \Exception('No existe el módulo con la descripción enviada por parámetro.');
+                    throw new \Exception('No existe la relación entre modulo y acción con la descripción enviada por parámetro.');
                 }
-                $objPerfil->setMODULOID($objModulo);
-            }
-            if(!empty($intIdAccion))
-            {
-                $arrayParametrosAccion = array('ESTADO' => 'ACTIVO',
-                                               'id'     => $intIdAccion);
-                $objAccion             = $em->getRepository('AppBundle:AdmiAccion')->findOneBy($arrayParametrosAccion);
-                if(!is_object($objAccion) || empty($objAccion))
-                {
-                    throw new \Exception('No existe el acción con la descripción enviada por parámetro.');
-                }
-                $objPerfil->setACCIONID($objAccion);
+                $objPerfil->setMODULOACCIONID($objModuloAccion);
             }
             if(!empty($intIdUsuario))
             {
@@ -224,9 +205,8 @@ class InfoPerfilController extends Controller
      */
     public function getPerfilAction(Request $request)
     {
+        $intIdModuloAccion      = $request->query->get("idModuloAccion") ? $request->query->get("idModuloAccion"):'';
         $intIdPerfil            = $request->query->get("idPerfil") ? $request->query->get("idPerfil"):'';
-        $intIdModulo            = $request->query->get("idModulo") ? $request->query->get("idModulo"):'';
-        $intIdAccion            = $request->query->get("idAccion") ? $request->query->get("idAccion"):'';
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
@@ -237,8 +217,7 @@ class InfoPerfilController extends Controller
         try
         {
             $arrayParametros = array('intIdPerfil'   => $intIdPerfil,
-                                    'intIdModulo'    => $intIdModulo,
-                                    'intIdAccion'    => $intIdAccion,
+                                    'intIdModuloAccion' => $intIdModuloAccion,
                                     'intIdUsuario'   => $intIdUsuario,
                                     'strDescripcion' => $strDescripcion,
                                     'strEstado'      => $strEstado
@@ -278,9 +257,8 @@ class InfoPerfilController extends Controller
      */
     public function deletePerfilAction(Request $request)
     {
+        $intIdModuloAccion      = $request->query->get("idModuloAccion") ? $request->query->get("idModuloAccion"):'';
         $intIdPerfil            = $request->query->get("idPerfil") ? $request->query->get("idPerfil"):'';
-        $intIdModulo            = $request->query->get("idModulo") ? $request->query->get("idModulo"):'';
-        $intIdAccion            = $request->query->get("idAccion") ? $request->query->get("idAccion"):'';
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -294,22 +272,13 @@ class InfoPerfilController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            if(!empty($intIdModulo))
+            if(!empty($intIdModuloAccion))
             {
-                $arrayParametrosModulo = array('id' => $intIdModulo);
-                $objModulo             = $em->getRepository('AppBundle:AdmiModulo')->findOneBy($arrayParametrosModulo);
-                if(!is_object($objModulo) || empty($objModulo))
+                $arrayParametros = array('id' => $intIdModuloAccion);
+                $objModuloAccion = $em->getRepository('AppBundle:InfoModuloAccion')->findOneBy($arrayParametros);
+                if(!is_object($objModuloAccion) || empty($objModuloAccion))
                 {
-                    throw new \Exception('No existe el módulo con la descripción enviada por parámetro.');
-                }
-            }
-            if(!empty($intIdAccion))
-            {
-                $arrayParametrosAccion = array('id' => $intIdAccion);
-                $objAccion             = $em->getRepository('AppBundle:AdmiAccion')->findOneBy($arrayParametrosAccion);
-                if(!is_object($objAccion) || empty($objAccion))
-                {
-                    throw new \Exception('No existe el acción con la descripción enviada por parámetro.');
+                    throw new \Exception('No existe la relación entre modulo y acción con la descripción enviada por parámetro.');
                 }
             }
             if(!empty($intIdUsuario))
@@ -321,9 +290,8 @@ class InfoPerfilController extends Controller
                     throw new \Exception('No existe el usuario con la descripción enviada por parámetro.');
                 }
             }
-            $arrayParametrosPerfil = array ('MODULO_ID'  => $intIdModulo,
-                                            'ACCION_ID'  => $intIdAccion,
-                                            'USUARIO_ID' => $intIdUsuario);
+            $arrayParametrosPerfil = array ('MODULO_ACCION_ID' => $intIdModuloAccion,
+                                            'USUARIO_ID'       => $intIdUsuario);
             $objPerfil = $em->getRepository('AppBundle:InfoPerfil')->findOneBy($arrayParametrosPerfil);
             if(!is_object($objPerfil) || empty($objPerfil))
             {
