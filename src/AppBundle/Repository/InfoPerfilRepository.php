@@ -19,12 +19,11 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array  $arrayPerfil
      * 
-     */    
+     */
     public function getPerfilCriterio($arrayParametros)
     {
+        $intIdModuloAccion  = $arrayParametros['intIdModuloAccion'] ? $arrayParametros['intIdModuloAccion']:'';
         $intIdPerfil        = $arrayParametros['intIdPerfil'] ? $arrayParametros['intIdPerfil']:'';
-        $intIdModulo        = $arrayParametros['intIdModulo'] ? $arrayParametros['intIdModulo']:'';
-        $intIdAccion        = $arrayParametros['intIdAccion'] ? $arrayParametros['intIdAccion']:'';
         $intIdUsuario       = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $strDescripcion     = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
@@ -41,8 +40,9 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
                                  IU.ID_USUARIO,IU.IDENTIFICACION,IU.NOMBRES,IU.APELLIDOS,IU.CORREO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PERFIL PF 
-                               JOIN ADMI_ACCION  AC ON AC.ID_ACCION  = PF.ACCION_ID
-                               JOIN ADMI_MODULO  AM ON AM.ID_MODULO  = PF.MODULO_ID
+                               JOIN INFO_MODULO_ACCION  IMA ON IMA.ID_MODULO_ACCION  = PF.MODULO_ACCION_ID
+                               JOIN ADMI_ACCION  AC ON AC.ID_ACCION  = IMA.ACCION_ID
+                               JOIN ADMI_MODULO  AM ON AM.ID_MODULO  = IMA.MODULO_ID
                                JOIN INFO_USUARIO IU ON IU.ID_USUARIO = PF.USUARIO_ID ";
             $strWhere       = "WHERE PF.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
@@ -59,17 +59,11 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("ID_USUARIO", $intIdUsuario);
                 $objQueryCount->setParameter("ID_USUARIO", $intIdUsuario);
             }
-            if(!empty($intIdModulo))
+            if(!empty($intIdModuloAccion))
             {
-                $strWhere .= " AND AM.ID_MODULO =:ID_MODULO";
-                $objQuery->setParameter("ID_MODULO", $intIdModulo);
-                $objQueryCount->setParameter("ID_MODULO", $intIdModulo);
-            }
-            if(!empty($intIdAccion))
-            {
-                $strWhere .= " AND AC.ID_ACCION =:ID_ACCION";
-                $objQuery->setParameter("ID_ACCION", $intIdAccion);
-                $objQueryCount->setParameter("ID_ACCION", $intIdAccion);
+                $strWhere .= " AND PF.MODULO_ACCION_ID =:MODULO_ACCION_ID";
+                $objQuery->setParameter("MODULO_ACCION_ID", $intIdModuloAccion);
+                $objQueryCount->setParameter("MODULO_ACCION_ID", $intIdModuloAccion);
             }
             if(!empty($strDescripcion))
             {
