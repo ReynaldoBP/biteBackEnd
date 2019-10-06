@@ -32,7 +32,7 @@ class InfoModuloAccionRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT AC.ID_ACCION,AC.DESCRIPCION AS DESCRIPCION_ACCION,AM.ID_MODULO,AM.DESCRIPCION AS DESCRIPCION_MODULO ";
+            $strSelect      = "SELECT IMA.ID_MODULO_ACCION,AC.ID_ACCION,AC.DESCRIPCION AS DESCRIPCION_ACCION,AM.ID_MODULO,AM.DESCRIPCION AS DESCRIPCION_MODULO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_MODULO_ACCION  IMA 
                                JOIN ADMI_ACCION  AC ON AC.ID_ACCION  = IMA.ACCION_ID
@@ -58,6 +58,7 @@ class InfoModuloAccionRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("ID_ACCION", $intIdAccion);
                 $objQueryCount->setParameter("ID_ACCION", $intIdAccion);
             }
+            $objRsmBuilder->addScalarResult('ID_MODULO_ACCION', 'ID_MODULO_ACCION', 'string');
             $objRsmBuilder->addScalarResult('ID_ACCION', 'ID_ACCION', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_ACCION', 'DESCRIPCION_ACCION', 'string');
             $objRsmBuilder->addScalarResult('ID_MODULO', 'ID_MODULO', 'string');
