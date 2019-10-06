@@ -35,7 +35,7 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
         $objQueryCount      = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
         try
         {
-            $strSelect      = "SELECT PF.ID_PERFIL,PF.DESCRIPCION,PF.ESTADO,PF.USR_CREACION,PF.FE_CREACION,PF.USR_MODIFICACION,PF.FE_MODIFICACION,
+            $strSelect      = "SELECT IMA.ID_MODULO_ACCION,PF.ID_PERFIL,PF.DESCRIPCION,PF.ESTADO,PF.USR_CREACION,PF.FE_CREACION,PF.USR_MODIFICACION,PF.FE_MODIFICACION,
                                  AC.ID_ACCION,AC.DESCRIPCION AS DESCRIPCION_ACCION,AM.ID_MODULO,AM.DESCRIPCION AS DESCRIPCION_MODULO,
                                  IU.ID_USUARIO,IU.IDENTIFICACION,IU.NOMBRES,IU.APELLIDOS,IU.CORREO ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
@@ -71,7 +71,7 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
                 $objQueryCount->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
             }
-
+            $objRsmBuilder->addScalarResult('ID_MODULO_ACCION', 'ID_MODULO_ACCION', 'string');
             $objRsmBuilder->addScalarResult('ID_PERFIL', 'ID_PERFIL', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
