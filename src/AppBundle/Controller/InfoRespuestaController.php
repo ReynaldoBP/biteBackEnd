@@ -26,8 +26,8 @@ class InfoRespuestaController extends Controller
      */
     public function getRespuestaAction(Request $request)
     {
+        $intIdCltEncuesta       = $request->query->get("idCltEncuesta") ? $request->query->get("idCltEncuesta"):'';
         $intIdPregunta          = $request->query->get("idPregunta") ? $request->query->get("idPregunta"):'';
-        $intIdCliente           = $request->query->get("idCliente") ? $request->query->get("idCliente"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $arrayRespuesta         = array();
@@ -37,7 +37,7 @@ class InfoRespuestaController extends Controller
         try
         {
             $arrayParametros = array('intIdPregunta' => $intIdPregunta,
-                                     'intIdCliente'  => $intIdCliente,
+                                     'intIdCltEncuesta'=>$intIdCltEncuesta,
                                      'strEstado'     => $strEstado);
             $arrayRespuesta = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')->getRespuestaCriterio($arrayParametros);
             if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))

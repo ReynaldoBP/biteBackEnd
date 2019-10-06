@@ -79,8 +79,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getRespuestaCriterio($arrayParametros)
     {
+        $intIdCltEncuesta   = $arrayParametros['intIdCltEncuesta'] ? $arrayParametros['intIdCltEncuesta']:'';
         $intIdPregunta      = $arrayParametros['intIdPregunta'] ? $arrayParametros['intIdPregunta']:'';
-        $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayRespuesta     = array();
         $strMensajeError    = '';
@@ -91,43 +91,37 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT IPR.ID_PREGUNTA,IPR.DESCRIPCION AS DESCRIPCION_PREGUNTA,IPR.OBLIGATORIA,IPR.ESTADO AS ESTADO_PREGUNTA,
-                                IC.DESCRIPCION AS DESCRIPCION_ENCUESTA, IC.TITULO,IC.ESTADO AS ESTADO_ENCUESTA,
-                                ICLT.ID_CLIENTE,ICLT.IDENTIFICACION,ICLT.NOMBRE,ICLT.APELLIDO,ICLT.CORREO,ICLT.ESTADO AS ESTADO_CLIENTE ";
+                                IPR.EN_CENTRO_COMERCIAL,IRE.RESPUESTA,IRE.ESTADO AS ESTADO_RESPUESTA,
+                                IOR.TIPO_RESPUESTA,IOR.VALOR ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
-            $strFrom        = "FROM INFO_RESPUESTA IRE
-                                JOIN INFO_PREGUNTA IPR ON IPR.ID_PREGUNTA=IRE.PREGUNTA_ID
-                                JOIN INFO_ENCUESTA IC ON IC.ID_ENCUESTA=IPR.ENCUESTA_ID
-                                JOIN INFO_CLIENTE ICLT ON ICLT.ID_CLIENTE=IRE.CLIENTE_ID ";
+            $strFrom        = "FROM INFO_RESPUESTA          IRE
+                                JOIN INFO_PREGUNTA          IPR  ON IPR.ID_PREGUNTA=IRE.PREGUNTA_ID
+                                JOIN INFO_OPCION_RESPUESTA  IOR  ON IOR.ID_OPCION_RESPUESTA=IPR.OPCION_RESPUESTA_ID ";
             $strWhere       = "WHERE IRE.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
+            if(!empty($intIdCltEncuesta))
+            {
+                $strWhere .= " AND IRE.CLT_ENCUESTA_ID =:CLT_ENCUESTA_ID";
+                $objQuery->setParameter("CLT_ENCUESTA_ID", $intIdCltEncuesta);
+                $objQueryCount->setParameter("CLT_ENCUESTA_ID", $intIdCltEncuesta);
+            }
             if(!empty($intIdPregunta))
             {
                 $strWhere .= " AND IPR.ID_PREGUNTA =:ID_PREGUNTA";
                 $objQuery->setParameter("ID_PREGUNTA", $intIdPregunta);
                 $objQueryCount->setParameter("ID_PREGUNTA", $intIdPregunta);
             }
-            if(!empty($intIdCliente))
-            {
-                $strWhere .= " AND ICLT.ID_CLIENTE =:ID_CLIENTE";
-                $objQuery->setParameter("ID_CLIENTE", $intIdCliente);
-                $objQueryCount->setParameter("ID_CLIENTE", $intIdCliente);
-            }
 
             $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION_PREGUNTA', 'DESCRIPCION_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('ESTADO_PREGUNTA', 'ESTADO_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('EN_CENTRO_COMERCIAL', 'EN_CENTRO_COMERCIAL', 'string');
+            $objRsmBuilder->addScalarResult('TIPO_RESPUESTA', 'TIPO_RESPUESTA', 'string');
+            $objRsmBuilder->addScalarResult('VALOR', 'VALOR', 'string');
             $objRsmBuilder->addScalarResult('OBLIGATORIA', 'OBLIGATORIA', 'string');
-            $objRsmBuilder->addScalarResult('DESCRIPCION_ENCUESTA', 'DESCRIPCION_ENCUESTA', 'string');
-            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
-            $objRsmBuilder->addScalarResult('ESTADO_ENCUESTA', 'ESTADO_ENCUESTA', 'string');
-            $objRsmBuilder->addScalarResult('ID_CLIENTE', 'ID_CLIENTE', 'string');
-            $objRsmBuilder->addScalarResult('IDENTIFICACION', 'IDENTIFICACION', 'string');
-            $objRsmBuilder->addScalarResult('NOMBRE', 'NOMBRE', 'string');
-            $objRsmBuilder->addScalarResult('APELLIDO', 'APELLIDO', 'string');
-            $objRsmBuilder->addScalarResult('CORREO', 'CORREO', 'string');
-            $objRsmBuilder->addScalarResult('ESTADO_CLIENTE', 'ESTADO_CLIENTE', 'string');
-
+            $objRsmBuilder->addScalarResult('RESPUESTA', 'RESPUESTA', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO_RESPUESTA', 'ESTADO_RESPUESTA', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
