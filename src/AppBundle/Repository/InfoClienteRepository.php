@@ -169,8 +169,6 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                 {
                     $strSelect .= " ,COUNT(ICE.ID_CLT_ENCUESTA) AS CANTIDAD_CUPO ";
                     $strFrom   .= " LEFT JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.CLIENTE_ID=IC.ID_CLIENTE ";
-                    $strGroup  .= " ,ICE.ID_CLT_ENCUESTA ";
-                    $strWhere  .= " AND ICE.ESTADO in (:ESTADO) ";
                     $objQuery->setParameter("ESTADO",$strEstado);
                     $objRsmBuilder->addScalarResult('CANTIDAD_CUPO', 'CANTIDAD_CUPO', 'string');
                 }
