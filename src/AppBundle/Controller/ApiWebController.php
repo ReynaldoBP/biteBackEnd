@@ -729,6 +729,7 @@ class ApiWebController extends FOSRestController
         $strNombres        = $arrayData['nombres'] ? $arrayData['nombres']:'';
         $strApellidos      = $arrayData['apellidos'] ? $arrayData['apellidos']:'';
         $strContador       = $arrayData['strContador'] ? $arrayData['strContador']:'';
+        $strCupoDisponible = $arrayData['strCupoDisponible'] ? $arrayData['strCupoDisponible']:'NO';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
         $arrayCliente      = array();
         $strMensajeError   = '';
@@ -742,6 +743,7 @@ class ApiWebController extends FOSRestController
                                     'strNombres'        => $strNombres,
                                     'strApellidos'      => $strApellidos,
                                     'strContador'       => $strContador,
+                                    'strCupoDisponible' => $strCupoDisponible,
                                     'strEstado'         => $strEstado
                                     );
             $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterio($arrayParametros);
