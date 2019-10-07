@@ -35,7 +35,7 @@ class InfoPreguntaRepository extends \Doctrine\ORM\EntityRepository
         $objQuery              = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $objRsmBuilderCount    = new ResultSetMappingBuilder($this->_em);
         $objQueryCount         = $this->_em->createNativeQuery(null, $objRsmBuilderCount);
-        $strOrder              = ' ORDER BY PE.FE_CREACION ASC';
+        $strOrder              = ' ORDER BY PE.ID_PREGUNTA ASC';
         try
         {
             $strSelect      = "SELECT PE.ID_PREGUNTA,PE.ENCUESTA_ID,PE.DESCRIPCION AS DESCRIPCION_PREGUNTA,PE.OBLIGATORIA,PE.ESTADO AS ESTADO_PREGUNTA, 
