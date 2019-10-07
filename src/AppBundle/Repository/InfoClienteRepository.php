@@ -125,6 +125,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
         $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
         $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
         $strContador        = $arrayParametros['strContador'] ? $arrayParametros['strContador']:'NO';
+        $strCupoDisponible  = $arrayParametros['strCupoDisponible'] ? $arrayParametros['strCupoDisponible']:'NO';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayCliente       = array();
         $strMensajeError    = '';
@@ -164,6 +165,15 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                 $strGroup = "GROUP BY IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
                             IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
                             IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION ";
+                if(!empty($strCupoDisponible) && $strCupoDisponible == 'SI')
+                {
+                    $strSelect .= " ,COUNT(ICE.ID_CLT_ENCUESTA) AS CANTIDAD_CUPO ";
+                    $strFrom   .= " LEFT JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.CLIENTE_ID=IC.ID_CLIENTE ";
+                    $strGroup  .= " ,ICE.ID_CLT_ENCUESTA ";
+                    $strWhere  .= " AND ICE.ESTADO in (:ESTADO) ";
+                    $objQuery->setParameter("ESTADO",$strEstado);
+                    $objRsmBuilder->addScalarResult('CANTIDAD_CUPO', 'CANTIDAD_CUPO', 'string');
+                }
                 if(!empty($intIdCliente))
                 {
                 $strWhere .= " AND IC.ID_CLIENTE =:intIdCliente";
