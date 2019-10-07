@@ -198,6 +198,9 @@ class InfoPromocionController extends Controller
         $intIdPromocion         = $request->query->get("idPromocion") ? $request->query->get("idPromocion"):'';
         $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
+        $strPromo               = $request->query->get("strPromo") ? $request->query->get("strPromo"):'NO';
+        $strMes                 = $request->query->get("strMes") ? $request->query->get("strMes"):'';
+        $strAnio                = $request->query->get("strAnio") ? $request->query->get("strAnio"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $strUsuarioCreacion     = $request->query->get("usuarioCreacion") ? $request->query->get("usuarioCreacion"):'';
         $conImagen              = $request->query->get("imagen") ? $request->query->get("imagen"):'NO';
@@ -212,6 +215,9 @@ class InfoPromocionController extends Controller
             $arrayParametros = array('intIdPromocion'   => $intIdPromocion,
                                     'intIdSucursal'     => $intIdSucursal,
                                     'strDescrPromocion' => $strDescrPromocion,
+                                    'strPromo'          => $strPromo,
+                                    'strMes'            => $strMes,
+                                    'strAnio'           => $strAnio,
                                     'strEstado'         => $strEstado);
             $arrayPromocion   = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPromocion')->getPromocionCriterio($arrayParametros);
             if(isset($arrayPromocion['error']) && !empty($arrayPromocion['error']))

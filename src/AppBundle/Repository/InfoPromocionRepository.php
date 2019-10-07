@@ -23,6 +23,9 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
     public function getPromocionCriterio($arrayParametros)
     {
         $intIdPromocion     = $arrayParametros['intIdPromocion'] ? $arrayParametros['intIdPromocion']:'';
+        $strPromo           = $arrayParametros['strPromo'] ? $arrayParametros['strPromo']:'';
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
         $intIdSucursal      = $arrayParametros['intIdSucursal'] ? $arrayParametros['intIdSucursal']:'';
         $strDescrPromocion  = $arrayParametros['strDescrPromocion'] ? $arrayParametros['strDescrPromocion']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
@@ -50,6 +53,19 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND PR.ID_PROMOCION =:ID_PROMOCION";
                 $objQuery->setParameter("ID_PROMOCION", $intIdPromocion);
                 $objQueryCount->setParameter("ID_PROMOCION", $intIdPromocion);
+            }
+            if(!empty($strPromo) && !empty($strMes) && !empty($strAnio))
+            {
+                $strWhere .= " AND PR.PREMIO =:PREMIO
+                                AND NOT EXISTS(SELECT *
+                                                FROM INFO_CLIENTE_PROMOCION_HISTORIAL A
+                                                WHERE A.PROMOCION_ID = PR.ID_PROMOCION
+                                                AND EXTRACT(YEAR  FROM A.FE_CREACION ) = :strAnio
+                                                AND EXTRACT(MONTH FROM A.FE_CREACION ) = :strMes) ";
+                $objQuery->setParameter("PREMIO", $strPromo);
+                $objQuery->setParameter("strAnio", $strAnio);
+                $objQuery->setParameter("strMes", $strMes);
+                $objQueryCount->setParameter("PREMIO", $strPromo);
             }
             if(!empty($intIdSucursal))
             {
