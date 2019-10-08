@@ -66,6 +66,8 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("strAnio", $strAnio);
                 $objQuery->setParameter("strMes", $strMes);
                 $objQueryCount->setParameter("PREMIO", $strPromo);
+                $objQueryCount->setParameter("strAnio", $strAnio);
+                $objQueryCount->setParameter("strMes", $strMes);
             }
             if(!empty($intIdSucursal))
             {
