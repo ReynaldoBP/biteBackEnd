@@ -649,6 +649,7 @@ class ApiMovilController extends FOSRestController
                 }
                 $arrayEncuesta = array( 'descripcionEncuesta' => $arrayItem->getDESCRIPCION(),
                                         'tituloEncuesta'      => $arrayItem->getTITULO(),
+                                        'idEncuesta'          => $arrayItem->getId(),
                                         'preguntas'           => $arrayPregunta);
             }
         }
