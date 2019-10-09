@@ -29,3 +29,4 @@ Stack trace:
 #0 /home2/massvisi/bitte.app/bitteBackend3.1/var/cache/prod/ContainerXfja0op/appProdProjectContainer.php(670): Symfony\Component\HttpKernel\Controller\ArgumentResolver->__construct(Object(Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory), Object(Symfony\Component\DependencyInjection\Argument\RewindableGenerator))
 #1 /home2/massvisi/bitte.app/bitteBackend3.1/vendor/symfony/symfony/src/Symfony/Component/DependencyInjection/Container.php(306): ContainerXfja0op\appProdProjectContainer->getHttpKernelService()
 #2 /home2/massvisi/bitte.app/bitteBackend3.1/vendor/symfony/symfony/ in /home2/massvisi/bitte.app/bitteBackend3.1/var/cache/prod/classes.php on line 614
+[08-Oct-2019 21:36:56 America/Chicago] PHP Warning:  Invalid argument supplied for foreach() in /home2/massvisi/bitte.app/bitteCore/src/AppBundle/Controller/ApiMovilController.php on line 801
