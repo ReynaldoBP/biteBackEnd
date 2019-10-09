@@ -61,6 +61,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getPromocionHistorial':$arrayRespuesta = $this->getPromocionHistorial($arrayData);
                 break;
+                case 'createPromocionHistorial':$arrayRespuesta = $this->createPromocionHistorial($arrayData);
+                break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1134,6 +1136,76 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPromocionHist,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'createPromocionHistorial'
+     * Método encargado de crear el historial de las promociones según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 09-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function createPromocionHistorial($arrayData)
+    {
+        $intIdPromocion     = $arrayData['idPromocion'] ? $arrayData['idPromocion']:'';
+        $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
+        $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual  = new \DateTime('now');
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $intCantidadPuntos  = 0;
+        $intCantPuntospromo = 0;
+        $objResponse        = new Response;
+        $em                 = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
+            if(!is_object($objCliente) || empty($objCliente))
+            {
+                throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
+            }
+            //consultar la promocion con valor premio SI
+            $objPromocion = $em->getRepository('AppBundle:InfoPromocion')->findOneBy(array('id'     => $intIdPromocion,
+                                                                                           'PREMIO' => 'SI'));
+            if(!is_object($objPromocion) || empty($objPromocion))
+            {
+                throw new \Exception('No existe la promoción con identificador enviada por parámetro.');
+            }
+            $entityPromocionHist = new InfoPromocionHistorial();
+            $entityPromocionHist->setCLIENTEID($objCliente);
+            $entityPromocionHist->setPROMOCIONID($objPromocion);
+            $entityPromocionHist->setESTADO(strtoupper($strEstado));
+            $entityPromocionHist->setUSRCREACION($strUsuarioCreacion);
+            $entityPromocionHist->setFECREACION($strDatetimeActual);
+            $em->persist($entityPromocionHist);
+            $em->flush();
+            $strMensajeError = 'Historial de la Promoción creado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError ="Fallo al crear el Historial de la Promoción, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
                                             'succes'    => true
                                             )
                                         ));
