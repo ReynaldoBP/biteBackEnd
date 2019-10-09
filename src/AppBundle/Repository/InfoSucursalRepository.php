@@ -22,6 +22,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getSucursalCriterio($arrayParametros)
     {
+        $intIdUsuario          = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $intIdSucursal         = $arrayParametros['intIdSucursal'] ? $arrayParametros['intIdSucursal']:'';
         $strIdRestaurante      = $arrayParametros['strIdRestaurante'] ? $arrayParametros['strIdRestaurante']:'';
         $strIdentificacionRes  = $arrayParametros['strIdentificacionRes'] ? $arrayParametros['strIdentificacionRes']:'';
@@ -46,7 +47,8 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                                       ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_SUCURSAL ISUR
-                               JOIN INFO_RESTAURANTE IR ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID ";
+                               JOIN INFO_RESTAURANTE IR  ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID 
+                               JOIN INFO_USUARIO_RES IUR ON IUR.RESTAURANTE_ID= IR.ID_RESTAURANTE ";
             $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
@@ -55,6 +57,12 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND ISUR.ID_SUCURSAL =:ID_SUCURSAL";
                 $objQuery->setParameter("ID_SUCURSAL", $intIdSucursal);
                 $objQueryCount->setParameter("ID_SUCURSAL", $intIdSucursal);
+            }
+            if(!empty($intIdUsuario))
+            {
+                $strWhere .= " AND IUR.USUARIO_ID =:USUARIO_ID";
+                $objQuery->setParameter("USUARIO_ID", $intIdUsuario);
+                $objQueryCount->setParameter("USUARIO_ID", $intIdUsuario);
             }
             if(!empty($strEsMatriz))
             {

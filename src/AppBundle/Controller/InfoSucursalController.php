@@ -25,6 +25,7 @@ class InfoSucursalController extends Controller
     public function getSucursalAction(Request $request)
     {
         $strIdRestaurante     = $request->query->get("strIdRestaurante") ? $request->query->get("strIdRestaurante"):'';
+        $intIdUsuario         = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $intIdSucursal        = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
         $strIdentificacionRes = $request->query->get("identificacionRestaurante") ? $request->query->get("identificacionRestaurante"):'';
         $strEsMatriz          = $request->query->get("esMatriz") ? $request->query->get("esMatriz"):'';
@@ -43,6 +44,7 @@ class InfoSucursalController extends Controller
         {
             $arrayParametros = array('strIdRestaurante'     => $strIdRestaurante,
                                     'intIdSucursal'         => $intIdSucursal,
+                                    'intIdUsuario'          => $intIdUsuario,
                                     'strIdentificacionRes'  => $strIdentificacionRes,
                                     'strEsMatriz'           => $strEsMatriz,
                                     'strPais'               => $strPais,
