@@ -195,6 +195,7 @@ class InfoPromocionController extends Controller
      */
     public function getPromocionAction(Request $request)
     {
+        $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $intIdPromocion         = $request->query->get("idPromocion") ? $request->query->get("idPromocion"):'';
         $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
@@ -214,6 +215,7 @@ class InfoPromocionController extends Controller
             $objController->setContainer($this->container);
             $arrayParametros = array('intIdPromocion'   => $intIdPromocion,
                                     'intIdSucursal'     => $intIdSucursal,
+                                    'intIdUsuario'      => $intIdUsuario,
                                     'strDescrPromocion' => $strDescrPromocion,
                                     'strPromo'          => $strPromo,
                                     'strMes'            => $strMes,
