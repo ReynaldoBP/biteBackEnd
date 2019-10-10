@@ -22,6 +22,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getPromocionCriterio($arrayParametros)
     {
+        $intIdUsuario       = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $intIdPromocion     = $arrayParametros['intIdPromocion'] ? $arrayParametros['intIdPromocion']:'';
         $strPromo           = $arrayParametros['strPromo'] ? $arrayParametros['strPromo']:'';
         $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
@@ -44,7 +45,8 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PROMOCION PR 
                                 JOIN INFO_SUCURSAL ISUR ON ISUR.ID_SUCURSAL=PR.SUCURSAL_ID 
-                                JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=ISUR.RESTAURANTE_ID ";
+                                JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=ISUR.RESTAURANTE_ID 
+                                JOIN INFO_USUARIO_RES IUR ON IRE.ID_RESTAURANTE=IUR.RESTAURANTE_ID ";
             $strWhere       = "WHERE PR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
@@ -53,6 +55,12 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND PR.ID_PROMOCION =:ID_PROMOCION";
                 $objQuery->setParameter("ID_PROMOCION", $intIdPromocion);
                 $objQueryCount->setParameter("ID_PROMOCION", $intIdPromocion);
+            }
+            if(!empty($intIdUsuario))
+            {
+                $strWhere .= " AND IUR.USUARIO_ID =:USUARIO_ID";
+                $objQuery->setParameter("USUARIO_ID", $intIdUsuario);
+                $objQueryCount->setParameter("USUARIO_ID", $intIdUsuario);
             }
             if(!empty($strPromo) && !empty($strMes) && !empty($strAnio))
             {
