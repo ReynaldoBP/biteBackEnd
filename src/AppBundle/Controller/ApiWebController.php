@@ -57,6 +57,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getClienteEncuesta':$arrayRespuesta = $this->getClienteEncuesta($arrayData);
                 break;
+                case 'editClienteEncuesta':$arrayRespuesta = $this->editClienteEncuesta($arrayData);
+                break;
                 case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
                 break;
                 case 'getPromocionHistorial':$arrayRespuesta = $this->getPromocionHistorial($arrayData);
@@ -993,9 +995,9 @@ class ApiWebController extends FOSRestController
      */
     public function getClienteEncuesta($arrayData)
     {
-        $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'';
-        $strMes             = $arrayData['mes'] ? $arrayData['mes']:'';
-        $strAnio            = $arrayData['anio'] ? $arrayData['anio']:'';
+        $strEstado          = $arrayData['strEstado'] ? $arrayData['strEstado']:'';
+        $strMes             = $arrayData['strMes'] ? $arrayData['strMes']:'';
+        $strAnio            = $arrayData['strAnio'] ? $arrayData['strAnio']:'';
         $arrayCltEncuesta   = array();
         $strMensajeError    = '';
         $strStatus          = 400;
@@ -1020,6 +1022,66 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayCltEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'editClienteEncuesta'
+     * Método encargado de editar la talba cliente encuesta según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editClienteEncuesta($arrayData)
+    {
+        $intIdClienteEncuesta   = $arrayData['idClienteEncuesta'] ? $arrayData['idClienteEncuesta']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ELIMINADO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objClienteEncuesta = $em->getRepository('AppBundle:InfoClienteEncuesta')->find($intIdClienteEncuesta);
+            if(!is_object($objClienteEncuesta) || empty($objClienteEncuesta))
+            {
+                throw new \Exception('Encuesta del cliente no existe.');
+            }
+            if(!empty($strEstado))
+            {
+                $objClienteEncuesta->setESTADO(strtoupper($strEstado));
+            }
+            $objClienteEncuesta->setUSRMODIFICACION($strUsuarioCreacion);
+            $objClienteEncuesta->setFEMODIFICACION($strDatetimeActual);
+            $em->persist($objClienteEncuesta);
+            $em->flush();
+            $strMensajeError = 'Encuesta del cliente editado con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al editar Encuesta del cliente, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
                                             'succes'    => true
                                             )
                                         ));
