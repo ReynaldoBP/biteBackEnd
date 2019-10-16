@@ -28,6 +28,7 @@ use AppBundle\Entity\InfoClientePuntoGlobal;
 use AppBundle\Entity\InfoOpcionRespuesta;
 use AppBundle\Entity\InfoClienteEncuesta;
 use AppBundle\Entity\InfoPromocionHistorial;
+use AppBundle\Entity\AdmiTipoComida;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -84,6 +85,8 @@ class ApiMovilController extends FOSRestController
                case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);
                break;
                case 'createPromocionHistorial':$arrayRespuesta = $this->createPromocionHistorial($arrayData);
+               break;
+               case 'getTipoComida':$arrayRespuesta = $this->getTipoComida($arrayData);
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -1676,6 +1679,64 @@ class ApiMovilController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPromocionHist,
                                             'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getTipoComida'
+     * Método encargado de listar los tipos de comida según los parámetros recibidos.
+     *
+     * @author Kevin Baque
+     * @version 1.0 15-10-2019
+     *
+     * @return array  $objResponse
+     */
+    public function getTipoComida($arrayData)
+    {
+        $intIdTipoComida        = $arrayData['idTipoComida'] ? $arrayData['idTipoComida']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $boolSucces             = true;
+        $arrayTipoComida        = array();
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        $objController          = new DefaultController();
+        $objController->setContainer($this->container);
+        try
+        {
+            $arrayParametros = array('ESTADO' => $strEstado);
+            if(!empty($intIdTipoComida))
+            {
+                $arrayParametros['id'] = $intIdTipoComida;
+            }
+            $objTipoComida = $em->getRepository('AppBundle:AdmiTipoComida')->findBy($arrayParametros);
+            if(empty($objTipoComida) && !is_array($objTipoComida))
+            {
+                throw new \Exception('El tipo de comida a buscar no existe.');
+            }
+            foreach($objTipoComida as $arrayItem)
+            {
+                $arrayTipoComida []= array('idTipoComida'     => $arrayItem->getId(),
+                                           'descripcion'      => $arrayItem->getDESCRIPCION(),
+                                           'estado'           => $arrayItem->getESTADO());
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $boolSucces               = false;
+            $strStatus                = 404;
+            $strMensaje               ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $arrayTipoComida['error'] = $strMensaje;
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayTipoComida,
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
