@@ -57,6 +57,10 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getClienteEncuesta':$arrayRespuesta = $this->getClienteEncuesta($arrayData);
                 break;
+                case 'getClienteEncuestaSemestral':$arrayRespuesta = $this->getClienteEncuestaSemestral($arrayData);
+                break;
+                case 'getClienteEncuestaSemanal':$arrayRespuesta = $this->getClienteEncuestaSemanal($arrayData);
+                break;
                 case 'editClienteEncuesta':$arrayRespuesta = $this->editClienteEncuesta($arrayData);
                 break;
                 case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
@@ -1029,6 +1033,92 @@ class ApiWebController extends FOSRestController
         return $objResponse;
     }
     /**
+     * Documentación para la función 'getClienteEncuestaSemestral'
+     * Método encargado de retornar todos las relaciones entre clt. y encuestas semestrales
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getClienteEncuestaSemestral($arrayData)
+    {
+        $strEstado          = $arrayData['strEstado'] ? $arrayData['strEstado']:'';
+        $strLimite          = $arrayData['strLimite'] ? $arrayData['strLimite']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
+                                                      ->getClienteEncuestaSemestral(array('strEstado'  => $strEstado,
+                                                                                          'strLimite'  => $strLimite));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getClienteEncuestaSemanal'
+     * Método encargado de retornar todos las relaciones entre clt. y encuestas semestrales
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getClienteEncuestaSemanal($arrayData)
+    {
+        $strEstado          = $arrayData['strEstado'] ? $arrayData['strEstado']:'';
+        $strLimite          = $arrayData['strLimite'] ? $arrayData['strLimite']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
+                                                      ->getClienteEncuestaSemanal(array('strEstado'  => $strEstado,
+                                                                                        'strLimite'  => $strLimite));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
      * Documentación para la función 'editClienteEncuesta'
      * Método encargado de editar la talba cliente encuesta según los parámetros recibidos.
      * 
@@ -1063,7 +1153,20 @@ class ApiWebController extends FOSRestController
             $objClienteEncuesta->setFEMODIFICACION($strDatetimeActual);
             $em->persist($objClienteEncuesta);
             $em->flush();
-            $strMensajeError = 'Encuesta del cliente editado con exito.!';
+            $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($objClienteEncuesta->getCONTENIDOID());
+            if(!is_object($objContenido) || empty($objContenido))
+            {
+                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+            }
+            if(!empty($strEstado))
+            {
+                $objContenido->setESTADO(strtoupper($strEstado));
+            }
+            $objContenido->setUSRMODIFICACION($strUsuarioCreacion);
+            $objContenido->setFEMODIFICACION($strDatetimeActual);
+            $em->persist($objContenido);
+            $em->flush();
+            $strMensajeError = 'Encuesta del cliente y contenido editado con exito.!';
         }
         catch(\Exception $ex)
         {
@@ -1072,7 +1175,7 @@ class ApiWebController extends FOSRestController
                 $strStatus = 404;
                 $em->getConnection()->rollback();
             }
-            $strMensajeError = "Fallo al editar Encuesta del cliente, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError = "Fallo al editar Encuesta del cliente y contenido, intente nuevamente.\n ". $ex->getMessage();
         }
         if ($em->getConnection()->isTransactionActive())
         {
