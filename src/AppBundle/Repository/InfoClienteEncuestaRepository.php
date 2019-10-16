@@ -57,4 +57,103 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayCltEncuesta['error'] = $strMensajeError;
         return $arrayCltEncuesta;
     }
+    /**
+     * Documentación para la función 'getClienteEncuestaSemestral'
+     * Método encargado de retornar las relaciones entre cliente y encuesta semestrales 
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getClienteEncuestaSemestral($arrayParametros)
+    {
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strLimite          = $arrayParametros['strLimite'] ? $arrayParametros['strLimite']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT IE.ID_ENCUESTA, IE.TITULO,
+                                    EXTRACT(MONTH FROM ICE.FE_CREACION) AS MES,
+                                    EXTRACT(YEAR  FROM ICE.FE_CREACION) AS ANIO, 
+                                    IFNULL(COUNT(*),0) AS CANTIDAD ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
+                                    INNER JOIN INFO_ENCUESTA IE ON ICE.ENCUESTA_ID = IE.ID_ENCUESTA ";
+            $strWhere       = " WHERE IE.ESTADO in (:ESTADO) ";
+            $strGroup       = " GROUP BY ICE.ENCUESTA_ID,EXTRACT(MONTH FROM ICE.FE_CREACION),EXTRACT(YEAR  FROM ICE.FE_CREACION) ";
+            $strOrder       = " ORDER BY ICE.FE_CREACION DESC ";
+            $strLimit       = " LIMIT ".$strLimite." ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+
+            $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
+            $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup.$strOrder.$strLimit;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
+    /**
+     * Documentación para la función 'getClienteEncuestaSemanal'
+     * Método encargado de retornar las relaciones entre cliente y encuesta semanal 
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getClienteEncuestaSemanal($arrayParametros)
+    {
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strLimite          = $arrayParametros['strLimite'] ? $arrayParametros['strLimite']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT IE.ID_ENCUESTA, 
+                                IE.TITULO,
+                                WEEK(ICE.FE_CREACION) AS MES,
+                                EXTRACT(YEAR  FROM ICE.FE_CREACION) AS ANIO, 
+                                IFNULL(COUNT(*),0) AS CANTIDAD ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
+                                    INNER JOIN INFO_ENCUESTA IE ON ICE.ENCUESTA_ID = IE.ID_ENCUESTA ";
+            $strWhere       = " WHERE IE.ESTADO in (:ESTADO) ";
+            $strGroup       = " GROUP BY ICE.ENCUESTA_ID,WEEK(ICE.FE_CREACION),EXTRACT(YEAR  FROM ICE.FE_CREACION) ";
+            $strOrder       = " ORDER BY ICE.FE_CREACION DESC ";
+            $strLimit       = " LIMIT ".$strLimite." ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+
+            $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
+            $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup.$strOrder.$strLimit;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
 }
