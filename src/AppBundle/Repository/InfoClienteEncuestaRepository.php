@@ -129,7 +129,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect      = "SELECT IE.ID_ENCUESTA, 
                                 IE.TITULO,
-                                WEEK(ICE.FE_CREACION) AS MES,
+                                WEEK(ICE.FE_CREACION) AS SEMANA,
                                 EXTRACT(YEAR  FROM ICE.FE_CREACION) AS ANIO, 
                                 IFNULL(COUNT(*),0) AS CANTIDAD ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
@@ -142,10 +142,102 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
 
             $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
             $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
-            $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
+            $objRsmBuilder->addScalarResult('SEMANA', 'SEMANA', 'string');
             $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
             $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
             $strSql       = $strSelect.$strFrom.$strWhere.$strGroup.$strOrder.$strLimit;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
+    /**
+     * Documentación para la función 'getClienteGenero'
+     * Método encargado de retornar los generos de los clientes
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getClienteGenero($arrayParametros)
+    {
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT IC.GENERO,COUNT(*) AS CANTIDAD ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
+                                INNER JOIN INFO_CLIENTE IC ON ICE.CLIENTE_ID = IC.ID_CLIENTE ";
+            $strWhere       = " WHERE EXTRACT(MONTH FROM ICE.FE_CREACION)  = :MES
+                                    AND EXTRACT(YEAR FROM ICE.FE_CREACION) = :ANIO ";
+            $strGroup       = " GROUP BY IC.GENERO ";
+            $objQuery->setParameter("MES",$strMes);
+            $objQuery->setParameter("ANIO",$strAnio);
+
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $objRsmBuilder->addScalarResult('GENERO', 'GENERO', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
+    /**
+     * Documentación para la función 'getClienteEdad'
+     * Método encargado de retornar las edades de los clientes
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getClienteEdad($arrayParametros)
+    {
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT (SELECT VALOR1 
+                                            FROM ADMI_PARAMETRO
+                                            WHERE DESCRIPCION = 'EDAD' 
+                                            AND EXTRACT(YEAR FROM IC.EDAD) >= VALOR2 
+                                            AND EXTRACT(YEAR FROM IC.EDAD) <= VALOR3) AS GENERACION,
+                                        COUNT(*) AS CANTIDAD  ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
+                                    INNER JOIN INFO_CLIENTE IC 
+                                        ON ICE.CLIENTE_ID = IC.ID_CLIENTE ";
+            $strWhere       = " WHERE EXTRACT(MONTH FROM ICE.FE_CREACION)  = :MES
+                                    AND EXTRACT(YEAR FROM ICE.FE_CREACION) = :ANIO ";
+            $strGroup       = " GROUP BY GENERACION ";
+            $objQuery->setParameter("MES",$strMes);
+            $objQuery->setParameter("ANIO",$strAnio);
+
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $objRsmBuilder->addScalarResult('GENERACION', 'GENERACION', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup;
             $objQuery->setSQL($strSql);
             $arrayCltEncuesta['resultados'] = $objQuery->getResult();
         }

@@ -69,6 +69,13 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'createPromocionHistorial':$arrayRespuesta = $this->createPromocionHistorial($arrayData);
                 break;
+                case 'getRedesSocialMensual':$arrayRespuesta = $this->getRedesSocialMensual($arrayData);
+                break;
+                case 'getClienteGenero':$arrayRespuesta = $this->getClienteGenero($arrayData);
+                break;
+                case 'getClienteEdad':$arrayRespuesta = $this->getClienteEdad($arrayData);
+                break;
+                
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1371,6 +1378,135 @@ class ApiWebController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $strMensajeError,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getRedesSocialMensual'
+     * Método encargado de retornar las redes sociales mensual.
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 17-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getRedesSocialMensual($arrayData)
+    {
+        $strMes             = $arrayData['strMes'] ? $arrayData['strMes']:'';
+        $strAnio            = $arrayData['strAnio'] ? $arrayData['strAnio']:'';
+        $arrayRedSocial     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayRedSocial   = $this->getDoctrine()->getRepository('AppBundle:InfoRedesSociales')
+                                                      ->getRedesSocialMensual(array('strMes'   => $strMes,
+                                                                                    'strAnio'  => $strAnio));
+            if(isset($arrayRedSocial['error']) && !empty($arrayRedSocial['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayRedSocial['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayRedSocial['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRedSocial,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getClienteGenero'
+     * Método encargado de retornar los generos de los clientes
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getClienteGenero($arrayData)
+    {
+        $strMes             = $arrayData['strMes'] ? $arrayData['strMes']:'';
+        $strAnio            = $arrayData['strAnio'] ? $arrayData['strAnio']:'';
+        $arrayCltEncuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
+                                                      ->getClienteGenero(array('strMes'   => $strMes,
+                                                                               'strAnio'  => $strAnio));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltEncuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getClienteEdad'
+     * Método encargado de retornar las edades de los clientes
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 16-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getClienteEdad($arrayData)
+    {
+        $strMes             = $arrayData['strMes'] ? $arrayData['strMes']:'';
+        $strAnio            = $arrayData['strAnio'] ? $arrayData['strAnio']:'';
+        $arrayCltEncuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayCltEncuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')
+                                                      ->getClienteEdad(array('strMes'   => $strMes,
+                                                                             'strAnio'  => $strAnio));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayCltEncuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayCltEncuesta,
                                             'succes'    => true
                                             )
                                         ));
