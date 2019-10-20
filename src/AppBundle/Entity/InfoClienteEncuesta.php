@@ -78,7 +78,7 @@ class InfoClienteEncuesta
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="FE_CREACION", type="date")
+     * @ORM\Column(name="FE_CREACION", type="datetime")
      */
     private $FECREACION;
 

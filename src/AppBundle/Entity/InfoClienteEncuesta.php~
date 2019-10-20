@@ -78,7 +78,7 @@ class InfoClienteEncuesta
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="FE_CREACION", type="date")
+     * @ORM\Column(name="FE_CREACION", type="datetime")
      */
     private $FECREACION;
 
@@ -296,5 +296,29 @@ class InfoClienteEncuesta
     public function getRESTAURANTEID()
     {
         return $this->RESTAURANTE_ID;
+    }
+
+    /**
+     * Set CONTENIDOID
+     *
+     * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setCONTENIDOID(\AppBundle\Entity\InfoContenidoSubido $CONTENIDOID = null)
+    {
+        $this->CONTENIDO_ID = $CONTENIDOID;
+
+        return $this;
+    }
+
+    /**
+     * Get CONTENIDOID
+     *
+     * @return \AppBundle\Entity\InfoContenidoSubido
+     */
+    public function getCONTENIDOID()
+    {
+        return $this->CONTENIDO_ID;
     }
 }

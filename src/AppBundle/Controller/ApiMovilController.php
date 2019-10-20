@@ -736,6 +736,7 @@ class ApiMovilController extends FOSRestController
      */
     public function createRespuesta($arrayData)
     {
+        date_default_timezone_set('America/Guayaquil');
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $intIdRestaurante   = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
         $intIdEncuesta      = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
