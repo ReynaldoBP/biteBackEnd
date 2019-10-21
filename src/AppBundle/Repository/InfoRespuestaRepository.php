@@ -137,4 +137,112 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayRespuesta['error'] = $strMensajeError;
         return $arrayRespuesta;
     }
+    /**
+     * Documentación para la función 'getResultadoProEncuesta'
+     * Método encargado de retornar el resultado promediado
+     * encuesta activa según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 20-10-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getResultadoProEncuesta($arrayParametros)
+    {
+        $strFechaIni        = $arrayParametros['strFechaIni'] ? $arrayParametros['strFechaIni']:'';
+        $strFechaFin        = $arrayParametros['strFechaFin'] ? $arrayParametros['strFechaFin']:'';
+        $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
+        $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
+        $strEdad            = $arrayParametros['strEdad'] ? $arrayParametros['strEdad']:'';
+        $strPais            = $arrayParametros['strPais'] ? $arrayParametros['strPais']:'';
+        $strCiudad          = $arrayParametros['strCiudad'] ? $arrayParametros['strCiudad']:'';
+        $strProvincia       = $arrayParametros['strProvincia'] ? $arrayParametros['strProvincia']:'';
+        $strParroquia       = $arrayParametros['strParroquia'] ? $arrayParametros['strParroquia']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT IP.ID_PREGUNTA,
+                                      IP.DESCRIPCION,
+                                      ROUND(AVG(RESPUESTA),2) AS PROMEDIO,
+                                      AP_HORARIO.VALOR1       AS HORARIO,
+                                      AP_EDAD.VALOR1          AS EDAD ";
+            $strFrom        = "FROM INFO_RESPUESTA IR
+                                INNER JOIN INFO_PREGUNTA IP          ON IR.PREGUNTA_ID          = IP.ID_PREGUNTA
+                                INNER JOIN INFO_OPCION_RESPUESTA IOR ON IOR.ID_OPCION_RESPUESTA = IP.OPCION_RESPUESTA_ID
+                                INNER JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.ID_CLT_ENCUESTA     = IR.CLT_ENCUESTA_ID
+                                INNER JOIN INFO_ENCUESTA IE          ON IE.ID_ENCUESTA          = ICE.ENCUESTA_ID
+                                INNER JOIN ADMI_PARAMETRO AP_HORARIO ON AP_HORARIO.DESCRIPCION  = 'HORARIO'
+                                    AND CAST(ICE.FE_CREACION AS TIME) >= CAST(AP_HORARIO.VALOR2 AS TIME)
+                                    AND CAST(ICE.FE_CREACION AS TIME) <= CAST(AP_HORARIO.VALOR3 AS TIME)
+                                INNER JOIN INFO_CLIENTE IC           ON IC.ID_CLIENTE           = ICE.CLIENTE_ID
+                                INNER JOIN ADMI_PARAMETRO AP_EDAD    ON AP_EDAD.DESCRIPCION     = 'EDAD'
+                                    AND EXTRACT(YEAR FROM IC.EDAD) >= AP_EDAD.VALOR2
+                                    AND EXTRACT(YEAR FROM IC.EDAD) <= AP_EDAD.VALOR3
+                                INNER JOIN INFO_RESTAURANTE IRES     ON IRES.ID_RESTAURANTE     = ICE.RESTAURANTE_ID
+                                INNER JOIN INFO_SUCURSAL ISU         ON ISU.RESTAURANTE_ID      = IRES.ID_RESTAURANTE ";
+            $strWhere       = "WHERE IOR.TIPO_RESPUESTA = 'CERRADA'
+                                AND IOR.VALOR           = '5'
+                                AND IE.ESTADO           = 'ACTIVO'
+                                AND ICE.ESTADO          = 'ACTIVO' ";
+            $strGroupBy     = " GROUP BY PREGUNTA_ID ";
+
+            if(!empty($strFechaIni) && !empty($strFechaFin))
+            {
+                $strWhere .= " AND ICE.FE_CREACION BETWEEN ".$strFechaIni." AND ".$strFechaFin." ";
+            }
+            if(!empty($strGenero))
+            {
+                $strWhere .= " AND IC.GENERO = :GENERO";
+                $objQuery->setParameter("GENERO", $strGenero);
+            }
+            if(!empty($strHorario))
+            {
+                $strWhere .= " AND AP_HORARIO.VALOR1 = :HORARIO ";
+                $objQuery->setParameter("HORARIO", $strHorario);
+            }
+            if(!empty($strEdad))
+            {
+                $strWhere .= " AND AP_EDAD.VALOR1 = :EDAD ";
+                $objQuery->setParameter("EDAD", $strEdad);
+            }
+            if(!empty($strPais))
+            {
+                $strWhere .= " AND ISU.PAIS = :PAIS ";
+                $objQuery->setParameter("PAIS", $strPais);
+            }
+            if(!empty($strCiudad))
+            {
+                $strWhere .= " AND ISU.CIUDAD = :CIUDAD ";
+                $objQuery->setParameter("CIUDAD", $strCiudad);
+            }
+            if(!empty($strProvincia))
+            {
+                $strWhere .= " AND ISU.PROVINCIA = :PROVINCIA ";
+                $objQuery->setParameter("PROVINCIA", $strProvincia);
+            }
+            if(!empty($strParroquia))
+            {
+                $strWhere .= " AND ISU.PARROQUIA = :PARROQUIA ";
+                $objQuery->setParameter("PARROQUIA", $strParroquia);
+            }
+            $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('PROMEDIO', 'PROMEDIO', 'string');
+            $objRsmBuilder->addScalarResult('HORARIO', 'HORARIO', 'string');
+            $objRsmBuilder->addScalarResult('EDAD', 'EDAD', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayRespuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        return $arrayRespuesta;
+    }
 }
