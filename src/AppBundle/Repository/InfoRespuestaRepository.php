@@ -234,7 +234,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('PROMEDIO', 'PROMEDIO', 'string');
             $objRsmBuilder->addScalarResult('HORARIO', 'HORARIO', 'string');
             $objRsmBuilder->addScalarResult('EDAD', 'EDAD', 'string');
-            $strSql       = $strSelect.$strFrom.$strWhere;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
         }
