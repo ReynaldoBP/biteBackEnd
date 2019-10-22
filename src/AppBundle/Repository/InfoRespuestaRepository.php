@@ -192,7 +192,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
 
             if(!empty($strFechaIni) && !empty($strFechaFin))
             {
-                $strWhere .= " AND ICE.FE_CREACION BETWEEN ".$strFechaIni." AND ".$strFechaFin." ";
+                $strWhere .= " AND ICE.FE_CREACION BETWEEN '".$strFechaIni."' AND '".$strFechaFin."' ";
             }
             if(!empty($strGenero))
             {

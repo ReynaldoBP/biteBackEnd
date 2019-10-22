@@ -1527,8 +1527,6 @@ class ApiWebController extends FOSRestController
      */
     public function getResultadoProEncuesta($arrayData)
     {
-        $strMes             = $arrayData['strMes'] ? $arrayData['strMes']:'';
-        $strAnio            = $arrayData['strAnio'] ? $arrayData['strAnio']:'';
         $strFechaIni        = $arrayData['strFechaIni'] ? $arrayData['strFechaIni']:'';
         $strFechaFin        = $arrayData['strFechaFin'] ? $arrayData['strFechaFin']:'';
         $strGenero          = $arrayData['strGenero'] ? $arrayData['strGenero']:'';
