@@ -168,8 +168,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $strSelect      = "SELECT IP.ID_PREGUNTA,
                                       IP.DESCRIPCION,
                                       ROUND(AVG(RESPUESTA),2) AS PROMEDIO,
-                                      AP_HORARIO.VALOR1       AS HORARIO,
-                                      AP_EDAD.VALOR1          AS EDAD ";
+                                      IE.TITULO,
+                                      IE.ID_ENCUESTA ";
             $strFrom        = "FROM INFO_RESPUESTA IR
                                 INNER JOIN INFO_PREGUNTA IP          ON IR.PREGUNTA_ID          = IP.ID_PREGUNTA
                                 INNER JOIN INFO_OPCION_RESPUESTA IOR ON IOR.ID_OPCION_RESPUESTA = IP.OPCION_RESPUESTA_ID
@@ -232,8 +232,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('PROMEDIO', 'PROMEDIO', 'string');
-            $objRsmBuilder->addScalarResult('HORARIO', 'HORARIO', 'string');
-            $objRsmBuilder->addScalarResult('EDAD', 'EDAD', 'string');
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
             $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
