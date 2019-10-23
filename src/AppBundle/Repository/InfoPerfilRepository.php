@@ -27,6 +27,7 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
         $intIdUsuario       = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $strDescripcion     = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
         $arrayPerfil        = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -52,6 +53,13 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND PF.ID_PERFIL =:ID_PERFIL";
                 $objQuery->setParameter("ID_PERFIL", $intIdPerfil);
                 $objQueryCount->setParameter("ID_PERFIL", $intIdPerfil);
+            }
+            if(!empty($intIdRestaurante))
+            {
+                $$strFrom .= " JOIN INFO_USUARIO_RES IURES ON IURES.USUARIO_ID = IU.ID_USUARIO ";
+                $strWhere .= " AND IURES.RESTAURANTE_ID =:RESTAURANTE_ID";
+                $objQuery->setParameter("RESTAURANTE_ID", $intIdRestaurante);
+                $objQueryCount->setParameter("RESTAURANTE_ID", $intIdRestaurante);
             }
             if(!empty($intIdUsuario))
             {

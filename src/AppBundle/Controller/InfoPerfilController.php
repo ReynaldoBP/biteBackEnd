@@ -209,6 +209,7 @@ class InfoPerfilController extends Controller
         $intIdPerfil            = $request->query->get("idPerfil") ? $request->query->get("idPerfil"):'';
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $strDescripcion         = $request->query->get("descripcion") ? $request->query->get("descripcion"):'';
+        $intIdRestaurante       = $request->query->get("intIdRestaurante") ? $request->query->get("intIdRestaurante"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
         $arrayPerfil          = array();
         $strMensajeError        = '';
@@ -220,7 +221,8 @@ class InfoPerfilController extends Controller
                                     'intIdModuloAccion' => $intIdModuloAccion,
                                     'intIdUsuario'   => $intIdUsuario,
                                     'strDescripcion' => $strDescripcion,
-                                    'strEstado'      => $strEstado
+                                    'strEstado'      => $strEstado,
+                                    'intIdRestaurante' => $intIdRestaurante
                                     );
             $arrayPerfil   = $this->getDoctrine()->getRepository('AppBundle:InfoPerfil')->getPerfilCriterio($arrayParametros);
             if(isset($arrayPerfil['error']) && !empty($arrayPerfil['error']))

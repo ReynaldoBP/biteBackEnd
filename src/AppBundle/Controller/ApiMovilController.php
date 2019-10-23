@@ -1306,6 +1306,7 @@ class ApiMovilController extends FOSRestController
      */
     public function createContenido($arrayData)
     {
+        //Agregar puntaje
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'NO COMPARTIDO';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
