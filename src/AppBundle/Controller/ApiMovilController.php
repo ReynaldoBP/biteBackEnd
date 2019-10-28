@@ -54,16 +54,26 @@ class ApiMovilController extends FOSRestController
                break;
                case 'getCliente':$arrayRespuesta = $this->getCliente($arrayData);
                break;
-               case 'getSucursalPorUbicacion':$arrayRespuesta = $this->getSucursalPorUbicacion($arrayData);
-               break;
                case 'getRestaurante':$arrayRespuesta = $this->getRestaurante($arrayData);
                break;
                case 'getEncuesta':$arrayRespuesta = $this->getEncuesta($arrayData);
                break;
                case 'getPregunta':$arrayRespuesta = $this->getPregunta($arrayData);
                break;
-               case 'createRespuesta':$arrayRespuesta = $this->createRespuesta($arrayData);
+               /*
+                        [INI]FLUJO DEL MOVIL CREAR PUNTOS
+               */
+               case 'getSucursalPorUbicacion':$arrayRespuesta = $this->getSucursalPorUbicacion($arrayData);//0
                break;
+               case 'createContenido':$arrayRespuesta = $this->createContenido($arrayData);//1
+               break;
+               case 'createRespuesta':$arrayRespuesta = $this->createRespuesta($arrayData);//2
+               break;
+               case 'editContenido':$arrayRespuesta = $this->editContenido($arrayData);//3
+               break;
+               /*
+                        [FIN]FLUJO DEL MOVIL CREAR PUNTOS
+               */
                case 'getLoginMovil':$arrayRespuesta = $this->getLoginMovil($arrayData);
                break;
                case 'getPublicidad':$arrayRespuesta = $this->getPublicidad($arrayData);
@@ -72,21 +82,19 @@ class ApiMovilController extends FOSRestController
                break;
                case 'deleteLike':$arrayRespuesta = $this->deleteLike($arrayData);
                break;
-               case 'createPunto':$arrayRespuesta = $this->createPunto($arrayData);
-               break;
-               case 'createContenido':$arrayRespuesta = $this->createContenido($arrayData);
-               break;
-               case 'editContenido':$arrayRespuesta = $this->editContenido($arrayData);
-               break;
                case 'createRedesSociales':$arrayRespuesta = $this->createRedesSociales($arrayData);
                break;
                case 'getPromocion':$arrayRespuesta = $this->getPromocion($arrayData);
                break;
-               case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);
-               break;
                case 'createPromocionHistorial':$arrayRespuesta = $this->createPromocionHistorial($arrayData);
                break;
                case 'getTipoComida':$arrayRespuesta = $this->getTipoComida($arrayData);
+               break;
+               case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
+               break;
+               case 'createPunto':$arrayRespuesta = $this->createPunto($arrayData);//Obsoleto
+               break;
+               case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);//Obsoleto
                break;
                default:
                 $objResponse->setContent(json_encode(array(
@@ -453,6 +461,7 @@ class ApiMovilController extends FOSRestController
      */
     public function getSucursalPorUbicacion($arrayData)
     {
+        //Una ves por día
         $strLatitud        = $arrayData['latitud'] ? $arrayData['latitud']:'';
         $strLongitud       = $arrayData['longitud'] ? $arrayData['longitud']:'';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
@@ -773,7 +782,13 @@ class ApiMovilController extends FOSRestController
             $objContenido    = $em->getRepository('AppBundle:InfoContenidoSubido')->find($intIdContenido);
             if(!is_object($objContenido) || empty($objContenido))
             {
-            throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+                throw new \Exception('No existe el contenido con la descripción enviada por parámetro.');
+            }
+            $objParametro    = $em->getRepository('AppBundle:AdmiParametro')->findOneBy(array('DESCRIPCION' => 'PUNTOS_ENCUESTA',
+                                                                                              'ESTADO'      => 'ACTIVO'));
+            if(!is_object($objParametro) || empty($objParametro))
+            {
+                throw new \Exception('No existe puntos de encuesta con la descripción enviada por parámetro.');
             }
             $entityCltEncuesta = new InfoClienteEncuesta();
             $entityCltEncuesta->setCLIENTEID($objCliente);
@@ -783,6 +798,8 @@ class ApiMovilController extends FOSRestController
             $entityCltEncuesta->setCONTENIDOID($objContenido);
             $entityCltEncuesta->setUSRCREACION($strUsuarioCreacion);
             $entityCltEncuesta->setFECREACION($strDatetimeActual);
+            $entityCltEncuesta->setCANTIDADPUNTOS($objParametro->getVALOR1());
+
             $em->persist($entityCltEncuesta);
             $em->flush();
             $intIdCltEncuesta = $entityCltEncuesta->getId();
@@ -1252,8 +1269,14 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el contenido con identificador enviada por parámetro.');
             }
-            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->findOneBy(array('DESCRIPCION' => $intIdRedSocial,
-                                                                                               'ESTADO'      => 'ACTIVO'));
+            $objParametro    = $em->getRepository('AppBundle:AdmiParametro')->findOneBy(array('DESCRIPCION' => 'PUNTOS_PUBLICACION',
+                                                                                              'ESTADO'      => 'ACTIVO'));
+            if(!is_object($objParametro) || empty($objParametro))
+            {
+                throw new \Exception('No existe puntos de encuesta con la descripción enviada por parámetro.');
+            }
+            $objRedSocial = $em->getRepository('AppBundle:InfoRedesSociales')->findOneBy(array('id'     => $intIdRedSocial,
+                                                                                               'ESTADO' => 'ACTIVO'));
             if(!is_object($objRedSocial) || empty($objRedSocial))
             {
                 throw new \Exception('No existe la red social con identificador enviada por parámetro.');
@@ -1261,6 +1284,9 @@ class ApiMovilController extends FOSRestController
             else
             {
                 $objContenido->setREDESSOCIALESID($objRedSocial);
+                $objContenido->setCANTIDADPUNTOS($objParametro->getVALOR1());
+                $objContenido->setUSRMODIFICACION($strUsuarioCreacion);
+                $objContenido->setFEMODIFICACION($strDatetimeActual);
                 $em->persist($objContenido);
                 $em->flush();
                 $strMensajeError = 'Contenido editado con exito.!';
@@ -1280,7 +1306,8 @@ class ApiMovilController extends FOSRestController
             $em->getConnection()->commit();
             $em->getConnection()->close();
             $arrayContenido = array('id'            => $objContenido->getId(),
-                                  'cantPuntos'      => $objContenido->getDESCRIPCION(),
+                                  'descripcion'     => $objContenido->getDESCRIPCION(),
+                                  'cantPuntos'      => $objContenido->getCANTIDADPUNTOS(),
                                   'estado'          => $objContenido->getESTADO(),
                                   'usrCreacion'     => $objContenido->getUSRCREACION(),
                                   'feCreacion'      => $objContenido->getFECREACION());
@@ -1306,7 +1333,6 @@ class ApiMovilController extends FOSRestController
      */
     public function createContenido($arrayData)
     {
-        //Agregar puntaje
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $intIdRedSocial     = $arrayData['idRedSocial'] ? $arrayData['idRedSocial']:'NO COMPARTIDO';
         $strDescripcion     = $arrayData['descripcion'] ? $arrayData['descripcion']:'';
@@ -1346,6 +1372,7 @@ class ApiMovilController extends FOSRestController
             $entityContSub->setESTADO(strtoupper($strEstado));
             $entityContSub->setUSRCREACION($strUsuarioCreacion);
             $entityContSub->setFECREACION($strDatetimeActual);
+            $entityContSub->setCANTIDADPUNTOS(0);
             $em->persist($entityContSub);
             $em->flush();
             $strMensajeError = 'Contenido creado con exito.!';
@@ -1467,7 +1494,8 @@ class ApiMovilController extends FOSRestController
         $objController->setContainer($this->container);
         try
         {
-            $objPromocion     = $em->getRepository('AppBundle:InfoPromocion')->findBy(array('ESTADO' => $strEstado));
+            $objPromocion     = $em->getRepository('AppBundle:InfoPromocion')->findBy(array('ESTADO' => $strEstado,
+                                                                                            'PREMIO' => 'NO'));
             if(empty($objPromocion) && !is_array($objPromocion))
             {
                 throw new \Exception('La promoción a buscar no existe.');
@@ -1481,7 +1509,6 @@ class ApiMovilController extends FOSRestController
                 $arrayPromocion []= array( 'idPromocion'   => $arrayItem->getId(),
                                         'descripcion'      => $arrayItem->getDESCRIPCIONTIPOPROMOCION(),
                                         'imagen'           => $strRutaImagen ? $strRutaImagen:'',
-                                        'imagen2'          => $arrayItem->getIMAGEN(),
                                         'cantPuntos'       => $arrayItem->getCANTIDADPUNTOS(),
                                         'aceptaGlobal'     => $arrayItem->getACEPTAGLOBAL(),
                                         'estado'           => $arrayItem->getESTADO());
@@ -1585,6 +1612,7 @@ class ApiMovilController extends FOSRestController
     {
         $intIdPromocion     = $arrayData['idPromocion'] ? $arrayData['idPromocion']:'';
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $intIdSucursal      = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
@@ -1603,12 +1631,13 @@ class ApiMovilController extends FOSRestController
                 throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
             //consultar el estado a buscar
-            $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'=>$intIdCliente));
+            $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'  => $intIdCliente,
+                                                                                            'SUCURSAL_ID' => $intIdSucursal));
             if(!is_array($arrayCltPunto) || empty($arrayCltPunto))
             {
                 throw new \Exception('El cliente a buscar no tiene puntajes.');
             }
-            foreach($arrayCltPunto as $arrayItem)
+            foreach($arrayCltPunto as $arrayItem)//1REGISTRO
             {
                 $intCantidadPuntos = $intCantidadPuntos + $arrayItem->getCANTIDADPUNTOS();
             }
@@ -1741,6 +1770,60 @@ class ApiMovilController extends FOSRestController
                                             'succes'    => $boolSucces
                                             )
                                         ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'editPromocionHistorial'
+     * Método encargado de eliminar el historial de la promoción según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 28-10-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function editPromocionHistorial($arrayData)
+    {
+        $intIdPromocionHist     = $arrayData['idPromocionHist'] ? $arrayData['idPromocionHist']:'';
+        $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'COMPLETADO';
+        $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
+        $strDatetimeActual      = new \DateTime('now');
+        $strMensajeError        = '';
+        $strStatus              = 400;
+        $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            $objPromocionHist = $em->getRepository('AppBundle:InfoPromocionHistorial')->findOneBy(array('id'     => $intIdPromocionHist,
+                                                                                                        'ESTADO' => 'PENDIENTE'));
+            if(!is_object($objPromocionHist) || empty($objPromocionHist))
+            {
+                throw new \Exception('Promoción ha sido redimida.');
+            }
+            $em->remove($objPromocionHist);
+            $em->flush();
+            $strMensajeError = 'Historial de la promoción eliminada con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $strStatus = 404;
+                $em->getConnection()->rollback();
+            }
+            $strMensajeError = "Fallo al eliminar Historial de la promoción, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true)
+                                            ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }

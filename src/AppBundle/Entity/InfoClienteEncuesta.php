@@ -62,6 +62,13 @@ class InfoClienteEncuesta
     private $CONTENIDO_ID;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer")
+     */
+    private $CANTIDADPUNTOS;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=100)
@@ -320,5 +327,29 @@ class InfoClienteEncuesta
     public function getCONTENIDOID()
     {
         return $this->CONTENIDO_ID;
+    }
+
+    /**
+     * Set cANTIDADPUNTOS
+     *
+     * @param integer $cANTIDADPUNTOS
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setCANTIDADPUNTOS($cANTIDADPUNTOS)
+    {
+        $this->CANTIDADPUNTOS = $cANTIDADPUNTOS;
+
+        return $this;
+    }
+
+    /**
+     * Get cANTIDADPUNTOS
+     *
+     * @return integer
+     */
+    public function getCANTIDADPUNTOS()
+    {
+        return $this->CANTIDADPUNTOS;
     }
 }

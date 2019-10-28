@@ -56,6 +56,13 @@ class InfoContenidoSubido
     private $IMAGEN;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer")
+     */
+    private $CANTIDADPUNTOS;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=100)
@@ -315,5 +322,29 @@ class InfoContenidoSubido
     public function getREDESSOCIALESID()
     {
         return $this->REDES_SOCIALES_ID;
+    }
+
+    /**
+     * Set cANTIDADPUNTOS
+     *
+     * @param integer $cANTIDADPUNTOS
+     *
+     * @return InfoContenidoSubido
+     */
+    public function setCANTIDADPUNTOS($cANTIDADPUNTOS)
+    {
+        $this->CANTIDADPUNTOS = $cANTIDADPUNTOS;
+
+        return $this;
+    }
+
+    /**
+     * Get cANTIDADPUNTOS
+     *
+     * @return integer
+     */
+    public function getCANTIDADPUNTOS()
+    {
+        return $this->CANTIDADPUNTOS;
     }
 }
