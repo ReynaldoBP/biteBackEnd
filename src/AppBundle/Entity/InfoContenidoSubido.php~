@@ -56,6 +56,13 @@ class InfoContenidoSubido
     private $IMAGEN;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="CANTIDAD_PUNTOS", type="integer")
+     */
+    private $CANTIDADPUNTOS;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ESTADO", type="string", length=100)
@@ -291,5 +298,29 @@ class InfoContenidoSubido
     public function getCLIENTEID()
     {
         return $this->CLIENTE_ID;
+    }
+
+    /**
+     * Set REDESSOCIALESID
+     *
+     * @param \AppBundle\Entity\InfoRedesSociales $REDESSOCIALESID
+     *
+     * @return InfoContenidoSubido
+     */
+    public function setREDESSOCIALESID(\AppBundle\Entity\InfoRedesSociales $REDESSOCIALESID = null)
+    {
+        $this->REDES_SOCIALES_ID = $REDESSOCIALESID;
+
+        return $this;
+    }
+
+    /**
+     * Get REDESSOCIALESID
+     *
+     * @return \AppBundle\Entity\InfoRedesSociales
+     */
+    public function getREDESSOCIALESID()
+    {
+        return $this->REDES_SOCIALES_ID;
     }
 }

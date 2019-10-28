@@ -39,11 +39,10 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
             $strSelect      = "SELECT IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
                                 IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
                                 IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION,
-                                IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES, IFNULL(SUM(ICPG.CANTIDAD_PUNTOS),0) AS PUNTOS_GLOBALES ";
+                                IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_CLIENTE IC 
-                                LEFT JOIN INFO_CLIENTE_PUNTO ICP ON IC.ID_CLIENTE = ICP.CLIENTE_ID
-                                LEFT JOIN INFO_CLIENTE_PUNTO_GLOBAL ICPG ON IC.ID_CLIENTE = ICPG.CLIENTE_ID ";
+                                LEFT JOIN INFO_CLIENTE_PUNTO ICP ON IC.ID_CLIENTE = ICP.CLIENTE_ID ";
             $strWhere       = "WHERE IC.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
@@ -153,10 +152,9 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                 $strSelect      = "SELECT IC.ID_CLIENTE,IC.USUARIO_ID,IC.TIPO_CLIENTE_PUNTAJE_ID, IC.IDENTIFICACION, IC.NOMBRE,IC.APELLIDO,
                                 IC.CORREO,IC.DIRECCION,IC.EDAD,IC.TIPO_COMIDA,IC.GENERO,IC.ESTADO,
                                 IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION,
-                                IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES, IFNULL(SUM(ICPG.CANTIDAD_PUNTOS),0) AS PUNTOS_GLOBALES ";
+                                IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES ";
                 $strFrom        = "FROM INFO_CLIENTE IC 
                                 LEFT JOIN INFO_CLIENTE_PUNTO ICP         ON IC.ID_CLIENTE       = ICP.CLIENTE_ID
-                                LEFT JOIN INFO_CLIENTE_PUNTO_GLOBAL ICPG ON IC.ID_CLIENTE       = ICPG.CLIENTE_ID 
                                 LEFT JOIN INFO_SUCURSAL ISUR             ON ISUR.ID_SUCURSAL    = ICP.SUCURSAL_ID
                                 LEFT JOIN INFO_RESTAURANTE IRES          ON IRES.ID_RESTAURANTE = ISUR.RESTAURANTE_ID
                                 ";
