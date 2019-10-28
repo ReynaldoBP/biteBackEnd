@@ -248,4 +248,50 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayCltEncuesta['error'] = $strMensajeError;
         return $arrayCltEncuesta;
     }
+    /**
+     * Documentación para la función 'getVigenciaEncuesta'
+     * Método encargado de validar si el cliente ya generó una encuesta en el día
+     * según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 28-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getVigenciaEncuesta($arrayParametros)
+    {
+        $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
+        $strDia             = $arrayParametros['strDia'] ? $arrayParametros['strDia']:'';
+        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
+        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
+        $arrayCltEncuesta   = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT COUNT(*) AS CANTIDAD ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE ";
+            $strWhere       = " WHERE EXTRACT(DAY FROM ICE.FE_CREACION)     = :DIA 
+                                    AND EXTRACT(MONTH FROM ICE.FE_CREACION) = :MES
+                                    AND EXTRACT(YEAR FROM ICE.FE_CREACION)  = :ANIO 
+                                    AND ICE.CLIENTE_ID                      = :CLIENTE_ID ";
+            $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
+            $objQuery->setParameter("DIA",$strDia);
+            $objQuery->setParameter("MES",$strMes);
+            $objQuery->setParameter("ANIO",$strAnio);
+
+            $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayCltEncuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCltEncuesta['error'] = $strMensajeError;
+        return $arrayCltEncuesta;
+    }
 }

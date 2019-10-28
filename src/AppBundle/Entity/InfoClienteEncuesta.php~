@@ -42,14 +42,14 @@ class InfoClienteEncuesta
     private $CLIENTE_ID;
 
     /**
-    * @var InfoRestaurante
+    * @var InfoSucursal
     *
-    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
+    * @ORM\ManyToOne(targetEntity="InfoSucursal")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
+    * @ORM\JoinColumn(name="SUCURSAL_ID", referencedColumnName="ID_SUCURSAL")
     * })
     */
-    private $RESTAURANTE_ID;
+    private $SUCURSAL_ID;
 
     /**
     * @var InfoContenidoSubido
@@ -282,30 +282,6 @@ class InfoClienteEncuesta
     }
 
     /**
-     * Set RESTAURANTEID
-     *
-     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
-     *
-     * @return InfoClienteEncuesta
-     */
-    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
-    {
-        $this->RESTAURANTE_ID = $RESTAURANTEID;
-
-        return $this;
-    }
-
-    /**
-     * Get RESTAURANTEID
-     *
-     * @return \AppBundle\Entity\InfoRestaurante
-     */
-    public function getRESTAURANTEID()
-    {
-        return $this->RESTAURANTE_ID;
-    }
-
-    /**
      * Set CONTENIDOID
      *
      * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
@@ -327,5 +303,29 @@ class InfoClienteEncuesta
     public function getCONTENIDOID()
     {
         return $this->CONTENIDO_ID;
+    }
+
+    /**
+     * Set cANTIDADPUNTOS
+     *
+     * @param integer $cANTIDADPUNTOS
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setCANTIDADPUNTOS($cANTIDADPUNTOS)
+    {
+        $this->CANTIDADPUNTOS = $cANTIDADPUNTOS;
+
+        return $this;
+    }
+
+    /**
+     * Get cANTIDADPUNTOS
+     *
+     * @return integer
+     */
+    public function getCANTIDADPUNTOS()
+    {
+        return $this->CANTIDADPUNTOS;
     }
 }
