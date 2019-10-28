@@ -42,14 +42,14 @@ class InfoClienteEncuesta
     private $CLIENTE_ID;
 
     /**
-    * @var InfoRestaurante
+    * @var InfoSucursal
     *
-    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
+    * @ORM\ManyToOne(targetEntity="InfoSucursal")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
+    * @ORM\JoinColumn(name="SUCURSAL_ID", referencedColumnName="ID_SUCURSAL")
     * })
     */
-    private $RESTAURANTE_ID;
+    private $SUCURSAL_ID;
 
     /**
     * @var InfoContenidoSubido
@@ -282,30 +282,6 @@ class InfoClienteEncuesta
     }
 
     /**
-     * Set RESTAURANTEID
-     *
-     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
-     *
-     * @return InfoClienteEncuesta
-     */
-    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
-    {
-        $this->RESTAURANTE_ID = $RESTAURANTEID;
-
-        return $this;
-    }
-
-    /**
-     * Get RESTAURANTEID
-     *
-     * @return \AppBundle\Entity\InfoRestaurante
-     */
-    public function getRESTAURANTEID()
-    {
-        return $this->RESTAURANTE_ID;
-    }
-
-    /**
      * Set CONTENIDOID
      *
      * @param \AppBundle\Entity\InfoContenidoSubido $CONTENIDOID
@@ -351,5 +327,29 @@ class InfoClienteEncuesta
     public function getCANTIDADPUNTOS()
     {
         return $this->CANTIDADPUNTOS;
+    }
+
+    /**
+     * Set sUCURSALID
+     *
+     * @param \AppBundle\Entity\InfoSucursal $sUCURSALID
+     *
+     * @return InfoClienteEncuesta
+     */
+    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $sUCURSALID = null)
+    {
+        $this->SUCURSAL_ID = $sUCURSALID;
+
+        return $this;
+    }
+
+    /**
+     * Get sUCURSALID
+     *
+     * @return \AppBundle\Entity\InfoSucursal
+     */
+    public function getSUCURSALID()
+    {
+        return $this->SUCURSAL_ID;
     }
 }

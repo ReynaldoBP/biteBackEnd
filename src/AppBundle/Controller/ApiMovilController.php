@@ -461,11 +461,11 @@ class ApiMovilController extends FOSRestController
      */
     public function getSucursalPorUbicacion($arrayData)
     {
-        //Una ves por día
         $strLatitud        = $arrayData['latitud'] ? $arrayData['latitud']:'';
         $strLongitud       = $arrayData['longitud'] ? $arrayData['longitud']:'';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
         $conImagen         = $arrayData['imagen'] ? $arrayData['imagen']:'NO';
+        $intIdCliente      = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $arraySucursal     = array();
         $strMensajeError   = '';
         $strStatus         = 400;
@@ -473,9 +473,25 @@ class ApiMovilController extends FOSRestController
         $intIterador       = 0;
         $objResponse       = new Response;
         $strDescripcion    = 'CANTIDAD_DISTANCIA';
+        $boolError         = false;
+        $boolSucces        = true;
         $arrayRespuesta    = array();
         try
         {
+            $arrayCltEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')->getVigenciaEncuesta(array('intIdCliente'=>$intIdCliente,
+                                                                                                                                'strDia'      =>date("d"),
+                                                                                                                                'strMes'      =>date("m"),
+                                                                                                                                'strAnio'     =>date("Y")));
+            if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arraySucursal['error']);
+            }
+            if(isset($arrayCltEncuesta['resultados']) && intval($arrayCltEncuesta['resultados'][0]['CANTIDAD']) >0 )
+            {
+                $boolError = true;
+                throw new \Exception("Estimado ud. ya cuenta con una encuesta llena, solo es permitido una encuesta por día.");
+            }
             $objController   = new DefaultController();
             $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
                                                                                                                'DESCRIPCION'  => $strDescripcion));
@@ -504,7 +520,7 @@ class ApiMovilController extends FOSRestController
                         $arraySucursal["resultados"][$intIterador]["IMAGEN"] =  null;
                     }
                 } 
-                $intIterador = $intIterador +1;                               
+                $intIterador = $intIterador +1;
             }
             
             if(isset($arraySucursal['error']) && !empty($arraySucursal['error']))
@@ -515,13 +531,21 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
-            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            if($boolError)
+            {
+                $strMensajeError = $ex->getMessage();
+            }
+            else
+            {
+                $strMensajeError ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            }
+            $boolSucces = false;
         }
         $arraySucursal['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arraySucursal,
-                                            'succes'    => true
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
@@ -747,7 +771,7 @@ class ApiMovilController extends FOSRestController
     {
         date_default_timezone_set('America/Guayaquil');
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
-        $intIdRestaurante   = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
+        $intIdSucursal      = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
         $intIdEncuesta      = $arrayData['idEncuesta'] ? $arrayData['idEncuesta']:'';
         $intIdPregunta      = $arrayData['idPregunta'] ? $arrayData['idPregunta']:'';
         $intIdContenido     = $arrayData['idContenido'] ? $arrayData['idContenido']:'';
@@ -769,10 +793,10 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el cliente con la descripción enviada por parámetro.');
             }
-            $objRestaurante = $em->getRepository('AppBundle:InfoRestaurante')->find($intIdRestaurante);
-            if(!is_object($objRestaurante) || empty($objRestaurante))
+            $objSucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
+            if(!is_object($objSucursal) || empty($objSucursal))
             {
-                throw new \Exception('No existe el Restaurante con la descripción enviada por parámetro.');
+                throw new \Exception('No existe la sucursal con la descripción enviada por parámetro.');
             }
             $objEncuesta   = $em->getRepository('AppBundle:InfoEncuesta')->find($intIdEncuesta);
             if(!is_object($objEncuesta) || empty($objEncuesta))
@@ -792,7 +816,7 @@ class ApiMovilController extends FOSRestController
             }
             $entityCltEncuesta = new InfoClienteEncuesta();
             $entityCltEncuesta->setCLIENTEID($objCliente);
-            $entityCltEncuesta->setRESTAURANTEID($objRestaurante);
+            $entityCltEncuesta->setSUCURSALID($objSucursal);
             $entityCltEncuesta->setENCUESTAID($objEncuesta);
             $entityCltEncuesta->setESTADO(strtoupper($strEstado));
             $entityCltEncuesta->setCONTENIDOID($objContenido);
