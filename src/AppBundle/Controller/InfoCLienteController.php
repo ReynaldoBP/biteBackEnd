@@ -25,12 +25,18 @@ class InfoCLienteController extends Controller
     {
         $strEstado             = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
         $intIdCliente          = $request->query->get("idCliente") ? $request->query->get("idCliente"):'';
+        $intIdClienteRS        = $request->query->get("jklasdqweuiorenm") ? $request->query->get("jklasdqweuiorenm"):'';
         $strMensajeError       = '';
         $strStatus             = 400;
         $objResponse           = new Response;
         $em                    = $this->getDoctrine()->getEntityManager();
         try
         {
+            if(!empty($intIdClienteRS) && $intIdClienteRS!= NULL)
+            {
+                $intIdCliente = substr($intIdClienteRS,16,strlen($intIdClienteRS));
+                $strEstado    = 'ACTIVO';
+            }
             $em->getConnection()->beginTransaction();
             $objCliente = $em->getRepository('AppBundle:InfoCliente')->findOneBy(array('id'=>$intIdCliente));
             if(!is_object($objCliente) || empty($objCliente))
@@ -54,21 +60,28 @@ class InfoCLienteController extends Controller
                 $strStatus = 404;
                 $em->getConnection()->rollback();
             }
-            $strMensajeError = "Fallo al editar una encuesta, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError = "Fallo al editar el cliente, intente nuevamente.\n ". $ex->getMessage();
         }
         if ($em->getConnection()->isTransactionActive())
         {
             $em->getConnection()->commit();
             $em->getConnection()->close();
         }
-        $objResponse->setContent(json_encode(array(
-                                            'status'    => $strStatus,
-                                            'resultado' => $strMensajeError,
-                                            'succes'    => true
-                                            )
-                                        ));
-        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
-        return $objResponse;
+        if(!empty($intIdClienteRS) && $intIdClienteRS!= NULL)
+        {
+            header('Location: https://bitte.app/pages/login');
+        }
+        else
+        {
+            $objResponse->setContent(json_encode(array(
+                'status'    => $strStatus,
+                'resultado' => $strMensajeError,
+                'succes'    => true
+                )
+            ));
+            $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+            return $objResponse;
+        }
     }
 
 }
