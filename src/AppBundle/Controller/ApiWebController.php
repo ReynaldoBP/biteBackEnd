@@ -80,6 +80,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getResultadoProPregunta':$arrayRespuesta = $this->getResultadoProPregunta($arrayData);
                 break;
+                case 'getResultadoProPublicaciones':$arrayRespuesta = $this->getResultadoProPublicaciones($arrayData);
+                break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1589,8 +1591,6 @@ class ApiWebController extends FOSRestController
      */
     public function getResultadoProPregunta($arrayData)
     {
-        $strFechaIni        = $arrayData['strFechaIni'] ? $arrayData['strFechaIni']:'';
-        $strFechaFin        = $arrayData['strFechaFin'] ? $arrayData['strFechaFin']:'';
         $strGenero          = $arrayData['strGenero'] ? $arrayData['strGenero']:'';
         $strHorario         = $arrayData['strHorario'] ? $arrayData['strHorario']:'';
         $strEdad            = $arrayData['strEdad'] ? $arrayData['strEdad']:'';
@@ -1598,6 +1598,7 @@ class ApiWebController extends FOSRestController
         $strCiudad          = $arrayData['strCiudad'] ? $arrayData['strCiudad']:'';
         $strProvincia       = $arrayData['strProvincia'] ? $arrayData['strProvincia']:'';
         $strParroquia       = $arrayData['strParroquia'] ? $arrayData['strParroquia']:'';
+        $intLimite          = $arrayData['intLimite'] ? $arrayData['intLimite']:'';
         $arrayRespuesta     = array();
         $strMensajeError    = '';
         $strStatus          = 400;
@@ -1606,17 +1607,74 @@ class ApiWebController extends FOSRestController
         {
             $arrayParametros = array("strMes"      => $strMes,
                                     "strAnio"      => $strAnio,
-                                    "strFechaIni"  => $strFechaIni,
-                                    "strFechaFin"  => $strFechaFin,
                                     "strGenero"    => $strGenero,
                                     "strHorario"   => $strHorario,
                                     "strEdad"      => $strEdad,
                                     "strPais"      => $strPais,
                                     "strCiudad"    => $strCiudad,
                                     "strProvincia" => $strProvincia,
+                                    "intLimite"    => $intLimite,
                                     "strParroquia" => $strParroquia);
             $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')
                                                       ->getResultadoProPregunta($arrayParametros);
+            if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayRespuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRespuesta,
+                                            'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getResultadoProPublicaciones'
+     * Método encargado de retornar el resultado promediado
+     * preguntas activa según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 07-11-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getResultadoProPublicaciones($arrayData)
+    {
+        $strGenero          = $arrayData['strGenero'] ? $arrayData['strGenero']:'';
+        $strHorario         = $arrayData['strHorario'] ? $arrayData['strHorario']:'';
+        $strEdad            = $arrayData['strEdad'] ? $arrayData['strEdad']:'';
+        $strPais            = $arrayData['strPais'] ? $arrayData['strPais']:'';
+        $strCiudad          = $arrayData['strCiudad'] ? $arrayData['strCiudad']:'';
+        $strProvincia       = $arrayData['strProvincia'] ? $arrayData['strProvincia']:'';
+        $strParroquia       = $arrayData['strParroquia'] ? $arrayData['strParroquia']:'';
+        $intLimite          = $arrayData['intLimite'] ? $arrayData['intLimite']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayParametros = array("strMes"      => $strMes,
+                                    "strAnio"      => $strAnio,
+                                    "strGenero"    => $strGenero,
+                                    "strHorario"   => $strHorario,
+                                    "strEdad"      => $strEdad,
+                                    "strPais"      => $strPais,
+                                    "strCiudad"    => $strCiudad,
+                                    "strProvincia" => $strProvincia,
+                                    "intLimite"    => $intLimite,
+                                    "strParroquia" => $strParroquia);
+            $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')
+                                                      ->getResultadoProPublicaciones($arrayParametros);
             if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
             {
                 $strStatus  = 404;

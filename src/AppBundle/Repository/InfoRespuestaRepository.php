@@ -258,8 +258,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getResultadoProPregunta($arrayParametros)
     {
-        $strFechaIni        = $arrayParametros['strFechaIni'] ? $arrayParametros['strFechaIni']:'';
-        $strFechaFin        = $arrayParametros['strFechaFin'] ? $arrayParametros['strFechaFin']:'';
+        $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
         $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
         $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
         $strEdad            = $arrayParametros['strEdad'] ? $arrayParametros['strEdad']:'';
@@ -297,10 +296,6 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
                                         AND ICE.ESTADO          = 'ACTIVO' ";
             $strGroupBy     = " GROUP BY MES,ANIO ";
 
-            if(!empty($strFechaIni) && !empty($strFechaFin))
-            {
-                $strWhere .= " AND ICE.FE_CREACION BETWEEN '".$strFechaIni."' AND '".$strFechaFin."' ";
-            }
             if(!empty($strGenero))
             {
                 $strWhere .= " AND IC.GENERO = :GENERO";
@@ -339,7 +334,110 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
             $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
             $objRsmBuilder->addScalarResult('PROMEDIO', 'PROMEDIO', 'string');
-            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
+            $strLimit     =" limit ".$intLimite;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strLimit;
+            $objQuery->setSQL($strSql);
+            $arrayRespuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        return $arrayRespuesta;
+    }
+    /**
+     * Documentación para la función 'getResultadoProPregunta'
+     * Método encargado de retornar el resultado promediado
+     * preguntas activa según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 07-11-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getResultadoProPublicaciones($arrayParametros)
+    {
+        $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
+        $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
+        $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
+        $strEdad            = $arrayParametros['strEdad'] ? $arrayParametros['strEdad']:'';
+        $strPais            = $arrayParametros['strPais'] ? $arrayParametros['strPais']:'';
+        $strCiudad          = $arrayParametros['strCiudad'] ? $arrayParametros['strCiudad']:'';
+        $strProvincia       = $arrayParametros['strProvincia'] ? $arrayParametros['strProvincia']:'';
+        $strParroquia       = $arrayParametros['strParroquia'] ? $arrayParametros['strParroquia']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT EXTRACT(YEAR FROM ICS.FE_CREACION ) ANIO,
+                                EXTRACT(MONTH FROM ICS.FE_CREACION )      MES,
+                                COUNT(CASE WHEN IR.DESCRIPCION = 'FACEBOOK' THEN ICS.REDES_SOCIALES_ID END) CANT_FACEBOOK,
+                                COUNT(CASE WHEN IR.DESCRIPCION = 'TWITTER' THEN ICS.REDES_SOCIALES_ID  END) CANT_TWITTER,
+                                COUNT(CASE WHEN IR.DESCRIPCION = 'INSTAGRAM' THEN ICS.REDES_SOCIALES_ID  END) CANT_INSTAGRAM ";
+            $strFrom        = "FROM INFO_CONTENIDO_SUBIDO ICS 
+                                    INNER JOIN INFO_REDES_SOCIALES IR ON ICS.REDES_SOCIALES_ID = IR.ID_REDES_SOCIALES
+                                    INNER JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.CONTENIDO_ID = ICS.ID_CONTENIDO_SUBIDO
+                                    INNER JOIN INFO_ENCUESTA IE          ON IE.ID_ENCUESTA          = ICE.ENCUESTA_ID
+                                    INNER JOIN ADMI_PARAMETRO AP_HORARIO ON AP_HORARIO.DESCRIPCION  = 'HORARIO'
+                                        AND CAST(ICE.FE_CREACION AS TIME) >= CAST(AP_HORARIO.VALOR2 AS TIME)
+                                        AND CAST(ICE.FE_CREACION AS TIME) <= CAST(AP_HORARIO.VALOR3 AS TIME)
+                                    INNER JOIN INFO_CLIENTE IC           ON IC.ID_CLIENTE           = ICE.CLIENTE_ID
+                                    INNER JOIN ADMI_PARAMETRO AP_EDAD    ON AP_EDAD.DESCRIPCION     = 'EDAD'
+                                        AND EXTRACT(YEAR FROM IC.EDAD) >= AP_EDAD.VALOR2
+                                        AND EXTRACT(YEAR FROM IC.EDAD) <= AP_EDAD.VALOR3
+                                    INNER JOIN INFO_SUCURSAL ISU         ON ISU.ID_SUCURSAL      =  ICE.SUCURSAL_ID
+                                    INNER JOIN INFO_RESTAURANTE IRES     ON IRES.ID_RESTAURANTE     = ISU.RESTAURANTE_ID ";
+            $strWhere       = "WHERE IR.DESCRIPCION != 'NO COMPARTIDO'
+                                    AND ICE.ESTADO   = 'ACTIVO' ";
+            $strGroupBy     = " GROUP BY ANIO,MES ";
+            $strOrderBy     = " ORDER BY ICS.FE_CREACION DESC ";
+
+            if(!empty($strGenero))
+            {
+                $strWhere .= " AND IC.GENERO = :GENERO";
+                $objQuery->setParameter("GENERO", $strGenero);
+            }
+            if(!empty($strHorario))
+            {
+                $strWhere .= " AND AP_HORARIO.VALOR1 = :HORARIO ";
+                $objQuery->setParameter("HORARIO", $strHorario);
+            }
+            if(!empty($strEdad))
+            {
+                $strWhere .= " AND AP_EDAD.VALOR1 = :EDAD ";
+                $objQuery->setParameter("EDAD", $strEdad);
+            }
+            if(!empty($strPais))
+            {
+                $strWhere .= " AND ISU.PAIS = :PAIS ";
+                $objQuery->setParameter("PAIS", $strPais);
+            }
+            if(!empty($strCiudad))
+            {
+                $strWhere .= " AND ISU.CIUDAD = :CIUDAD ";
+                $objQuery->setParameter("CIUDAD", $strCiudad);
+            }
+            if(!empty($strProvincia))
+            {
+                $strWhere .= " AND ISU.PROVINCIA = :PROVINCIA ";
+                $objQuery->setParameter("PROVINCIA", $strProvincia);
+            }
+            if(!empty($strParroquia))
+            {
+                $strWhere .= " AND ISU.PARROQUIA = :PARROQUIA ";
+                $objQuery->setParameter("PARROQUIA", $strParroquia);
+            }
+            $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
+            $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
+            $objRsmBuilder->addScalarResult('CANT_FACEBOOK', 'CANT_FACEBOOK', 'string');
+            $objRsmBuilder->addScalarResult('CANT_TWITTER', 'CANT_TWITTER', 'string');
+            $objRsmBuilder->addScalarResult('CANT_INSTAGRAM', 'CANT_INSTAGRAM', 'string');
+            $strLimit     =" limit ".$intLimite;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strLimit;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
         }
