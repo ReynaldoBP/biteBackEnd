@@ -69,7 +69,8 @@ class InfoCLienteController extends Controller
         }
         if(!empty($intIdClienteRS) && $intIdClienteRS!= NULL)
         {
-            header('Location: https://bitte.app/pages/login');
+            //header('Location: https://bitte.app/pages/login');
+            return $this->render('http://www.google.com/');
         }
         else
         {
