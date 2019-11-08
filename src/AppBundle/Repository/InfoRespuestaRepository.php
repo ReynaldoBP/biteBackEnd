@@ -448,4 +448,129 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayRespuesta['error'] = $strMensajeError;
         return $arrayRespuesta;
     }
+    /**
+     * Documentación para la función 'getResultadosProIPN'
+     * Método encargado de retornar el resultado promediado
+     * IPN activa según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 08-11-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getResultadosProIPN($arrayParametros)
+    {
+        $strFechaIni        = $arrayParametros['strFechaIni'] ? $arrayParametros['strFechaIni']:'';
+        $strFechaFin        = $arrayParametros['strFechaFin'] ? $arrayParametros['strFechaFin']:'';
+        $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
+        $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
+        $strEdad            = $arrayParametros['strEdad'] ? $arrayParametros['strEdad']:'';
+        $strPais            = $arrayParametros['strPais'] ? $arrayParametros['strPais']:'';
+        $strCiudad          = $arrayParametros['strCiudad'] ? $arrayParametros['strCiudad']:'';
+        $strProvincia       = $arrayParametros['strProvincia'] ? $arrayParametros['strProvincia']:'';
+        $strParroquia       = $arrayParametros['strParroquia'] ? $arrayParametros['strParroquia']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT   IE.TITULO,
+                                        IE.ID_ENCUESTA ,
+                                        IP.ID_PREGUNTA,
+                                        IP.DESCRIPCION,
+                                        COUNT(CASE WHEN RESPUESTA = 1 THEN RESPUESTA END) CANT_1,
+                                        COUNT(CASE WHEN RESPUESTA = 2 THEN RESPUESTA END) CANT_2,
+                                        COUNT(CASE WHEN RESPUESTA = 3 THEN RESPUESTA END) CANT_3,
+                                        COUNT(CASE WHEN RESPUESTA = 4 THEN RESPUESTA END) CANT_4,
+                                        COUNT(CASE WHEN RESPUESTA = 5 THEN RESPUESTA END) CANT_5,
+                                        COUNT(CASE WHEN RESPUESTA = 6 THEN RESPUESTA END) CANT_6,
+                                        COUNT(CASE WHEN RESPUESTA = 7 THEN RESPUESTA END) CANT_7,
+                                        COUNT(CASE WHEN RESPUESTA = 8 THEN RESPUESTA END) CANT_8,
+                                        COUNT(CASE WHEN RESPUESTA = 9 THEN RESPUESTA END) CANT_9,
+                                        COUNT(CASE WHEN RESPUESTA = 10 THEN RESPUESTA END) CANT_10 ";
+            $strFrom        = "FROM INFO_RESPUESTA IR
+                                    INNER JOIN INFO_PREGUNTA IP          ON IR.PREGUNTA_ID          = IP.ID_PREGUNTA
+                                    INNER JOIN INFO_OPCION_RESPUESTA IOR ON IOR.ID_OPCION_RESPUESTA = IP.OPCION_RESPUESTA_ID
+                                    INNER JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.ID_CLT_ENCUESTA     = IR.CLT_ENCUESTA_ID
+                                    INNER JOIN INFO_ENCUESTA IE          ON IE.ID_ENCUESTA          = ICE.ENCUESTA_ID
+                                    INNER JOIN ADMI_PARAMETRO AP_HORARIO ON AP_HORARIO.DESCRIPCION  = 'HORARIO'
+                                        AND CAST(ICE.FE_CREACION AS TIME) >= CAST(AP_HORARIO.VALOR2 AS TIME)
+                                        AND CAST(ICE.FE_CREACION AS TIME) <= CAST(AP_HORARIO.VALOR3 AS TIME)
+                                    INNER JOIN INFO_CLIENTE IC           ON IC.ID_CLIENTE           = ICE.CLIENTE_ID
+                                    INNER JOIN ADMI_PARAMETRO AP_EDAD    ON AP_EDAD.DESCRIPCION     = 'EDAD'
+                                        AND EXTRACT(YEAR FROM IC.EDAD) >= AP_EDAD.VALOR2
+                                        AND EXTRACT(YEAR FROM IC.EDAD) <= AP_EDAD.VALOR3
+                                    INNER JOIN INFO_SUCURSAL ISU         ON ISU.ID_SUCURSAL         =  ICE.SUCURSAL_ID
+                                    INNER JOIN INFO_RESTAURANTE IRES     ON IRES.ID_RESTAURANTE     = ISU.RESTAURANTE_ID ";
+            $strWhere       = "WHERE IOR.TIPO_RESPUESTA = 'CERRADA'
+                                AND IOR.VALOR           = '10'
+                                AND IE.ESTADO           = 'ACTIVO'
+                                AND ICE.ESTADO          = 'ACTIVO' ";
+
+            if(!empty($strFechaIni) && !empty($strFechaFin))
+            {
+                $strWhere .= " AND ICE.FE_CREACION BETWEEN '".$strFechaIni."' AND '".$strFechaFin."' ";
+            }
+            if(!empty($strGenero))
+            {
+                $strWhere .= " AND IC.GENERO = :GENERO";
+                $objQuery->setParameter("GENERO", $strGenero);
+            }
+            if(!empty($strHorario))
+            {
+                $strWhere .= " AND AP_HORARIO.VALOR1 = :HORARIO ";
+                $objQuery->setParameter("HORARIO", $strHorario);
+            }
+            if(!empty($strEdad))
+            {
+                $strWhere .= " AND AP_EDAD.VALOR1 = :EDAD ";
+                $objQuery->setParameter("EDAD", $strEdad);
+            }
+            if(!empty($strPais))
+            {
+                $strWhere .= " AND ISU.PAIS = :PAIS ";
+                $objQuery->setParameter("PAIS", $strPais);
+            }
+            if(!empty($strCiudad))
+            {
+                $strWhere .= " AND ISU.CIUDAD = :CIUDAD ";
+                $objQuery->setParameter("CIUDAD", $strCiudad);
+            }
+            if(!empty($strProvincia))
+            {
+                $strWhere .= " AND ISU.PROVINCIA = :PROVINCIA ";
+                $objQuery->setParameter("PROVINCIA", $strProvincia);
+            }
+            if(!empty($strParroquia))
+            {
+                $strWhere .= " AND ISU.PARROQUIA = :PARROQUIA ";
+                $objQuery->setParameter("PARROQUIA", $strParroquia);
+            }
+            $objRsmBuilder->addScalarResult('TITULO', 'TITULO', 'string');
+            $objRsmBuilder->addScalarResult('ID_ENCUESTA', 'ID_ENCUESTA', 'string');
+            $objRsmBuilder->addScalarResult('ID_PREGUNTA', 'ID_PREGUNTA', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('CANT_1', 'CANT_1', 'string');
+            $objRsmBuilder->addScalarResult('CANT_2', 'CANT_2', 'string');
+            $objRsmBuilder->addScalarResult('CANT_3', 'CANT_3', 'string');
+            $objRsmBuilder->addScalarResult('CANT_4', 'CANT_4', 'string');
+            $objRsmBuilder->addScalarResult('CANT_5', 'CANT_5', 'string');
+            $objRsmBuilder->addScalarResult('CANT_6', 'CANT_6', 'string');
+            $objRsmBuilder->addScalarResult('CANT_7', 'CANT_7', 'string');
+            $objRsmBuilder->addScalarResult('CANT_8', 'CANT_8', 'string');
+            $objRsmBuilder->addScalarResult('CANT_9', 'CANT_9', 'string');
+            $objRsmBuilder->addScalarResult('CANT_10', 'CANT_10', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayRespuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        return $arrayRespuesta;
+    }
 }
