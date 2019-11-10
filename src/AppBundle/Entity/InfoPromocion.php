@@ -29,14 +29,14 @@ class InfoPromocion
     private $IMAGEN;
 
     /**
-    * @var InfoSucursal
+    * @var InfoRestaurante
     *
-    * @ORM\ManyToOne(targetEntity="InfoSucursal")
+    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="SUCURSAL_ID", referencedColumnName="ID_SUCURSAL")
+    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
     * })
     */
-    private $SUCURSAL_ID;
+    private $RESTAURANTE_ID;
 
     /**
      * @var string
@@ -304,30 +304,6 @@ class InfoPromocion
     }
 
     /**
-     * Set SUCURSALID
-     *
-     * @param \AppBundle\Entity\InfoSucursal $SUCURSALID
-     *
-     * @return InfoPromocion
-     */
-    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $SUCURSALID = null)
-    {
-        $this->SUCURSAL_ID = $SUCURSALID;
-
-        return $this;
-    }
-
-    /**
-     * Get SUCURSALID
-     *
-     * @return \AppBundle\Entity\InfoSucursal
-     */
-    public function getSUCURSALID()
-    {
-        return $this->SUCURSAL_ID;
-    }
-
-    /**
      * Set IMAGEN
      *
      * @param string $IMAGEN
@@ -373,5 +349,29 @@ class InfoPromocion
     public function getPREMIO()
     {
         return $this->PREMIO;
+    }
+
+    /**
+     * Set RESTAURANTEID
+     *
+     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
+     *
+     * @return InfoPromocion
+     */
+    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
+    {
+        $this->RESTAURANTE_ID = $RESTAURANTEID;
+
+        return $this;
+    }
+
+    /**
+     * Get RESTAURANTEID
+     *
+     * @return \AppBundle\Entity\InfoRestaurante
+     */
+    public function getRESTAURANTEID()
+    {
+        return $this->RESTAURANTE_ID;
     }
 }

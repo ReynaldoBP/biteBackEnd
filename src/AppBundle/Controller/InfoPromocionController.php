@@ -21,11 +21,14 @@ class InfoPromocionController extends Controller
      * @author Kevin Baque
      * @version 1.0 05-09-2019
      * 
+     * @author Kevin Baque Se cambia la sucursalID por RestauranteID
+     * @version 1.1 08-11-2019
+     * 
      * @return array  $objResponse
      */
     public function createPromocionAction(Request $request)
     {
-        $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
+        $intIdRestaurante       = $request->query->get("intIdRestaurante") ? $request->query->get("intIdRestaurante"):'';
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
         $intCantPuntos          = $request->query->get("cantPuntos") ? $request->query->get("cantPuntos"):'';
         $strAceptaGlobal        = $request->query->get("aceptaGlobal") ? $request->query->get("aceptaGlobal"):'';
@@ -41,15 +44,15 @@ class InfoPromocionController extends Controller
         try
         {
             $em->getConnection()->beginTransaction();
-            $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                     'id'     => $intIdSucursal);
-            $objSucursal     = $em->getRepository('AppBundle:InfoSucursal')->findOneBy($arrayParametros);
-            if(!is_object($objSucursal) || empty($objSucursal))
+            $arrayParametros = array('ESTADO' => $strEstado,
+                                     'id'     => $intIdRestaurante);
+            $objRestaurante  = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy($arrayParametros);
+            if(!is_object($objRestaurante) || empty($objRestaurante))
             {
-                throw new \Exception('No existe la sucursal con la descripción enviada por parámetro.');
+                throw new \Exception('No existe el restaurante con la descripción enviada por parámetro.');
             }
             $entityPromocion = new InfoPromocion();
-            $entityPromocion->setSUCURSALID($objSucursal);
+            $entityPromocion->setRESTAURANTEID($objRestaurante);
             $entityPromocion->setDESCRIPCIONTIPOPROMOCION($strDescrPromocion);
             $entityPromocion->setCANTIDADPUNTOS($intCantPuntos);
             $entityPromocion->setACEPTAGLOBAL($strAceptaGlobal);
@@ -99,7 +102,7 @@ class InfoPromocionController extends Controller
     public function editPromocionAction(Request $request)
     {
         $intIdPromocion         = $request->query->get("idPromocion") ? $request->query->get("idPromocion"):'';
-        $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
+        $intIdRestaurante       = $request->query->get("intIdRestaurante") ? $request->query->get("intIdRestaurante"):'';
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
         $intCantPuntos          = $request->query->get("cantPuntos") ? $request->query->get("cantPuntos"):'';
         $strAceptaGlobal        = $request->query->get("aceptaGlobal") ? $request->query->get("aceptaGlobal"):'';
@@ -120,16 +123,16 @@ class InfoPromocionController extends Controller
             {
                 throw new \Exception('No existe promoción con la identificación enviada por parámetro.');
             }
-            if(!empty($intIdSucursal))
+            if(!empty($intIdRestaurante))
             {
                 $arrayParametros = array('ESTADO' => $strEstado,
-                                         'id'     => $intIdSucursal);
-                $objSucursal     = $em->getRepository('AppBundle:InfoSucursal')->findOneBy($arrayParametros);
-                if(!is_object($objSucursal) || empty($objSucursal))
+                                         'id'     => $intIdRestaurante);
+                $objRestaurante  = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy($arrayParametros);
+                if(!is_object($objRestaurante) || empty($objRestaurante))
                 {
-                    throw new \Exception('No existe sucursal con la descripción enviada por parámetro.');
+                    throw new \Exception('No existe el restaurante con la descripción enviada por parámetro.');
                 }
-                $objPromocion->setSUCURSALID($objSucursal);
+                $objPromocion->setRESTAURANTEID($objRestaurante);
             }
             if(!empty($strDescrPromocion))
             {
@@ -197,7 +200,7 @@ class InfoPromocionController extends Controller
     {
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
         $intIdPromocion         = $request->query->get("idPromocion") ? $request->query->get("idPromocion"):'';
-        $intIdSucursal          = $request->query->get("idSucursal") ? $request->query->get("idSucursal"):'';
+        $intIdRestaurante       = $request->query->get("intIdRestaurante") ? $request->query->get("intIdRestaurante"):'';
         $strDescrPromocion      = $request->query->get("descrPromocion") ? $request->query->get("descrPromocion"):'';
         $strPromo               = $request->query->get("strPromo") ? $request->query->get("strPromo"):'NO';
         $strMes                 = $request->query->get("strMes") ? $request->query->get("strMes"):'';
@@ -214,7 +217,7 @@ class InfoPromocionController extends Controller
             $objController   = new DefaultController();
             $objController->setContainer($this->container);
             $arrayParametros = array('intIdPromocion'   => $intIdPromocion,
-                                    'intIdSucursal'     => $intIdSucursal,
+                                    'intIdRestaurante'  => $intIdRestaurante,
                                     'intIdUsuario'      => $intIdUsuario,
                                     'strDescrPromocion' => $strDescrPromocion,
                                     'strPromo'          => $strPromo,

@@ -560,11 +560,14 @@ class ApiWebController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 13-09-2019
      * 
+     * @author Kevin Baque Se cambia la sucursalID por RestauranteID
+     * @version 1.1 08-11-2019
+     * 
      * @return array  $objResponse
      */
     public function createPromocion($arrayData)
     {
-        $intIdSucursal          = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $intIdRestaurante       = $arrayData['intIdRestaurante'] ? $arrayData['intIdRestaurante']:'';
         $strDescrPromocion      = $arrayData['descrPromocion'] ? $arrayData['descrPromocion']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
         $intCantPuntos          = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
@@ -587,14 +590,14 @@ class ApiWebController extends FOSRestController
                 $strRutaImagen = $objController->subirfichero($imgBase64);
             }
             $arrayParametros = array('ESTADO' => 'ACTIVO',
-                                     'id'     => $intIdSucursal);
-            $objSucursal     = $em->getRepository('AppBundle:InfoSucursal')->findOneBy($arrayParametros);
-            if(!is_object($objSucursal) || empty($objSucursal))
+                                     'id'     => $intIdRestaurante);
+            $objRestaurante  = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy($arrayParametros);
+            if(!is_object($objRestaurante) || empty($objRestaurante))
             {
-                throw new \Exception('No existe la sucursal con la descripción enviada por parámetro.');
+                throw new \Exception('No existe el restaurante con la descripción enviada por parámetro.');
             }
             $entityPromocion = new InfoPromocion();
-            $entityPromocion->setSUCURSALID($objSucursal);
+            $entityPromocion->setRESTAURANTEID($objRestaurante);
             $entityPromocion->setDESCRIPCIONTIPOPROMOCION($strDescrPromocion);
             $entityPromocion->setIMAGEN($strRutaImagen);
             $entityPromocion->setPREMIO($strPremio);
@@ -637,12 +640,15 @@ class ApiWebController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 13-09-2019
      * 
+     * @author Kevin Baque Se cambia la sucursalID por RestauranteID.
+     * @version 1.1 08-11-2019
+     * 
      * @return array  $objResponse
      */
     public function editPromocion($arrayData)
     {
         $intIdPromocion         = $arrayData['idPromocion'] ? $arrayData['idPromocion']:'';
-        $intIdSucursal          = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $intIdRestaurante       = $arrayData['intIdRestaurante'] ? $arrayData['intIdRestaurante']:'';
         $strDescrPromocion      = $arrayData['descrPromocion'] ? $arrayData['descrPromocion']:'';
         $imgBase64              = $arrayData['rutaImagen'] ? $arrayData['rutaImagen']:'';
         $intCantPuntos          = $arrayData['cantPuntos'] ? $arrayData['cantPuntos']:'';
@@ -669,16 +675,16 @@ class ApiWebController extends FOSRestController
             {
                 throw new \Exception('No existe promoción con la identificación enviada por parámetro.');
             }
-            if(!empty($intIdSucursal))
+            if(!empty($intIdRestaurante))
             {
                 $arrayParametros = array('ESTADO' => $strEstado,
-                                         'id'     => $intIdSucursal);
-                $objSucursal     = $em->getRepository('AppBundle:InfoSucursal')->findOneBy($arrayParametros);
-                if(!is_object($objSucursal) || empty($objSucursal))
+                                         'id'     => $intIdRestaurante);
+                $objRestaurante  = $em->getRepository('AppBundle:InfoRestaurante')->findOneBy($arrayParametros);
+                if(!is_object($objRestaurante) || empty($objRestaurante))
                 {
-                    throw new \Exception('No existe sucursal con la descripción enviada por parámetro.');
+                    throw new \Exception('No existe el restaurante con la descripción enviada por parámetro.');
                 }
-                $objPromocion->setSUCURSALID($objSucursal);
+                $objPromocion->setRESTAURANTEID($objRestaurante);
             }
             if(!empty($strDescrPromocion))
             {
