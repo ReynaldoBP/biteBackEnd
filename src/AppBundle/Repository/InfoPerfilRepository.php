@@ -56,7 +56,7 @@ class InfoPerfilRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($intIdRestaurante))
             {
-                $$strFrom .= " JOIN INFO_USUARIO_RES IURES ON IURES.USUARIO_ID = IU.ID_USUARIO ";
+                $strFrom .= " JOIN INFO_USUARIO_RES IURES ON IURES.USUARIO_ID = IU.ID_USUARIO ";
                 $strWhere .= " AND IURES.RESTAURANTE_ID =:RESTAURANTE_ID";
                 $objQuery->setParameter("RESTAURANTE_ID", $intIdRestaurante);
                 $objQueryCount->setParameter("RESTAURANTE_ID", $intIdRestaurante);
