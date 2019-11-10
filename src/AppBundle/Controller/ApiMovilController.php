@@ -92,6 +92,8 @@ class ApiMovilController extends FOSRestController
                break;
                case 'editPromocionHistorial':$arrayRespuesta = $this->editPromocionHistorial($arrayData);
                break;
+               case 'getCantPtosResEnc':$arrayRespuesta = $this->getCantPtosResEnc($arrayData);
+               break;
                case 'createPunto':$arrayRespuesta = $this->createPunto($arrayData);//Obsoleto
                break;
                case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);//Obsoleto
@@ -1500,6 +1502,7 @@ class ApiMovilController extends FOSRestController
     public function getPromocion($arrayData)
     {
         $intIdSucursal          = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $intIdRestaurante       = $arrayData['intIdRestaurante'] ? $arrayData['intIdRestaurante']:'';
         $intIdCliente           = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strEstado              = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
         $strUsuarioCreacion     = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
@@ -1515,8 +1518,9 @@ class ApiMovilController extends FOSRestController
         $objController->setContainer($this->container);
         try
         {
-            $objPromocion     = $em->getRepository('AppBundle:InfoPromocion')->findBy(array('ESTADO' => $strEstado,
-                                                                                            'PREMIO' => 'NO'));
+            $objPromocion     = $em->getRepository('AppBundle:InfoPromocion')->findBy(array('ESTADO'         => $strEstado,
+                                                                                            'PREMIO'         => 'NO',
+                                                                                            'RESTAURANTE_ID' => $intIdRestaurante));
             if(empty($objPromocion) && !is_array($objPromocion))
             {
                 throw new \Exception('La promoción a buscar no existe.');
@@ -1859,6 +1863,49 @@ class ApiMovilController extends FOSRestController
                                             'resultado' => $strMensajeError,
                                             'succes'    => true)
                                             ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getCantPtosResEnc'
+     * Método encargado de retornar todos los clientes según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 01-08-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getCantPtosResEnc($arrayData)
+    {
+        $intIdCliente      = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
+        $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $arrayPuntos       = array();
+        $strMensajeError   = '';
+        $strStatus         = 400;
+        $objResponse       = new Response;
+        try
+        {
+            $arrayParametros = array('intIdCliente'     => $intIdCliente,
+                                    'strEstado'         => $strEstado
+                                    );
+            $arrayPuntos   = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')->getCantPtosResEnc($arrayParametros);
+            if(isset($arrayPuntos['error']) && !empty($arrayPuntos['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayPuntos['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayPuntos['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayPuntos,
+                                            'succes'    => true
+                                            )
+                                        ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
     }

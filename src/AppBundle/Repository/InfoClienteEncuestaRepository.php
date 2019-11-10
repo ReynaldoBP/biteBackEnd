@@ -294,4 +294,51 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayCltEncuesta['error'] = $strMensajeError;
         return $arrayCltEncuesta;
     }
+    /**
+     * Documentación para la función 'getCantPtosResEnc'
+     * Método encargado de que me retorne los restaurantes que yo he comido y llenado encuestas, 
+     * devolviendo adicional el puntaje por restaurante.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 28-10-2019
+     * 
+     * @return array  $arrayCltEncuesta
+     * 
+     */
+    public function getCantPtosResEnc($arrayParametros)
+    {
+        $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:'';
+        $arrayCantPtos      = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT SUM(ICE.CANTIDAD_PUNTOS) AS CANT_PUNTOS,
+                                      IRE.RAZON_SOCIAL ";
+            $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
+                                JOIN INFO_SUCURSAL         ISUR ON ISUR.ID_SUCURSAL   = ICE.SUCURSAL_ID
+                                JOIN INFO_RESTAURANTE      IRE  ON IRE.ID_RESTAURANTE = ISUR.RESTAURANTE_ID ";
+            $strWhere       = " WHERE ICE.CLIENTE_ID=:CLIENTE_ID
+                                    AND ICE.ESTADO  = :ESTADO
+                                    AND ISUR.ESTADO = :ESTADO
+                                    AND IRE.ESTADO  = :ESTADO ";
+            $strGroupBy     = " GROUP BY IRE.ID_RESTAURANTE ";
+            $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
+            $objQuery->setParameter("ESTADO",$strEstado);
+
+            $objRsmBuilder->addScalarResult('CANT_PUNTOS', 'CANT_PUNTOS', 'string');
+            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
+            $objQuery->setSQL($strSql);
+            $arrayCantPtos['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayCantPtos['error'] = $strMensajeError;
+        return $arrayCantPtos;
+    }
 }

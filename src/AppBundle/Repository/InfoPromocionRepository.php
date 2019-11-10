@@ -27,7 +27,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
         $strPromo           = $arrayParametros['strPromo'] ? $arrayParametros['strPromo']:'';
         $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
         $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
-        $intIdSucursal      = $arrayParametros['intIdSucursal'] ? $arrayParametros['intIdSucursal']:'';
+        $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
         $strDescrPromocion  = $arrayParametros['strDescrPromocion'] ? $arrayParametros['strDescrPromocion']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $arrayPromocion     = array();
@@ -44,8 +44,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
                                IRE.ID_RESTAURANTE,IRE.IDENTIFICACION,IRE.RAZON_SOCIAL,IRE.NOMBRE_COMERCIAL ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PROMOCION PR 
-                                JOIN INFO_SUCURSAL ISUR ON ISUR.ID_SUCURSAL=PR.SUCURSAL_ID 
-                                JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=ISUR.RESTAURANTE_ID 
+                                JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=PR.RESTAURANTE_ID 
                                 JOIN INFO_USUARIO_RES IUR ON IRE.ID_RESTAURANTE=IUR.RESTAURANTE_ID ";
             $strWhere       = "WHERE PR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
@@ -82,6 +81,11 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND ISUR.ID_SUCURSAL =:ID_SUCURSAL";
                 $objQuery->setParameter("ID_SUCURSAL", $intIdSucursal);
                 $objQueryCount->setParameter("ID_SUCURSAL", $intIdSucursal);
+            }
+            if(!empty($intIdRestaurante))
+            {
+                $strWhere .= " AND IRE.ID_RESTAURANTE =:ID_RESTAURANTE ";
+                $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
             }
             if(!empty($strDescrPromocion))
             {

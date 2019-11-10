@@ -81,10 +81,8 @@ class InfoPromocionHistorialRepository extends \Doctrine\ORM\EntityRepository
             $strFrom        = "FROM INFO_CLIENTE_PROMOCION_HISTORIAL ICH
                                 JOIN INFO_PROMOCION IPROMO 
                                     ON IPROMO.ID_PROMOCION = ICH.PROMOCION_ID
-                                JOIN INFO_SUCURSAL ISU
-                                    ON ISU.ID_SUCURSAL=IPROMO.SUCURSAL_ID
                                 JOIN INFO_RESTAURANTE IRE
-                                    ON IRE.ID_RESTAURANTE=ISU.RESTAURANTE_ID ";
+                                    ON IRE.ID_RESTAURANTE=IPROMO.RESTAURANTE_ID ";
             $strWhere       = "WHERE ICH.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             if(!empty($intIdRestaurante))
