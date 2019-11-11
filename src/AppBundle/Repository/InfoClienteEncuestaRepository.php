@@ -328,7 +328,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO",$strEstado);
             if(!empty($intIdCliente))
             {
-                $strWhere .= " ICE.CLIENTE_ID= :CLIENTE_ID ";
+                $strWhere .= " AND ICE.CLIENTE_ID= :CLIENTE_ID ";
                 $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
             }
 
