@@ -45,6 +45,7 @@ class InfoPromocionRepository extends \Doctrine\ORM\EntityRepository
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_PROMOCION PR 
                                 JOIN INFO_RESTAURANTE IRE ON IRE.ID_RESTAURANTE=PR.RESTAURANTE_ID 
+                                JOIN INFO_SUCURSAL    ISUR ON IRE.ID_RESTAURANTE=ISUR.RESTAURANTE_ID 
                                 JOIN INFO_USUARIO_RES IUR ON IRE.ID_RESTAURANTE=IUR.RESTAURANTE_ID ";
             $strWhere       = "WHERE PR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);

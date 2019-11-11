@@ -47,8 +47,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
                                       ISUR.USR_CREACION, ISUR.FE_CREACION,ISUR.USR_MODIFICACION,ISUR.FE_MODIFICACION ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_SUCURSAL ISUR
-                               JOIN INFO_RESTAURANTE IR  ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID 
-                               JOIN INFO_USUARIO_RES IUR ON IUR.RESTAURANTE_ID= IR.ID_RESTAURANTE ";
+                               JOIN INFO_RESTAURANTE IR  ON IR.ID_RESTAURANTE = ISUR.RESTAURANTE_ID ";
             $strWhere       = "WHERE ISUR.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO", $strEstado);
             $objQueryCount->setParameter("ESTADO", $strEstado);
@@ -60,6 +59,7 @@ class InfoSucursalRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($intIdUsuario))
             {
+                $strFrom  .= " JOIN INFO_USUARIO_RES IUR ON IUR.RESTAURANTE_ID= IR.ID_RESTAURANTE ";
                 $strWhere .= " AND IUR.USUARIO_ID =:USUARIO_ID";
                 $objQuery->setParameter("USUARIO_ID", $intIdUsuario);
                 $objQueryCount->setParameter("USUARIO_ID", $intIdUsuario);
