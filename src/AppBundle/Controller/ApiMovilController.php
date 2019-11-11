@@ -598,7 +598,7 @@ class ApiMovilController extends FOSRestController
         {
             $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
         }
-        if($conImagen == 'SI')
+        /*if($conImagen == 'SI')
         {
             foreach ($arrayRestaurante['resultados'] as &$item)
             {
@@ -618,7 +618,7 @@ class ApiMovilController extends FOSRestController
                     $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
                 }
             }
-        }
+        }*/
         $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
                                                                                                            'DESCRIPCION'  => 'NUM_PUBLICIDAD'));
         if(!is_object($objParametro) || empty($objParametro))
@@ -637,19 +637,9 @@ class ApiMovilController extends FOSRestController
                 }
                 else
                 {
-                    if($conImagen == 'SI')
-                    {
-                        foreach ($arrayPublicidad['resultados'] as &$item)
-                        {
-                            if(!empty($item['IMAGEN']) && $conImagen == 'SI')
-                            {
-                                $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
-                            }
-                        }
-                    }
                     $arrayResultado ['resultados'] []= array('NOMBRE_COMERCIAL' =>   $arrayPublicidad['resultados'][0]['DESCRIPCION'],
-                                                            'ICONO'             =>   $arrayPublicidad['resultados'][0]['IMAGEN'],
-                                                            'ES_PUBLICIDAD'     =>  'S');
+                                                             'ICONO'            =>   (!empty($arrayPublicidad['resultados'][0]['IMAGEN']) && $conIcono == 'SI')? $objController->getImgBase64($arrayPublicidad['resultados'][0]['IMAGEN']) :null,
+                                                             'ES_PUBLICIDAD'    =>  'S');
                     $intContadorRes                  = 0;
                 }
             }
@@ -666,8 +656,10 @@ class ApiMovilController extends FOSRestController
                                                      'URL_CATALOGO'            =>   $arrayItemRestaurante['URL_CATALOGO'],
                                                      'NUMERO_CONTACTO'         =>   $arrayItemRestaurante['NUMERO_CONTACTO'],
                                                      'ESTADO'                  =>   $arrayItemRestaurante['ESTADO'],
-                                                     'IMAGEN'                  =>   $arrayItemRestaurante['IMAGEN'],
-                                                     'ICONO'                   =>   $arrayItemRestaurante['ICONO'],
+                                                     //'IMAGEN'                  =>   $arrayItemRestaurante['IMAGEN'],
+                                                     'IMAGEN'                  =>   (!empty($arrayItemRestaurante['IMAGEN']) && $conImagen == 'SI')? $objController->getImgBase64($arrayItemRestaurante['IMAGEN']) :null,
+                                                     'ICONO'                  =>   (!empty($arrayItemRestaurante['ICONO']) && $conIcono == 'SI')? $objController->getImgBase64($arrayItemRestaurante['ICONO']) :null,
+                                                     //'ICONO'                   =>   $arrayItemRestaurante['ICONO'],
                                                      'CANT_LIKE'               =>   $arrayItemRestaurante['CANT_LIKE'],
                                                      'PRO_ENCUESTAS'           =>   $arrayItemRestaurante['PRO_ENCUESTAS'],
                                                      'ES_PUBLICIDAD'           =>  'N');
