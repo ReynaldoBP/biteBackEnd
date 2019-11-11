@@ -658,10 +658,11 @@ class ApiMovilController extends FOSRestController
                                                      'ESTADO'                  =>   $arrayItemRestaurante['ESTADO'],
                                                      //'IMAGEN'                  =>   $arrayItemRestaurante['IMAGEN'],
                                                      'IMAGEN'                  =>   (!empty($arrayItemRestaurante['IMAGEN']) && $conImagen == 'SI')? $objController->getImgBase64($arrayItemRestaurante['IMAGEN']) :null,
-                                                     'ICONO'                  =>   (!empty($arrayItemRestaurante['ICONO']) && $conIcono == 'SI')? $objController->getImgBase64($arrayItemRestaurante['ICONO']) :null,
+                                                     'ICONO'                   =>   (!empty($arrayItemRestaurante['ICONO']) && $conIcono == 'SI')? $objController->getImgBase64($arrayItemRestaurante['ICONO']) :null,
                                                      //'ICONO'                   =>   $arrayItemRestaurante['ICONO'],
                                                      'CANT_LIKE'               =>   $arrayItemRestaurante['CANT_LIKE'],
                                                      'PRO_ENCUESTAS'           =>   $arrayItemRestaurante['PRO_ENCUESTAS'],
+                                                     'ID_LIKE'                 =>   $arrayItemRestaurante['ID_LIKE'] ? $arrayItemRestaurante['ID_LIKE']:null,
                                                      'ES_PUBLICIDAD'           =>  'N');
         }
         $arrayResultado['error'] = $strMensajeError;

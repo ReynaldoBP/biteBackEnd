@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * AdmiParametroRepository
@@ -10,4 +11,56 @@ namespace AppBundle\Repository;
  */
 class AdmiParametroRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Documentación para la función 'getClienteCriterio'
+     * Método encargado de retornar todos los clientes para el movil según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 26-08-2019
+     * 
+     * @return array  $arrayParametro
+     * 
+     */    
+    public function getParametro($arrayParametros)
+    {
+        $strDescripcion     = $arrayParametros['strDescripcion'] ? $arrayParametros['strDescripcion']:'';
+        $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $arrayParametro     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT AP.ID_PARAMETRO,AP.DESCRIPCION,AP.VALOR1, AP.VALOR2, AP.VALOR3,AP.ESTADO,
+                                AP.USR_CREACION,AP.FE_CREACION,AP.USR_MODIFICACION,AP.FE_MODIFICACION ";
+            $strFrom        = "FROM ADMI_PARAMETRO AP  ";
+            $strWhere       = "WHERE AP.ESTADO in (:ESTADO) ";
+            $objQuery->setParameter("ESTADO",$strEstado);
+            if(!empty($strDescripcion))
+            {
+                $strWhere .= " AND lower(AP.DESCRIPCION) like lower(:DESCRIPCION)";
+                $objQuery->setParameter("DESCRIPCION", '%' . trim($strDescripcion) . '%');
+            }
+
+            $objRsmBuilder->addScalarResult('ID_PARAMETRO', 'ID_PARAMETRO', 'string');
+            $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
+            $objRsmBuilder->addScalarResult('VALOR1', 'VALOR1', 'string');
+            $objRsmBuilder->addScalarResult('VALOR2', 'VALOR2', 'string');
+            $objRsmBuilder->addScalarResult('VALOR3', 'VALOR3', 'string');
+            $objRsmBuilder->addScalarResult('ESTADO', 'ESTADO', 'string');
+            $objRsmBuilder->addScalarResult('USR_CREACION', 'USR_CREACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'date');
+            $objRsmBuilder->addScalarResult('USR_MODIFICACION', 'USR_MODIFICACION', 'string');
+            $objRsmBuilder->addScalarResult('FE_MODIFICACION', 'FE_MODIFICACION', 'date');
+            $strSql       = $strSelect.$strFrom.$strWhere;
+            $objQuery->setSQL($strSql);
+            $arrayParametro['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayParametro['error'] = $strMensajeError;
+        return $arrayParametro;
+    }
 }

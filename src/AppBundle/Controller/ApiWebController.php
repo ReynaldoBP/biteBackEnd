@@ -18,6 +18,7 @@ use AppBundle\Entity\InfoClienteInfluencer;
 use AppBundle\Entity\InfoClienteEncuesta;
 use AppBundle\Entity\InfoPromocionHistorial;
 use AppBundle\Entity\InfoRespuesta;
+use AppBundle\Entity\AdmiParametro;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -83,6 +84,8 @@ class ApiWebController extends FOSRestController
                 case 'getResultadoProPublicaciones':$arrayRespuesta = $this->getResultadoProPublicaciones($arrayData);
                 break;
                 case 'getResultadosProIPN':$arrayRespuesta = $this->getResultadosProIPN($arrayData);
+                break;
+                case 'getParametro':$arrayRespuesta = $this->getParametro($arrayData);
                 break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
@@ -1758,6 +1761,48 @@ class ApiWebController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $arrayRespuesta,
                                             'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getParametro'
+     * Método encargado de retornar todos los parametro según los parámetros recibidos.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 11-11-2019
+     * 
+     * @return array  $objResponse
+     */
+    public function getParametro($arrayData)
+    {
+        $strDescripcion    = $arrayData['strDescripcion'] ? $arrayData['strDescripcion']:'';
+        $arrayParametro    = array();
+        $strMensajeError   = '';
+        $strStatus         = 400;
+        $objResponse       = new Response;
+        $boolSucces        = true;
+        try
+        {
+            $arrayParametros = array('strDescripcion'=>$strDescripcion);
+            $arrayParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->getParametro($arrayParametros);
+            if(isset($arrayParametro['error']) && !empty($arrayParametro['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayParametro['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $boolSucces      = false;
+            $strMensajeError ="Fallo al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+        }
+        $arrayParametro['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayParametro,
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
