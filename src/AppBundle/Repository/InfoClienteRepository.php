@@ -113,6 +113,9 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
      * @author Kevin Baque
      * @version 1.0 26-08-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 10-11-2019 Se agrega filtro por restaurante.
+     * 
      * @return array  $arrayCliente
      * 
      */
@@ -155,8 +158,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                                 IFNULL(SUM(ICP.CANTIDAD_PUNTOS),0) AS PUNTOS_RESTAURANTES ";
                 $strFrom        = "FROM INFO_CLIENTE IC 
                                 LEFT JOIN INFO_CLIENTE_PUNTO ICP         ON IC.ID_CLIENTE       = ICP.CLIENTE_ID
-                                LEFT JOIN INFO_SUCURSAL ISUR             ON ISUR.ID_SUCURSAL    = ICP.SUCURSAL_ID
-                                LEFT JOIN INFO_RESTAURANTE IRES          ON IRES.ID_RESTAURANTE = ISUR.RESTAURANTE_ID
+                                LEFT JOIN INFO_RESTAURANTE IRES          ON IRES.ID_RESTAURANTE = ICP.RESTAURANTE_ID
                                 ";
                 $strWhere       = "WHERE IC.ESTADO in (:ESTADO) ";
                 $objQuery->setParameter("ESTADO",$strEstado);

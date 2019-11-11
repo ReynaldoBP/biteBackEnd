@@ -23,11 +23,15 @@ class UsuarioController extends Controller
      * @author Kevin Baque
      * @version 1.0 01-08-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 10-11-2019 Se agrega filtro por restaurante.
+     * 
      * @return array  $objResponse
      */
     public function getUsuarioAction(Request $request)
     {
         $intIdUsuario           = $request->query->get("idUsuario") ? $request->query->get("idUsuario"):'';
+        $intIdRestaurante       = $request->query->get("intIdRestaurante") ? $request->query->get("intIdRestaurante"):'';
         $strTipoRol             = $request->query->get("idRol") ? $request->query->get("idRol"):'';
         $strIdentificacion      = $request->query->get("identificacion") ? $request->query->get("identificacion"):'';
         $strNombres             = $request->query->get("nombres") ? $request->query->get("nombres"):'';
@@ -42,6 +46,7 @@ class UsuarioController extends Controller
             $arrayParametros = array('intIdUsuario'     => $intIdUsuario,
                                     'strTipoRol'        => $strTipoRol,
                                     'strIdentificacion' => $strIdentificacion,
+                                    'intIdRestaurante'  => $intIdRestaurante,
                                     'strNombres'        => $strNombres,
                                     'strApellidos'      => $strApellidos,
                                     'strEstado'         => $strEstado

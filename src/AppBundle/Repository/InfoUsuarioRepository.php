@@ -18,11 +18,15 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
      * @author Kevin Baque
      * @version 1.0 16-07-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 10-11-2019 Se agrega filtro por restaurante.
+     *
      * @return array  $arrayUsuarios
      * 
      */    
     public function getUsuariosCriterio($arrayParametros)
     {
+        $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
         $intIdUsuario       = $arrayParametros['intIdUsuario'] ? $arrayParametros['intIdUsuario']:'';
         $strTipoRol         = $arrayParametros['strTipoRol'] ? $arrayParametros['strTipoRol']:'';
         $strIdentificacion  = $arrayParametros['strIdentificacion'] ? $arrayParametros['strIdentificacion']:'';
@@ -46,6 +50,13 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
             $strWhere       = "WHERE IU.ESTADO in (:ESTADO) ";
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQueryCount->setParameter("ESTADO",$strEstado);
+            if(!empty($intIdRestaurante))
+            {
+                $strFrom .= " JOIN INFO_USUARIO_RES IURES ON IURES.USUARIO_ID = IU.ID_USUARIO ";
+                $strWhere .= " AND IURES.RESTAURANTE_ID =:RESTAURANTE_ID ";
+                $objQuery->setParameter("RESTAURANTE_ID", $intIdRestaurante);
+                $objQueryCount->setParameter("RESTAURANTE_ID", $intIdRestaurante);
+            }
             if(!empty($intIdUsuario))
             {
                 $strWhere .= " AND IU.ID_USUARIO =:intIdUsuario";

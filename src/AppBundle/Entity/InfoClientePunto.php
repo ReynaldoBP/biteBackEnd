@@ -32,14 +32,14 @@ class InfoClientePunto
     private $CLIENTE_ID;
 
     /**
-    * @var InfoSucursal
+    * @var InfoRestaurante
     *
-    * @ORM\ManyToOne(targetEntity="InfoSucursal")
+    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
     * @ORM\JoinColumns({
-    * @ORM\JoinColumn(name="SUCURSAL_ID", referencedColumnName="ID_SUCURSAL")
+    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
     * })
     */
-    private $SUCURSAL_ID;
+    private $RESTAURANTE_ID;
 
     /**
      * @var int
@@ -261,27 +261,28 @@ class InfoClientePunto
         return $this->CLIENTE_ID;
     }
 
+
     /**
-     * Set SUCURSALID
+     * Set RESTAURANTEID
      *
-     * @param \AppBundle\Entity\InfoSucursal $SUCURSALID
+     * @param \AppBundle\Entity\InfoRestaurante $RESTAURANTEID
      *
      * @return InfoClientePunto
      */
-    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $SUCURSALID = null)
+    public function setRESTAURANTEID(\AppBundle\Entity\InfoRestaurante $RESTAURANTEID = null)
     {
-        $this->SUCURSAL_ID = $SUCURSALID;
+        $this->RESTAURANTE_ID = $RESTAURANTEID;
 
         return $this;
     }
 
     /**
-     * Get SUCURSALID
+     * Get RESTAURANTEID
      *
-     * @return \AppBundle\Entity\InfoSucursal
+     * @return \AppBundle\Entity\InfoRestaurante
      */
-    public function getSUCURSALID()
+    public function getRESTAURANTEID()
     {
-        return $this->SUCURSAL_ID;
+        return $this->RESTAURANTE_ID;
     }
 }

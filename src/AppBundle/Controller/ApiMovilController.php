@@ -1497,6 +1497,9 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 02-09-2019
      *
+     * @author Kevin Baque
+     * @version 1.1 10-11-2019 Se agrega filtro por restaurante.
+     *
      * @return array  $objResponse
      */
     public function getPromocion($arrayData)
@@ -1538,7 +1541,7 @@ class ApiMovilController extends FOSRestController
                                         'aceptaGlobal'     => $arrayItem->getACEPTAGLOBAL(),
                                         'estado'           => $arrayItem->getESTADO());
             }
-            $arrayPuntos     = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('SUCURSAL_ID' => $intIdSucursal,
+            $arrayPuntos     = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('RESTAURANTE_ID' => $intIdRestaurante,
                                                                                               'CLIENTE_ID'  => $intIdCliente));
             if(empty($arrayPuntos) && !is_array($arrayPuntos))
             {
@@ -1669,9 +1672,14 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
+            $objSucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
+            if(!is_object($objSucursal) || empty($objSucursal))
+            {
+                throw new \Exception('No existe sucursal con identificador enviado por parámetro.');
+            }
             //consultar el estado a buscar
             $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'  => $intIdCliente,
-                                                                                            'SUCURSAL_ID' => $intIdSucursal));
+                                                                                            'RESTAURANTE_ID' => $objSucursal->getRESTAURANTEID()->getId()));
             if(!is_array($arrayCltPunto) || empty($arrayCltPunto))
             {
                 throw new \Exception('El cliente a buscar no tiene puntajes.');
