@@ -330,21 +330,21 @@ class InfoClienteEncuesta
     }
 
     /**
-     * Set sUCURSALID
+     * Set SUCURSALID
      *
-     * @param \AppBundle\Entity\InfoSucursal $sUCURSALID
+     * @param \AppBundle\Entity\InfoSucursal $SUCURSALID
      *
      * @return InfoClienteEncuesta
      */
-    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $sUCURSALID = null)
+    public function setSUCURSALID(\AppBundle\Entity\InfoSucursal $SUCURSALID = null)
     {
-        $this->SUCURSAL_ID = $sUCURSALID;
+        $this->SUCURSAL_ID = $SUCURSALID;
 
         return $this;
     }
 
     /**
-     * Get sUCURSALID
+     * Get SUCURSALID
      *
      * @return \AppBundle\Entity\InfoSucursal
      */

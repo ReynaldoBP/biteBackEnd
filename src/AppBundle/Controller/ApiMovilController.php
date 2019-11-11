@@ -827,6 +827,7 @@ class ApiMovilController extends FOSRestController
         $strStatus          = 400;
         $objResponse        = new Response;
         $em                 = $this->getDoctrine()->getEntityManager();
+        $boolSucces         = true;
         try
         {
             $em->getConnection()->beginTransaction();
@@ -925,6 +926,7 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
+            $boolSucces = false;
             if ($em->getConnection()->isTransactionActive())
             {
                 $strStatus = 404;
@@ -941,8 +943,9 @@ class ApiMovilController extends FOSRestController
         $arrayRespuesta['intIdCltEncuesta'] = $intIdCltEncuesta;
         $objResponse->setContent(json_encode(array(
                                                     'status'           => $strStatus,
+                                                    'objSucursal'=>$objSucursal,
                                                     'resultado'        => $arrayRespuesta,
-                                                    'succes'           => true
+                                                    'succes'           => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
@@ -1327,6 +1330,7 @@ class ApiMovilController extends FOSRestController
         $strStatus          = 400;
         $objResponse        = new Response;
         $em                 = $this->getDoctrine()->getEntityManager();
+        $boolSucces         = true;
         try
         {
             $em->getConnection()->beginTransaction();
@@ -1360,6 +1364,7 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
+            $boolSucces         = false;
             if ($em->getConnection()->isTransactionActive())
             {
                 $strStatus = 404;
@@ -1382,7 +1387,7 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayContenido,
-                                            'succes'    => true
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
@@ -1412,6 +1417,7 @@ class ApiMovilController extends FOSRestController
         $em                 = $this->getDoctrine()->getEntityManager();
         $objController      = new DefaultController();
         $objController->setContainer($this->container);
+        $boolSucces         = true;
         try
         {
             $em->getConnection()->beginTransaction();
@@ -1445,6 +1451,7 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
+            $boolSucces         = false;
             if ($em->getConnection()->isTransactionActive())
             {
                 $strStatus = 404;
@@ -1466,7 +1473,7 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayContenido,
-                                            'succes'    => true
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
