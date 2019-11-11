@@ -316,20 +316,25 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT SUM(ICE.CANTIDAD_PUNTOS) AS CANT_PUNTOS,
-                                      IRE.RAZON_SOCIAL ";
+                                      IRE.NOMBRE_COMERCIAL,
+                                      IRE.ICONO ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
                                 JOIN INFO_SUCURSAL         ISUR ON ISUR.ID_SUCURSAL   = ICE.SUCURSAL_ID
                                 JOIN INFO_RESTAURANTE      IRE  ON IRE.ID_RESTAURANTE = ISUR.RESTAURANTE_ID ";
-            $strWhere       = " WHERE ICE.CLIENTE_ID=:CLIENTE_ID
-                                    AND ICE.ESTADO  = :ESTADO
+            $strWhere       = " WHERE ICE.ESTADO  = :ESTADO
                                     AND ISUR.ESTADO = :ESTADO
                                     AND IRE.ESTADO  = :ESTADO ";
             $strGroupBy     = " GROUP BY IRE.ID_RESTAURANTE ";
-            $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
             $objQuery->setParameter("ESTADO",$strEstado);
+            if(!empty($intIdCliente))
+            {
+                $strWhere .= " ICE.CLIENTE_ID= :CLIENTE_ID ";
+                $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
+            }
 
             $objRsmBuilder->addScalarResult('CANT_PUNTOS', 'CANT_PUNTOS', 'string');
-            $objRsmBuilder->addScalarResult('RAZON_SOCIAL', 'RAZON_SOCIAL', 'string');
+            $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'RAZON_SOCIAL', 'string');
+            $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
             $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
             $objQuery->setSQL($strSql);
             $arrayCantPtos['resultados'] = $objQuery->getResult();

@@ -1709,6 +1709,7 @@ class ApiMovilController extends FOSRestController
         $intCantPuntospromo = 0;
         $objResponse        = new Response;
         $em                 = $this->getDoctrine()->getEntityManager();
+        $boolSucces         = true;
         try
         {
             $em->getConnection()->beginTransaction();
@@ -1727,7 +1728,7 @@ class ApiMovilController extends FOSRestController
                                                                                             'RESTAURANTE_ID' => $objSucursal->getRESTAURANTEID()->getId()));
             if(!is_array($arrayCltPunto) || empty($arrayCltPunto))
             {
-                throw new \Exception('El cliente a buscar no tiene puntajes.');
+                throw new \Exception('No tiene puntaje sufuciente.');
             }
             foreach($arrayCltPunto as $arrayItem)//1REGISTRO
             {
@@ -1762,7 +1763,7 @@ class ApiMovilController extends FOSRestController
                     $entityPromocionHist->setFECREACION($strDatetimeActual);
                     $em->persist($entityPromocionHist);
                     $em->flush();
-                    $strMensajeError = 'Historial de la Promoción creado con exito.!';
+                    $strMensajeError = 'Creado con exito.!';
                 }
                 else
                 {
@@ -1778,12 +1779,13 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
+            $boolSucces = false;
             if ($em->getConnection()->isTransactionActive())
             {
                 $strStatus = 404;
                 $em->getConnection()->rollback();
             }
-            $strMensajeError ="Fallo al crear el Historial de la Promoción, intente nuevamente.\n ". $ex->getMessage();
+            $strMensajeError = $ex->getMessage();
         }
         if ($em->getConnection()->isTransactionActive())
         {
@@ -1801,7 +1803,7 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPromocionHist,
-                                            'succes'    => true
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
@@ -1926,16 +1928,22 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 01-08-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 11-11-2019 Se retorna el icono del restaurante, adicional se cambia el valor razon social por nombre comercial.
+     * 
      * @return array  $objResponse
      */
     public function getCantPtosResEnc($arrayData)
     {
         $intIdCliente      = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'ACTIVO';
+        $conIcono          = $arrayData['icono']  ? $arrayData['icono']:'SI';
         $arrayPuntos       = array();
         $strMensajeError   = '';
         $strStatus         = 400;
         $objResponse       = new Response;
+        $objController     = new DefaultController();
+        $objController->setContainer($this->container);
         try
         {
             $arrayParametros = array('intIdCliente'     => $intIdCliente,
@@ -1946,6 +1954,16 @@ class ApiMovilController extends FOSRestController
             {
                 $strStatus  = 404;
                 throw new \Exception($arrayPuntos['error']);
+            }
+            if($conIcono == 'SI')
+            {
+                foreach ($arrayPuntos['resultados'] as &$item)
+                {
+                    if($item['ICONO'])
+                    {
+                        $item['ICONO'] = $objController->getImgBase64($item['ICONO']);
+                    }
+                }
             }
         }
         catch(\Exception $ex)
