@@ -619,10 +619,63 @@ class ApiMovilController extends FOSRestController
                 }
             }
         }
-        $arrayRestaurante['error'] = $strMensajeError;
+        $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
+                                                                                                           'DESCRIPCION'  => 'NUM_PUBLICIDAD'));
+        if(!is_object($objParametro) || empty($objParametro))
+        {
+            throw new \Exception('No existe parametrizado el número de publicidad.');
+        }
+        $arrayResultado = array();
+        foreach($arrayRestaurante['resultados'] as &$arrayItemRestaurante)
+        {
+            if($intContadorRes == $objParametro->getVALOR1())
+            {
+                $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterioMovil(array('GENERO' => 'TODOS'));
+                if(empty($arrayPublicidad))
+                {
+                    $arrayItemRestaurante['ES_PUBLICIDAD'] = 'N';
+                }
+                else
+                {
+                    if($conImagen == 'SI')
+                    {
+                        foreach ($arrayPublicidad['resultados'] as &$item)
+                        {
+                            if(!empty($item['IMAGEN']) && $conImagen == 'SI')
+                            {
+                                $item['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
+                            }
+                        }
+                    }
+                    $arrayResultado ['resultados'] []= array('NOMBRE_COMERCIAL' =>   $arrayPublicidad['resultados'][0]['DESCRIPCION'],
+                                                            'ICONO'             =>   $arrayPublicidad['resultados'][0]['IMAGEN'],
+                                                            'ES_PUBLICIDAD'     =>  'S');
+                    $intContadorRes                  = 0;
+                }
+            }
+            $intContadorRes ++;
+            $arrayResultado ['resultados'] []= array('ID_RESTAURANTE'          =>   $arrayItemRestaurante['ID_RESTAURANTE'],
+                                                     'TIPO_IDENTIFICACION'     =>   $arrayItemRestaurante['TIPO_IDENTIFICACION'],
+                                                     'IDENTIFICACION'          =>   $arrayItemRestaurante['IDENTIFICACION'],
+                                                     'RAZON_SOCIAL'            =>   $arrayItemRestaurante['RAZON_SOCIAL'],
+                                                     'NOMBRE_COMERCIAL'        =>   $arrayItemRestaurante['NOMBRE_COMERCIAL'],
+                                                     'REPRESENTANTE_LEGAL'     =>   $arrayItemRestaurante['REPRESENTANTE_LEGAL'],
+                                                     'TIPO_COMIDA_ID'          =>   $arrayItemRestaurante['TIPO_COMIDA_ID'],
+                                                     'DESCRIPCION_TIPO_COMIDA' =>   $arrayItemRestaurante['DESCRIPCION_TIPO_COMIDA'],
+                                                     'DIRECCION_TRIBUTARIO'    =>   $arrayItemRestaurante['DIRECCION_TRIBUTARIO'],
+                                                     'URL_CATALOGO'            =>   $arrayItemRestaurante['URL_CATALOGO'],
+                                                     'NUMERO_CONTACTO'         =>   $arrayItemRestaurante['NUMERO_CONTACTO'],
+                                                     'ESTADO'                  =>   $arrayItemRestaurante['ESTADO'],
+                                                     'IMAGEN'                  =>   $arrayItemRestaurante['IMAGEN'],
+                                                     'ICONO'                   =>   $arrayItemRestaurante['ICONO'],
+                                                     'CANT_LIKE'               =>   $arrayItemRestaurante['CANT_LIKE'],
+                                                     'PRO_ENCUESTAS'           =>   $arrayItemRestaurante['PRO_ENCUESTAS'],
+                                                     'ES_PUBLICIDAD'           =>  'N');
+        }
+        $arrayResultado['error'] = $strMensajeError;
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
-                                            'resultado' => $arrayRestaurante,
+                                            'resultado' => $arrayResultado,
                                             'succes'    => true
                                             )
                                         ));
