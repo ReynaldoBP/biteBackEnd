@@ -147,9 +147,22 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
         try
         {
             $strSelect      = "SELECT IR.ID_RESTAURANTE,IR.TIPO_IDENTIFICACION, IR.IDENTIFICACION, IR.RAZON_SOCIAL, 
-                                        IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
-                                        IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO ";
-            $strSelect     .= ",(SELECT COUNT(*) FROM INFO_LIKE_RES ILR_RES WHERE ILR_RES.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ILR_RES.ESTADO='ACTIVO') as CANT_LIKE ";
+                                      IR.NOMBRE_COMERCIAL, IR.REPRESENTANTE_LEGAL, IR.TIPO_COMIDA_ID,ATC.DESCRIPCION_TIPO_COMIDA, 
+                                      IR.DIRECCION_TRIBUTARIO, IR.URL_CATALOGO, IR.NUMERO_CONTACTO, IR.ESTADO, IR.IMAGEN, IR.ICONO
+                                      ,(SELECT COUNT(*) FROM INFO_LIKE_RES ILR_RES WHERE ILR_RES.RESTAURANTE_ID=IR.ID_RESTAURANTE AND ILR_RES.ESTADO='ACTIVO') as CANT_LIKE
+                                      ,(SELECT IFNULL(AVG(SUB_IRES.RESPUESTA),0) 
+                                            FROM INFO_CLIENTE_ENCUESTA SUB_ICE
+                                                INNER JOIN INFO_SUCURSAL SUB_ISU 
+                                                    ON SUB_ISU.ID_SUCURSAL = SUB_ICE.SUCURSAL_ID
+                                                INNER JOIN INFO_RESPUESTA SUB_IRES 
+                                                    ON SUB_IRES.CLT_ENCUESTA_ID = SUB_ICE.ID_CLT_ENCUESTA
+                                                INNER JOIN INFO_PREGUNTA SUB_IP 
+                                                    ON SUB_IP.ID_PREGUNTA = SUB_IRES.PREGUNTA_ID
+                                                INNER JOIN INFO_OPCION_RESPUESTA SUB_IOR 
+                                                    ON SUB_IOR.ID_OPCION_RESPUESTA = SUB_IP.OPCION_RESPUESTA_ID
+                                                WHERE SUB_IOR.VALOR = 5 
+                                                    AND SUB_ICE.ESTADO = 'ACTIVO' 
+                                                    AND SUB_ISU.RESTAURANTE_ID = IR.ID_RESTAURANTE) AS PRO_ENCUESTAS ";
             $strSelectCount = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = "FROM INFO_RESTAURANTE IR,ADMI_TIPO_COMIDA ATC ";
             $strWhere       = "WHERE IR.ESTADO in (:ESTADO) AND IR.TIPO_COMIDA_ID = ATC.ID_TIPO_COMIDA";
@@ -207,6 +220,7 @@ class InfoRestauranteRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('IMAGEN', 'IMAGEN', 'string');
             $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
             $objRsmBuilder->addScalarResult('CANT_LIKE', 'CANT_LIKE', 'string');
+            $objRsmBuilder->addScalarResult('PRO_ENCUESTAS', 'PRO_ENCUESTAS', 'string');
             $objRsmBuilderCount->addScalarResult('CANTIDAD', 'Cantidad', 'integer');
             $strSql       = $strSelect.$strFrom.$strWhere;
             $objQuery->setSQL($strSql);
