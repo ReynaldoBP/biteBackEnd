@@ -24,6 +24,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getRespuestaDashboard($arrayParametros)
     {
+        
+        $intIdCltEncuesta   = $arrayParametros['intIdCltEncuesta'] ? $arrayParametros['intIdCltEncuesta']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
         $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
@@ -48,6 +50,11 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO",$strEstado);
             $objQuery->setParameter("strMes", $strMes);
             $objQuery->setParameter("strAnio", $strAnio);
+            if(!empty($intIdCltEncuesta))
+            {
+                $strWhere .= " AND A.ID_CLT_ENCUESTA = :ID_CLT_ENCUESTA ";
+                $objQuery->setParameter("ID_CLT_ENCUESTA",$intIdCltEncuesta);
+            }
             $objRsmBuilder->addScalarResult('RED_SOCIAL', 'RED_SOCIAL', 'string');
             $objRsmBuilder->addScalarResult('FE_CREACION', 'FE_CREACION', 'string');
             $objRsmBuilder->addScalarResult('CLIENTE_ID', 'CLIENTE_ID', 'string');
@@ -258,6 +265,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getResultadoProPregunta($arrayParametros)
     {
+        $intIdPregunta      = $arrayParametros['intIdPregunta'] ? $arrayParametros['intIdPregunta']:1;
+        $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
         $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
         $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
         $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
@@ -298,7 +307,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
 
             if(!empty($strGenero))
             {
-                $strWhere .= " AND IC.GENERO = :GENERO";
+                $strWhere .= " AND IC.GENERO = :GENERO ";
                 $objQuery->setParameter("GENERO", $strGenero);
             }
             if(!empty($strHorario))
@@ -331,11 +340,17 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
                 $strWhere .= " AND ISU.PARROQUIA = :PARROQUIA ";
                 $objQuery->setParameter("PARROQUIA", $strParroquia);
             }
+            if(!empty($intIdPregunta))
+            {
+                $strWhere .= " AND IP.ID_PREGUNTA = :ID_PREGUNTA ";
+                $objQuery->setParameter("ID_PREGUNTA", $intIdPregunta);
+            }
             $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
             $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
             $objRsmBuilder->addScalarResult('PROMEDIO', 'PROMEDIO', 'string');
             $strLimit     =" limit ".$intLimite;
-            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strLimit;
+            $strOrder     = " ORDER BY ICE.FE_CREACION DESC ";
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strOrder.$strLimit;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
         }
@@ -347,7 +362,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
         return $arrayRespuesta;
     }
     /**
-     * Documentación para la función 'getResultadoProPregunta'
+     * Documentación para la función 'getResultadoProPublicaciones'
      * Método encargado de retornar el resultado promediado
      * preguntas activa según los parámetros recibidos.
      * 
@@ -437,7 +452,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('CANT_TWITTER', 'CANT_TWITTER', 'string');
             $objRsmBuilder->addScalarResult('CANT_INSTAGRAM', 'CANT_INSTAGRAM', 'string');
             $strLimit     =" limit ".$intLimite;
-            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strLimit;
+            $strOrder     = " ORDER BY ICE.FE_CREACION DESC ";
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strOrder.$strLimit;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
         }

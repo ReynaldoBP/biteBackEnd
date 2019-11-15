@@ -94,6 +94,8 @@ class ApiMovilController extends FOSRestController
                break;
                case 'getCantPtosResEnc':$arrayRespuesta = $this->getCantPtosResEnc($arrayData);
                break;
+               case 'generarPass':$arrayRespuesta = $this->generarPass($arrayData);
+               break;
                case 'createPunto':$arrayRespuesta = $this->createPunto($arrayData);//Obsoleto
                break;
                case 'createPuntoGlobal':$arrayRespuesta = $this->createPuntoGlobal($arrayData);//Obsoleto
@@ -458,6 +460,7 @@ class ApiMovilController extends FOSRestController
      */
     public function getSucursalPorUbicacion($arrayData)
     {
+        $intidSucursal     = $arrayData['intIdSucursal'] ? $arrayData['intIdSucursal']:'';
         $strLatitud        = $arrayData['latitud'] ? $arrayData['latitud']:'';
         $strLongitud       = $arrayData['longitud'] ? $arrayData['longitud']:'';
         $strEstado         = $arrayData['estado'] ? $arrayData['estado']:'';
@@ -476,6 +479,7 @@ class ApiMovilController extends FOSRestController
         try
         {
             $arrayCltEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')->getVigenciaEncuesta(array('intIdCliente'=>$intIdCliente,
+                                                                                                                                'intIdSucursal'=>$intidSucursal,
                                                                                                                                 'strDia'      =>date("d"),
                                                                                                                                 'strMes'      =>date("m"),
                                                                                                                                 'strAnio'     =>date("Y")));
@@ -487,7 +491,7 @@ class ApiMovilController extends FOSRestController
             if(isset($arrayCltEncuesta['resultados']) && intval($arrayCltEncuesta['resultados'][0]['CANTIDAD']) >0 )
             {
                 $boolError = true;
-                throw new \Exception("Estimado ud. ya cuenta con una encuesta llena, solo es permitido una encuesta por día.");
+                throw new \Exception("Estimado, ud. ya cuenta con una encuesta llena, solo es permitido una encuesta por día.");
             }
             $objController   = new DefaultController();
             $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
@@ -1983,6 +1987,96 @@ class ApiMovilController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $arrayPuntos,
                                             'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'generarPass'
+     * Método encargado de generar las contraseñas a todos los clientes.
+     *
+     * @author Kevin Baque
+     * @version 1.0 14-11-2019
+     *
+     * @return array  $objResponse
+     */
+    public function generarPass($arrayData)
+    {
+        $strDestinatario  = $arrayData['strCorreo'] ? $arrayData['strCorreo']:'';
+        $strAsunto        = 'Clave temporal Bitte';
+        $strContrasenia   = uniqid();
+        $strMensajeCorreo = '<div class="">Estimado cliente.</div>
+        <div class="">&nbsp;</div>
+        <div class="">En base a su solicitud el sistema BITTE ha procedido a asignarle una clave temporal.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div><strong>Tu clave temporal es :'.$strContrasenia.'&nbsp;</strong></div>
+        <div class="">&nbsp;</div>
+        <div class="">Recuerda que para mayor seguridad luego de ingresar a BITTE es muy importante cambiar la contraseña.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div class="">
+        <div>
+        <div class="">Nuestro equipo de asistencia estar&aacute; disponible para usted para lo que necesite.&nbsp;</div>
+        <div>&nbsp;</div>
+        </div>
+        </div>
+        <div class="">Bienvenido al mundo BITTE.</div>';
+        $strRemitente     = 'notificaciones_bitte@massvision.tv';
+        $objResponse      = new Response;
+        $strRespuesta     = '';
+        $arrayParametros  = array();
+        $strStatus        = 400;
+        $em               = $this->getDoctrine()->getEntityManager();
+        $strMensajeError  = '';
+        $boolSucces       = true;
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(empty($strDestinatario))
+            {
+                throw new \Exception('Es necesario enviar el correo.');
+            }
+            $objCliente = $em->getRepository('AppBundle:InfoCliente')->findOneBy(array('CORREO'=>$strDestinatario));
+            if(!is_object($objCliente) && empty($objCliente))
+            {
+                throw new \Exception('Cliente no existente.');
+            }
+            if(empty($strContrasenia))
+            {
+                throw new \Exception('No se ah generado la contraseña.');
+            }
+            $arrayParametros  = array('strAsunto'        => $strAsunto,
+                                      'strMensajeCorreo' => $strMensajeCorreo,
+                                      'strRemitente'     => $strRemitente,
+                                      'strDestinatario'  => $strDestinatario);
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
+            $objController->enviaCorreo($arrayParametros);
+            $objCliente->setCONTRASENIA(md5($strContrasenia));
+            $em->persist($objCliente);
+            $em->flush();
+            $strMensajeError = 'Cambio de clave con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $em->getConnection()->rollback();
+                $em->getConnection()->close();
+            }
+            $strStatus       = 404;
+            $boolSucces      = false;
+            $strMensajeError = "Fallo al generar el correo, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');

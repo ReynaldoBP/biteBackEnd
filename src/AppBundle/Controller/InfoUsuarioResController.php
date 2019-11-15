@@ -60,6 +60,39 @@ class InfoUsuarioResController extends Controller
             {
                 throw new \Exception('Relación ya existente.');
             }
+            $strNombreRestaurante = $objRestaurante->getNOMBRECOMERCIAL();
+            $strNombreUsuario     = $objUsuario->getAPELLIDOS() .' '.$objUsuario->getNOMBRES();
+            $strAsunto            = 'Bienvenido '.$strNombreRestaurante.'. ';
+            $strMensajeCorreo = '<div class="">Bienvenido '.$strNombreRestaurante.'.</div>
+            <div class="">&nbsp;</div>
+            <div class="">Hola '.$strNombreUsuario.' Administrador Restaurante '.$strNombreRestaurante.'.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">BITTE le da la cordial bienvenida a su sistema de an&aacute;lisis de datos de satisfacci&oacute;n al cliente.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">BITTE le va a permitir conocer la satisfacci&oacute;n de sus clientes bajo diferentes variables y a su vez, le permitir&aacute; hacer distintos comparativos estad&iacute;sticos.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">A su vez, BITTE permite a los usuarios de la app compartir im&aacute;genes de sus platos, junto con su logo en redes sociales (Facebook, Instagram y Twitter), que permitir&aacute;n a su establecimiento tener un marketing viral. Su restaurante conocer&aacute; datos estad&iacute;sticos de im&aacute;genes compartidas bajo diferentes variables.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">Es hora de gratificar a su clientela fija con premios que usted controle y escoja, permitiendo crear un v&iacute;nculo m&aacute;s cercano con ellos.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">Nuestro equipo de asistencia estar&aacute; disponible en lo que requiera.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">Por favor, complete su registro de establecimiento y comience a recolectar las opiniones de sus clientes de manera ordenada para un an&aacute;lisis y tabulaci&oacute;n din&aacute;mica.&nbsp;</div>
+            <div class="">&nbsp;</div>
+            <div class="">Bienvenido al mundo BITTE.</div>';
+            $strRemitente     = 'notificaciones_bitte@massvision.tv';
+            $arrayParametros  = array('strAsunto'        => $strAsunto,
+                                      'strMensajeCorreo' => $strMensajeCorreo,
+                                      'strRemitente'     => $strRemitente,
+                                      'strDestinatario'  => $objUsuario->getCORREO());
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
+            $objController->enviaCorreo($arrayParametros);
+
             $entityUsuarioRes = new InfoUsuarioRes();
             $entityUsuarioRes->setRESTAURANTEID($objRestaurante);
             $entityUsuarioRes->setUSUARIOID($objUsuario);
