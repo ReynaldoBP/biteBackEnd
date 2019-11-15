@@ -263,6 +263,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
     {
         $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
         $strDia             = $arrayParametros['strDia'] ? $arrayParametros['strDia']:'';
+        $intIdSucursal      = $arrayParametros['intidSucursal'] ? $arrayParametros['intidSucursal']:'';
         $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
         $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
         $arrayCltEncuesta   = array();

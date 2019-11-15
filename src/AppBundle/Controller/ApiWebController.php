@@ -87,6 +87,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getParametro':$arrayRespuesta = $this->getParametro($arrayData);
                 break;
+                case 'generarPass':$arrayRespuesta = $this->generarPass($arrayData);
+                break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1609,6 +1611,7 @@ class ApiWebController extends FOSRestController
         $strCiudad          = $arrayData['strCiudad'] ? $arrayData['strCiudad']:'';
         $strProvincia       = $arrayData['strProvincia'] ? $arrayData['strProvincia']:'';
         $strParroquia       = $arrayData['strParroquia'] ? $arrayData['strParroquia']:'';
+        $intIdPregunta      = $arrayData['intIdPregunta'] ? $arrayData['intIdPregunta']:'';
         $intLimite          = $arrayData['intLimite'] ? $arrayData['intLimite']:'';
         $arrayRespuesta     = array();
         $strMensajeError    = '';
@@ -1625,6 +1628,7 @@ class ApiWebController extends FOSRestController
                                     "strCiudad"    => $strCiudad,
                                     "strProvincia" => $strProvincia,
                                     "intLimite"    => $intLimite,
+                                    "intIdPregunta" => $intIdPregunta,
                                     "strParroquia" => $strParroquia);
             $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')
                                                       ->getResultadoProPregunta($arrayParametros);
@@ -1803,6 +1807,95 @@ class ApiWebController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $arrayParametro,
                                             'succes'    => $boolSucces
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+
+    /**
+     * Documentación para la función 'generarPass'
+     * Método encargado de generar las contraseñas a todos los usuarios.
+     *
+     * @author Kevin Baque
+     * @version 1.0 14-11-2019
+     *
+     * @return array  $objResponse
+     */
+    public function generarPass($arrayData)
+    {
+        $strDestinatario  = $arrayData['strCorreo'] ? $arrayData['strCorreo']:'';
+        $strAsunto        = 'Clave temporal Bitte';
+        $strContrasenia   = uniqid();
+        $strMensajeCorreo = '<div class="">Estimado usuario.</div>
+        <div class="">&nbsp;</div>
+        <div class="">En base a su solicitud el sistema BITTE ha procedido a asignarle una clave temporal.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div><strong>Tu clave temporal es :'.$strContrasenia.'&nbsp;</strong></div>
+        <div class="">&nbsp;</div>
+        <div class="">Recuerda que para mayor seguridad luego de ingresar a BITTE es muy importante cambiar la contraseña.&nbsp;</div>
+        <div class="">&nbsp;</div>
+        <div class="">
+        <div>
+        <div class="">Nuestro equipo de asistencia estar&aacute; disponible para usted para lo que necesite.&nbsp;</div>
+        <div>&nbsp;</div>
+        </div>
+        </div>
+        <div class="">Bienvenido al mundo BITTE.</div>';
+        $strRemitente     = 'notificaciones_bitte@massvision.tv';
+        $objResponse      = new Response;
+        $strRespuesta     = '';
+        $arrayParametros  = array();
+        $strStatus        = 400;
+        $em               = $this->getDoctrine()->getEntityManager();
+        $strMensajeError  = '';
+        try
+        {
+            $em->getConnection()->beginTransaction();
+            if(empty($strDestinatario))
+            {
+                throw new \Exception('Es necesario enviar el correo.');
+            }
+            $objUsuario = $em->getRepository('AppBundle:InfoUsuario')->findOneBy(array('CORREO'=>$strDestinatario));
+            if(!is_object($objUsuario) && empty($objUsuario))
+            {
+                throw new \Exception('Usuario no existente.');
+            }
+            if(empty($strContrasenia))
+            {
+                throw new \Exception('No se ah generado la contraseña.');
+            }
+            $arrayParametros  = array('strAsunto'        => $strAsunto,
+                                      'strMensajeCorreo' => $strMensajeCorreo,
+                                      'strRemitente'     => $strRemitente,
+                                      'strDestinatario'  => $strDestinatario);
+            $objController    = new DefaultController();
+            $objController->setContainer($this->container);
+            $objController->enviaCorreo($arrayParametros);
+            $objUsuario->setCONTRASENIA(md5($strContrasenia));
+            $em->persist($objUsuario);
+            $em->flush();
+            $strMensajeError = 'Cambio de clave con exito.!';
+        }
+        catch(\Exception $ex)
+        {
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $em->getConnection()->rollback();
+                $em->getConnection()->close();
+            }
+            $strStatus       = 404;
+            $strMensajeError = "Fallo al generar el correo, intente nuevamente.\n ". $ex->getMessage();
+        }
+        if ($em->getConnection()->isTransactionActive())
+        {
+            $em->getConnection()->commit();
+            $em->getConnection()->close();
+        }
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $strMensajeError,
+                                            'succes'    => true
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');

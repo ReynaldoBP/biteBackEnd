@@ -75,6 +75,7 @@ class InfoRespuestaController extends Controller
     public function getRespuestaDashboardAction(Request $request)
     {
         $strAnio                = $request->query->get("strAnio") ? $request->query->get("strAnio"):'';
+        $intIdCltEncuesta       = $request->query->get("intIdCltEncuesta") ? $request->query->get("intIdCltEncuesta"):'';
         $strMes                 = $request->query->get("strMes") ? $request->query->get("strMes"):'';
         $conImagen              = $request->query->get("conImagen") ? $request->query->get("conImagen"):'NO';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'ACTIVO';
@@ -88,6 +89,7 @@ class InfoRespuestaController extends Controller
         {
             $arrayParametros = array('strAnio'   => $strAnio,
                                      'strMes'    => $strMes,
+                                     'intIdCltEncuesta' => $intIdCltEncuesta,
                                      'strEstado' => $strEstado);
             $arrayRespuesta = (array) $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')->getRespuestaDashboard($arrayParametros);
             if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
