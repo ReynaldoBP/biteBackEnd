@@ -24,7 +24,6 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */    
     public function getRespuestaDashboard($arrayParametros)
     {
-        
         $intIdCltEncuesta   = $arrayParametros['intIdCltEncuesta'] ? $arrayParametros['intIdCltEncuesta']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
         $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
@@ -265,8 +264,7 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getResultadoProPregunta($arrayParametros)
     {
-        $intIdPregunta      = $arrayParametros['intIdPregunta'] ? $arrayParametros['intIdPregunta']:1;
-        $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
+        $intIdPregunta      = $arrayParametros['intIdPregunta'] ? $arrayParametros['intIdPregunta']:'';
         $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
         $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
         $strHorario         = $arrayParametros['strHorario'] ? $arrayParametros['strHorario']:'';
@@ -409,7 +407,6 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $strWhere       = "WHERE IR.DESCRIPCION != 'NO COMPARTIDO'
                                     AND ICE.ESTADO   = 'ACTIVO' ";
             $strGroupBy     = " GROUP BY ANIO,MES ";
-            $strOrderBy     = " ORDER BY ICS.FE_CREACION DESC ";
 
             if(!empty($strGenero))
             {
@@ -452,8 +449,8 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('CANT_TWITTER', 'CANT_TWITTER', 'string');
             $objRsmBuilder->addScalarResult('CANT_INSTAGRAM', 'CANT_INSTAGRAM', 'string');
             $strLimit     =" limit ".$intLimite;
-            $strOrder     = " ORDER BY ICE.FE_CREACION DESC ";
-            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strOrder.$strLimit;
+            $strOrderBy   = " ORDER BY ICE.FE_CREACION DESC ";
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strOrderBy.$strLimit;
             $objQuery->setSQL($strSql);
             $arrayRespuesta['resultados'] = $objQuery->getResult();
         }
