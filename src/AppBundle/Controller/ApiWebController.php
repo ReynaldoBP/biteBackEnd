@@ -85,6 +85,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'getResultadosProIPN':$arrayRespuesta = $this->getResultadosProIPN($arrayData);
                 break;
+                case 'getComparativosRestaurantes':$arrayRespuesta = $this->getComparativosRestaurantes($arrayData);
+                break;
                 case 'getParametro':$arrayRespuesta = $this->getParametro($arrayData);
                 break;
                 case 'generarPass':$arrayRespuesta = $this->generarPass($arrayData);
@@ -1896,6 +1898,63 @@ class ApiWebController extends FOSRestController
                                             'status'    => $strStatus,
                                             'resultado' => $strMensajeError,
                                             'succes'    => true
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getComparativosRestaurantes'
+     * Método encargado de retornar comparacion entre restaurantes.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-11-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getComparativosRestaurantes($arrayData)
+    {
+        $intLimite          = $arrayData['intLimite'] ? $arrayData['intLimite']:'';
+        $intIdRestaurante   = $arrayData['intIdRestaurante'] ? $arrayData['intIdRestaurante']:'';
+        $intIdTipoComida    = $arrayData['intIdTipoComida'] ? $arrayData['intIdTipoComida']:'';
+        $intIdPais          = $arrayData['intIdPais'] ? $arrayData['intIdPais']:'';
+        $intIdProvincia     = $arrayData['intIdProvincia'] ? $arrayData['intIdProvincia']:'';
+        $intIdCiudad        = $arrayData['intIdCiudad'] ? $arrayData['intIdCiudad']:'';
+        $intIdParroquia     = $arrayData['intIdParroquia'] ? $arrayData['intIdParroquia']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $boolSucces         = true;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayParametros = array("intLimite"        => $intLimite,
+                                    "intIdRestaurante" => $intIdRestaurante,
+                                    "intIdTipoComida"  => $intIdTipoComida,
+                                    "intIdPais"        => $intIdPais,
+                                    "intIdProvincia"   => $intIdProvincia,
+                                    "intIdCiudad"      => $intIdCiudad,
+                                    "intIdParroquia"   => $intIdParroquia);
+
+            $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')
+                                                      ->getComparativosRestaurantes($arrayParametros);
+            if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayRespuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $boolSucces      = true;
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRespuesta,
+                                            'succes'    => $boolSucces
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');

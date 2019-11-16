@@ -586,4 +586,97 @@ class InfoRespuestaRepository extends \Doctrine\ORM\EntityRepository
         $arrayRespuesta['error'] = $strMensajeError;
         return $arrayRespuesta;
     }
+
+    /**
+     * Documentación para la función 'getComparativosRestaurantes'
+     * Método encargado de retornar comparacion entre restaurantes.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-11-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getComparativosRestaurantes($arrayParametros)
+    {
+        $intLimite          = $arrayParametros['intLimite'] ? $arrayParametros['intLimite']:1;
+        $intIdRestaurante   = $arrayParametros['intIdRestaurante'] ? $arrayParametros['intIdRestaurante']:'';
+        $intIdTipoComida    = $arrayParametros['intIdTipoComida'] ? $arrayParametros['intIdTipoComida']:'';
+        $intIdPais          = $arrayParametros['intIdPais'] ? $arrayParametros['intIdPais']:'';
+        $intIdProvincia     = $arrayParametros['intIdProvincia'] ? $arrayParametros['intIdProvincia']:'';
+        $intIdCiudad        = $arrayParametros['intIdCiudad'] ? $arrayParametros['intIdCiudad']:'';
+        $intIdParroquia     = $arrayParametros['intIdParroquia'] ? $arrayParametros['intIdParroquia']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
+        $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        try
+        {
+            $strSelect      = "SELECT 
+                                IFNULL(ROUND(AVG(CASE WHEN IRES.ID_RESTAURANTE = ".$intIdRestaurante." THEN RESPUESTA END),2),0) AS MI_PROMEDIO,
+                                EXTRACT(YEAR FROM ICE.FE_CREACION) ANIO, 
+                                EXTRACT(MONTH FROM ICE.FE_CREACION) MES ";
+            $strFrom        = "FROM INFO_RESPUESTA IR
+                                    INNER JOIN INFO_PREGUNTA IP          ON IR.PREGUNTA_ID          = IP.ID_PREGUNTA
+                                    INNER JOIN INFO_OPCION_RESPUESTA IOR ON IOR.ID_OPCION_RESPUESTA = IP.OPCION_RESPUESTA_ID
+                                    INNER JOIN INFO_CLIENTE_ENCUESTA ICE ON ICE.ID_CLT_ENCUESTA     = IR.CLT_ENCUESTA_ID
+                                    INNER JOIN INFO_ENCUESTA IE          ON IE.ID_ENCUESTA          = ICE.ENCUESTA_ID
+                                    INNER JOIN INFO_SUCURSAL ISU         ON ISU.ID_SUCURSAL         =  ICE.SUCURSAL_ID
+                                    INNER JOIN INFO_RESTAURANTE IRES     ON IRES.ID_RESTAURANTE     = ISU.RESTAURANTE_ID ";
+            $strWhere       = "WHERE IOR.TIPO_RESPUESTA = 'CERRADA'
+                                    AND IOR.VALOR           = '5'
+                                    AND IE.ESTADO           = 'ACTIVO'
+                                    AND ICE.ESTADO          = 'ACTIVO' ";
+            $strGroupBy     = " GROUP BY EXTRACT(YEAR FROM ICE.FE_CREACION), EXTRACT(MONTH FROM ICE.FE_CREACION) ";
+            $strLimit       = " limit ".$intLimite;
+
+            if(!empty($intIdRestaurante))
+            {
+                $strSubSelect   =" IFNULL(ROUND(AVG(CASE WHEN IRES.ID_RESTAURANTE <> :ID_RESTAURANTE";
+                $objQuery->setParameter("ID_RESTAURANTE", $intIdRestaurante);
+            }
+            if(!empty($intIdTipoComida))
+            {
+                $strSubSelect .= " AND IRES.TIPO_COMIDA_ID = :TIPO_COMIDA_ID ";
+                $objQuery->setParameter("TIPO_COMIDA_ID", $intIdTipoComida);
+            }
+            if(!empty($intIdPais))
+            {
+                $strSubSelect .= " AND ISU.PAIS = :PAIS ";
+                $objQuery->setParameter("PAIS", $intIdPais);
+            }
+            if(!empty($intIdProvincia))
+            {
+                $strSubSelect .= " AND ISU.PROVINCIA = :PROVINCIA ";
+                $objQuery->setParameter("PROVINCIA", $intIdProvincia);
+            }
+            if(!empty($intIdCiudad))
+            {
+                $strSubSelect .= " AND ISU.CIUDAD = :CIUDAD ";
+                $objQuery->setParameter("CIUDAD", $intIdCiudad);
+            }
+            if(!empty($intIdParroquia))
+            {
+                $strSubSelect .= " AND ISU.PARROQUIA = :PARROQUIA ";
+                $objQuery->setParameter("PARROQUIA", $intIdParroquia);
+            }
+            $strSubSelect .= " THEN RESPUESTA END),2),0) AS OTRO_PROMEDIO " ;
+            $strSelect    .= " , ".$strSubSelect;
+            $objRsmBuilder->addScalarResult('MI_PROMEDIO', 'MI_PROMEDIO', 'string');
+            $objRsmBuilder->addScalarResult('OTRO_PROMEDIO', 'OTRO_PROMEDIO', 'string');
+            $objRsmBuilder->addScalarResult('ANIO', 'ANIO', 'string');
+            $objRsmBuilder->addScalarResult('MES', 'MES', 'string');
+            $strLimit     =" limit ".$intLimite;
+            $strOrderBy   = " ORDER BY ICE.FE_CREACION DESC ";
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy.$strOrderBy.$strLimit;
+            $objQuery->setSQL($strSql);
+            $arrayRespuesta['resultados'] = $objQuery->getResult();
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError = $ex->getMessage();
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        return $arrayRespuesta;
+    }
 }
