@@ -318,6 +318,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         {
             //SUM(ICE.CANTIDAD_PUNTOS) AS CANT_PUNTOS,
             $strSelect      = "SELECT IRE.NOMBRE_COMERCIAL,
+                                      IRE.ID_RESTAURANTE,
                                       IRE.ICONO ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
                                 JOIN INFO_SUCURSAL         ISUR ON ISUR.ID_SUCURSAL   = ICE.SUCURSAL_ID
@@ -337,6 +338,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
             $objRsmBuilder->addScalarResult('CANT_PUNTOS', 'CANT_PUNTOS', 'string');
             $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'RAZON_SOCIAL', 'string');
             $objRsmBuilder->addScalarResult('ICONO', 'ICONO', 'string');
+            $objRsmBuilder->addScalarResult('ID_RESTAURANTE', 'IDRESTAURANTE', 'string');
             $strSql       = $strSelect.$strFrom.$strWhere.$strGroupBy;
             $objQuery->setSQL($strSql);
             $arrayCantPtos['resultados'] = $objQuery->getResult();
