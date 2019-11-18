@@ -25,11 +25,14 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
         $strGenero          = $arrayParametros['strGenero'] ? $arrayParametros['strGenero']:'';
         $strEdad            = $arrayParametros['strEdad'] ? $arrayParametros['strEdad']:'';
         $strGlobal          = $arrayParametros['strGlobal'] ? $arrayParametros['strGlobal']:'';
+        $strFechaIni        = $arrayParametros['strFechaIni'] ? $arrayParametros['strFechaIni']:'';
+        $strFechaFin        = $arrayParametros['strFechaFin'] ? $arrayParametros['strFechaFin']:'';
         $arrayCliente       = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         $strOrder           = ' ORDER BY IC.NOMBRE ASC';
+        $strWhere           = ' ';
         try
         {
             $strSelect      = "SELECT IP.ID_PUBLICIDAD,
@@ -58,10 +61,14 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
             {
                 $strGroup = " GROUP BY IVP.PUBLICIDAD_ID ";
             }
+            if(!empty($strFechaIni) && !empty($strFechaFin))
+            {
+                $strWhere = " IVP.FE_CREACION BETWEEN '".$strFechaIni."' AND '".$strFechaFin."' ";
+            }
             $objRsmBuilder->addScalarResult('ID_PUBLICIDAD', 'ID_PUBLICIDAD', 'string');
             $objRsmBuilder->addScalarResult('DESCRIPCION', 'DESCRIPCION', 'string');
             $objRsmBuilder->addScalarResult('VISTAS', 'VISTAS', 'string');
-            $strSql       = $strSelect.$strFrom.$strGroup;
+            $strSql       = $strSelect.$strFrom.$strWhere.$strGroup;
             $objQuery->setSQL($strSql);
             $arrayCliente['resultados'] = $objQuery->getResult();
         }
