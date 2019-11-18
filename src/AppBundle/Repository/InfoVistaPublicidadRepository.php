@@ -53,7 +53,7 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
             }
             if(!empty($strEdad) && $strEdad=='SI')
             {
-                $strSelect .= " ,AP.VALOR1 AS CRITERIO ";
+                $strSelect .= " ,AP_EDAD.VALOR1 AS CRITERIO ";
                 $objRsmBuilder->addScalarResult('CRITERIO', 'CRITERIO', 'string');
                 $strGroup = " GROUP BY IVP.PUBLICIDAD_ID,CRITERIO ";
             }
