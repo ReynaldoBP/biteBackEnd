@@ -167,7 +167,7 @@ class InfoClienteRepository extends \Doctrine\ORM\EntityRepository
                             IC.USR_CREACION,IC.FE_CREACION,IC.USR_MODIFICACION,IC.FE_MODIFICACION ";
                 if(!empty($strCupoDisponible) && $strCupoDisponible == 'SI')
                 {
-                    $strSelect .= " ,(SELECT COUNT(ID_CLT_ENCUESTA) FROM INFO_CLIENTE_ENCUESTA WHERE CLIENTE_ID=IC.ID_CLIENTE AND EXTRACT(MONTH FROM FE_CREACION) =EXTRACT(MONTH FROM CURRENT_DATE()) ) AS CANTIDAD_CUPO";
+                    $strSelect .= " ,(SELECT COUNT(ID_CLT_ENCUESTA) FROM INFO_CLIENTE_ENCUESTA WHERE CLIENTE_ID=IC.ID_CLIENTE AND EXTRACT(MONTH FROM FE_CREACION) =EXTRACT(MONTH FROM CURRENT_DATE()) ) AS CANTIDAD_CUPO ";
                     $objRsmBuilder->addScalarResult('CANTIDAD_CUPO', 'CANTIDAD_CUPO', 'string');
                 }
                 if(!empty($intIdCliente))
