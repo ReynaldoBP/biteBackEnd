@@ -1977,6 +1977,8 @@ class ApiWebController extends FOSRestController
         $strGenero          = $arrayData['strGenero'] ? $arrayData['strGenero']:'';
         $strEdad            = $arrayData['strEdad'] ? $arrayData['strEdad']:'';
         $strGlobal          = $arrayData['strGlobal'] ? $arrayData['strGlobal']:'';
+        $strFechaIni        = $arrayData['strFechaIni'] ? $arrayData['strFechaIni']:'';
+        $strFechaFin        = $arrayData['strFechaFin'] ? $arrayData['strFechaFin']:'';
         $arrayRespuesta     = array();
         $strMensajeError    = '';
         $strStatus          = 400;
@@ -1984,9 +1986,11 @@ class ApiWebController extends FOSRestController
         $objResponse        = new Response;
         try
         {
-            $arrayParametros = array("strGenero"  => $strGenero,
-                                     "strEdad"    => $strEdad,
-                                     "strGlobal"  => $strGlobal);
+            $arrayParametros = array("strGenero"   => $strGenero,
+                                     "strEdad"     => $strEdad,
+                                     "strFechaIni" => $strFechaIni,
+                                     "strFechaFin" => $strFechaFin,
+                                     "strGlobal"   => $strGlobal);
 
             $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoVistaPublicidad')
                                                       ->getVistasPublicidades($arrayParametros);
