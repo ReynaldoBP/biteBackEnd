@@ -316,8 +316,8 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
         try
         {
-            $strSelect      = "SELECT SUM(ICE.CANTIDAD_PUNTOS) AS CANT_PUNTOS,
-                                      IRE.NOMBRE_COMERCIAL,
+            //SUM(ICE.CANTIDAD_PUNTOS) AS CANT_PUNTOS,
+            $strSelect      = "SELECT IRE.NOMBRE_COMERCIAL,
                                       IRE.ICONO ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE
                                 JOIN INFO_SUCURSAL         ISUR ON ISUR.ID_SUCURSAL   = ICE.SUCURSAL_ID
@@ -329,6 +329,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
             $objQuery->setParameter("ESTADO",$strEstado);
             if(!empty($intIdCliente))
             {
+                $strSelect .= ", (SELECT IFNULL(SUM(ICP.CANTIDAD_PUNTOS ),0) FROM INFO_CLIENTE_PUNTO ICP WHERE CLIENTE_ID = :CLIENTE_ID AND ICP.RESTAURANTE_ID = IRE.ID_RESTAURANTE) AS CANT_PUNTOS ";
                 $strWhere .= " AND ICE.CLIENTE_ID= :CLIENTE_ID ";
                 $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
             }
