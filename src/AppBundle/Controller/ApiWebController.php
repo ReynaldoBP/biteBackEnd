@@ -91,6 +91,8 @@ class ApiWebController extends FOSRestController
                 break;
                 case 'generarPass':$arrayRespuesta = $this->generarPass($arrayData);
                 break;
+                case 'getVistasPublicidades':$arrayRespuesta = $this->getVistasPublicidades($arrayData);
+                break;
                  $objResponse->setContent(json_encode(array(
                                                      'status'    => 400,
                                                      'resultado' => "No existe método con la descripción enviado por parámetro",
@@ -1939,6 +1941,55 @@ class ApiWebController extends FOSRestController
 
             $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoRespuesta')
                                                       ->getComparativosRestaurantes($arrayParametros);
+            if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
+            {
+                $strStatus  = 404;
+                throw new \Exception($arrayRespuesta['error']);
+            }
+        }
+        catch(\Exception $ex)
+        {
+            $strMensajeError ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
+            $boolSucces      = true;
+        }
+        $arrayRespuesta['error'] = $strMensajeError;
+        $objResponse->setContent(json_encode(array(
+                                            'status'    => $strStatus,
+                                            'resultado' => $arrayRespuesta,
+                                            'succes'    => $boolSucces
+                                            )
+                                        ));
+        $objResponse->headers->set('Access-Control-Allow-Origin', '*');
+        return $objResponse;
+    }
+    /**
+     * Documentación para la función 'getComparativosRestaurantes'
+     * Método encargado de retornar comparacion entre restaurantes.
+     * 
+     * @author Kevin Baque
+     * @version 1.0 15-11-2019
+     * 
+     * @return array  $arrayRespuesta
+     * 
+     */
+    public function getVistasPublicidades($arrayData)
+    {
+        $strGenero          = $arrayData['strGenero'] ? $arrayData['strGenero']:'';
+        $strEdad            = $arrayData['strEdad'] ? $arrayData['strEdad']:'';
+        $strGlobal          = $arrayData['strGlobal'] ? $arrayData['strGlobal']:'';
+        $arrayRespuesta     = array();
+        $strMensajeError    = '';
+        $strStatus          = 400;
+        $boolSucces         = true;
+        $objResponse        = new Response;
+        try
+        {
+            $arrayParametros = array("strGenero"  => $strGenero,
+                                     "strEdad"    => $strEdad,
+                                     "strGlobal"  => $strGlobal);
+
+            $arrayRespuesta   = $this->getDoctrine()->getRepository('AppBundle:InfoVistaPublicidad')
+                                                      ->getVistasPublicidades($arrayParametros);
             if(isset($arrayRespuesta['error']) && !empty($arrayRespuesta['error']))
             {
                 $strStatus  = 404;
