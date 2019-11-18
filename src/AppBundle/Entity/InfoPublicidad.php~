@@ -99,6 +99,13 @@ class InfoPublicidad
     private $ESTADO;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="CANT_VISTAS",type="integer", nullable=true)
+     */
+    private $CANT_VISTAS;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="USR_CREACION", type="string", length=255)
@@ -470,5 +477,29 @@ class InfoPublicidad
     public function getPARROQUIA()
     {
         return $this->PARROQUIA;
+    }
+
+    /**
+     * Set ORIENTACION
+     *
+     * @param string $ORIENTACION
+     *
+     * @return InfoPublicidad
+     */
+    public function setORIENTACION($ORIENTACION)
+    {
+        $this->ORIENTACION = $ORIENTACION;
+
+        return $this;
+    }
+
+    /**
+     * Get ORIENTACION
+     *
+     * @return string
+     */
+    public function getORIENTACION()
+    {
+        return $this->ORIENTACION;
     }
 }
