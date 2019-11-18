@@ -1758,7 +1758,7 @@ class ApiMovilController extends FOSRestController
     {
         $intIdPromocion     = $arrayData['idPromocion'] ? $arrayData['idPromocion']:'';
         $intIdCliente       = $arrayData['idCliente'] ? $arrayData['idCliente']:'';
-        $intIdSucursal      = $arrayData['idSucursal'] ? $arrayData['idSucursal']:'';
+        $intIdRestaurante   = $arrayData['idRestaurante'] ? $arrayData['idRestaurante']:'';
         $strEstado          = $arrayData['estado'] ? $arrayData['estado']:'PENDIENTE';
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
@@ -1777,14 +1777,9 @@ class ApiMovilController extends FOSRestController
             {
                 throw new \Exception('No existe el cliente con identificador enviada por parámetro.');
             }
-            $objSucursal = $em->getRepository('AppBundle:InfoSucursal')->find($intIdSucursal);
-            if(!is_object($objSucursal) || empty($objSucursal))
-            {
-                throw new \Exception('No existe sucursal con identificador enviado por parámetro.');
-            }
             //consultar el estado a buscar
-            $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'  => $intIdCliente,
-                                                                                            'RESTAURANTE_ID' => $objSucursal->getRESTAURANTEID()->getId()));
+            $arrayCltPunto = $em->getRepository('AppBundle:InfoClientePunto')->findBy(array('CLIENTE_ID'     => $intIdCliente,
+                                                                                            'RESTAURANTE_ID' => $intIdRestaurante));
             if(!is_array($arrayCltPunto) || empty($arrayCltPunto))
             {
                 throw new \Exception('No tiene puntaje sufuciente.');
@@ -1796,7 +1791,7 @@ class ApiMovilController extends FOSRestController
             $objPromocion = $em->getRepository('AppBundle:InfoPromocion')->find($intIdPromocion);
             if(!is_object($objPromocion) || empty($objPromocion))
             {
-                throw new \Exception('No existe la Promoción con identificador enviada por parámetro.');
+                throw new \Exception('No existe la Promoción.');
             }
             $intCantPuntospromo = $objPromocion->getCANTIDADPUNTOS();
             if($intCantPuntospromo<=$intCantidadPuntos)
