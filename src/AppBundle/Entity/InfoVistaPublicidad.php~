@@ -1,0 +1,109 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * InfoVistaPublicidad
+ *
+ * @ORM\Table(name="INFO_VISTA_PUBLICIDAD")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoVistaPublicidadRepository")
+ */
+class InfoVistaPublicidad
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ID_VISTA_PUBLICIDAD", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @var InfoCliente
+    *
+    * @ORM\ManyToOne(targetEntity="InfoCliente")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="CLIENTE_ID", referencedColumnName="ID_CLIENTE")
+    * })
+    */
+    private $CLIENTE_ID;
+
+    /**
+    * @var InfoRestaurante
+    *
+    * @ORM\ManyToOne(targetEntity="InfoRestaurante")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="RESTAURANTE_ID", referencedColumnName="ID_RESTAURANTE")
+    * })
+    */
+    private $RESTAURANTE_ID;
+
+    /**
+    * @var InfoPublicidad
+    *
+    * @ORM\ManyToOne(targetEntity="InfoPublicidad")
+    * @ORM\JoinColumns({
+    * @ORM\JoinColumn(name="PUBLICIDAD_ID", referencedColumnName="ID_PUBLICIDAD")
+    * })
+    */
+    private $PUBLICIDAD_ID;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ESTADO", type="string", length=100, nullable=true)
+     */
+    private $ESTADO;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="USR_CREACION", type="string", length=255)
+     */
+    private $USRCREACION;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="FE_CREACION", type="date")
+     */
+    private $FECREACION;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set ESTADO
+     *
+     * @param string $ESTADO
+     *
+     * @return InfoVistaPublicidad
+     */
+    public function setESTADO($ESTADO)
+    {
+        $this->ESTADO = $ESTADO;
+
+        return $this;
+    }
+
+    /**
+     * Get ESTADO
+     *
+     * @return string
+     */
+    public function getESTADO()
+    {
+        return $this->ESTADO;
+    }
+}
+

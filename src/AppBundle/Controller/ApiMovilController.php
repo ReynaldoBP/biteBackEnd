@@ -28,6 +28,7 @@ use AppBundle\Entity\InfoClientePuntoGlobal;
 use AppBundle\Entity\InfoOpcionRespuesta;
 use AppBundle\Entity\InfoClienteEncuesta;
 use AppBundle\Entity\InfoPromocionHistorial;
+use AppBundle\Entity\InfoVistaPublicidad;
 use AppBundle\Entity\AdmiTipoComida;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -560,6 +561,9 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 28-08-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 17-1-2019 - Se agrega insert a la tabla InfovistaPublicidad.
+     *
      * @return array  $objResponse
      */
     public function getRestaurante($arrayData)
@@ -579,8 +583,10 @@ class ApiMovilController extends FOSRestController
         $strStatus              = 400;
         $strMetros              = 0;
         $objResponse            = new Response;
+        $em                     = $this->getDoctrine()->getEntityManager();
         try
         {
+            $em->getConnection()->beginTransaction();
             $objController    = new DefaultController();
             $objController->setContainer($this->container);
             $arrayParametros = array('strTipoComida'        => $strTipoComida,
@@ -645,6 +651,18 @@ class ApiMovilController extends FOSRestController
                                                              'ICONO'            =>   (!empty($arrayPublicidad['resultados'][0]['IMAGEN']) && $conIcono == 'SI')? $objController->getImgBase64($arrayPublicidad['resultados'][0]['IMAGEN']) :null,
                                                              'ES_PUBLICIDAD'    =>  'S');
                     $intContadorRes                  = 0;
+                    if((!empty($intIdRestaurante) && !empty($intIdCliente)) && (!empty($arrayPublicidad['resultados'][0]['ID_PUBLICIDAD'])))
+                    {
+                        $entityVistaPubl = new InfoVistaPublicidad();
+                        $entityVistaPubl->setCLIENTEID($em->getRepository('AppBundle:InfoCliente')->find($intIdCliente));
+                        $entityVistaPubl->setRESTAURANTEID($em->getRepository('AppBundle:InfoRestaurante')->find($intIdRestaurante));
+                        $entityVistaPubl->setPUBLICIDADID($em->getRepository('AppBundle:InfoPublicidad')->find($arrayPublicidad['resultados'][0]['ID_PUBLICIDAD']));
+                        $entityVistaPubl->setESTADO(strtoupper('ACTIVO'));
+                        $entityVistaPubl->setUSRCREACION($strUsuarioCreacion);
+                        $entityVistaPubl->setFECREACION($strDatetimeActual);
+                        $em->persist($entityVistaPubl);
+                        $em->flush();
+                    }
                 }
             }
             $intContadorRes ++;
@@ -670,6 +688,7 @@ class ApiMovilController extends FOSRestController
                                                      'ES_PUBLICIDAD'           =>  'N');
         }
         $arrayResultado['error'] = $strMensajeError;
+        $em->getConnection()->commit();
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayResultado,
@@ -1026,6 +1045,9 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 06-09-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 17-1-2019 - Se agrega insert a la tabla InfovistaPublicidad.
+     *
      * @return array  $objResponse
      */
     public function getPublicidad($arrayData)
@@ -1040,12 +1062,15 @@ class ApiMovilController extends FOSRestController
         $arrayCliente           = array();
         $strMensajeError        = '';
         $strStatus              = 400;
+        $boolSucces             = true;
+        $strDatetimeActual      = new \DateTime('now');
         $objResponse            = new Response;
         $em                     = $this->getDoctrine()->getEntityManager();
         $objController    = new DefaultController();
         $objController->setContainer($this->container);
         try
         {
+            $em->getConnection()->beginTransaction();
             $objCliente = $em->getRepository('AppBundle:InfoCliente')->find($intIdCliente);
             if(!empty($objCliente))
             {
@@ -1091,6 +1116,12 @@ class ApiMovilController extends FOSRestController
         }
         catch(\Exception $ex)
         {
+            $strStatus  = 404;
+            $boolSucces = false;
+            if ($em->getConnection()->isTransactionActive())
+            {
+                $em->getConnection()->rollback();
+            }
             $strMensajeError          ="Falló al realizar la búsqueda, intente nuevamente.\n ". $ex->getMessage();
             $arrayPublicidad['error'] = $strMensajeError;
         }
@@ -1108,6 +1139,19 @@ class ApiMovilController extends FOSRestController
                                           'USR_MODIFICACION' => $item['USR_MODIFICACION'],
                                           'FE_MODIFICACION'  => $item['FE_MODIFICACION'],
                                           'ERROR'            => $strMensajeError);
+            if((!empty($objCliente) && is_object($objCliente)) && (!empty($objSucursal) && is_object($objSucursal)))
+            {
+                $entityVistaPubl = new InfoVistaPublicidad();
+                $entityVistaPubl->setCLIENTEID($objCliente);
+                $entityVistaPubl->setRESTAURANTEID($objSucursal->getRESTAURANTEID());
+                $entityVistaPubl->setPUBLICIDADID($em->getRepository('AppBundle:InfoPublicidad')->find($item['ID_PUBLICIDAD']));
+                $entityVistaPubl->setESTADO(strtoupper('ACTIVO'));
+                $entityVistaPubl->setUSRCREACION($strUsuarioCreacion);
+                $entityVistaPubl->setFECREACION($strDatetimeActual);
+                $em->persist($entityVistaPubl);
+                $em->flush();
+                $em->getConnection()->commit();
+            }
             if(!empty($item['IMAGEN']) && $conImagen == 'SI')
             {
                 $arrayPublicidadMovil['IMAGEN'] = $objController->getImgBase64($item['IMAGEN']);
@@ -1116,7 +1160,7 @@ class ApiMovilController extends FOSRestController
         $objResponse->setContent(json_encode(array(
                                                     'status'    => $strStatus,
                                                     'resultado' => $arrayPublicidadMovil,
-                                                    'succes'    => true)
+                                                    'succes'    => $boolSucces)
                                             ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
         return $objResponse;
