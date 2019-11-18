@@ -403,6 +403,9 @@ class ApiMovilController extends FOSRestController
      * @author Kevin Baque
      * @version 1.0 01-08-2019
      * 
+     * @author Kevin Baque
+     * @version 1.1 17-08-2019 se cambia el llamado de cant. puntos del movil por el web.
+     * 
      * @return array  $objResponse
      */
     public function getCliente($arrayData)
@@ -424,7 +427,7 @@ class ApiMovilController extends FOSRestController
                                     'strApellidos'      => $strApellidos,
                                     'strEstado'         => $strEstado
                                     );
-            $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterioMovil($arrayParametros);
+            $arrayCliente   = $this->getDoctrine()->getRepository('AppBundle:InfoCliente')->getClienteCriterio($arrayParametros);
             if(isset($arrayCliente['error']) && !empty($arrayCliente['error']))
             {
                 $strStatus  = 404;
