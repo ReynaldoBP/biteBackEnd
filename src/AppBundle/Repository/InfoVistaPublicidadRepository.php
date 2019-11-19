@@ -31,7 +31,6 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
-        $strOrder           = ' ORDER BY IC.NOMBRE ASC';
         $strWhere           = ' ';
         try
         {
@@ -45,6 +44,7 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
                                 INNER JOIN ADMI_PARAMETRO AP_EDAD    ON AP_EDAD.DESCRIPCION     = 'EDAD'
                                                                     AND EXTRACT(YEAR FROM IC.EDAD) >= AP_EDAD.VALOR2
                                                                     AND EXTRACT(YEAR FROM IC.EDAD) <= AP_EDAD.VALOR3 ";
+            $strGroup       = " GROUP BY IVP.PUBLICIDAD_ID ";
             if(!empty($strGenero) && $strGenero=='SI')
             {
                 $strSelect .= " ,IC.GENERO AS CRITERIO ";
@@ -56,10 +56,6 @@ class InfoVistaPublicidadRepository extends \Doctrine\ORM\EntityRepository
                 $strSelect .= " ,AP_EDAD.VALOR1 AS CRITERIO ";
                 $objRsmBuilder->addScalarResult('CRITERIO', 'CRITERIO', 'string');
                 $strGroup = " GROUP BY IVP.PUBLICIDAD_ID,CRITERIO ";
-            }
-            if(!empty($strGroup) && $strGroup=='SI')
-            {
-                $strGroup = " GROUP BY IVP.PUBLICIDAD_ID ";
             }
             if(!empty($strFechaIni) && !empty($strFechaFin))
             {
