@@ -483,10 +483,7 @@ class ApiMovilController extends FOSRestController
         try
         {
             $arrayCltEncuesta = $this->getDoctrine()->getRepository('AppBundle:InfoClienteEncuesta')->getVigenciaEncuesta(array('intIdCliente'=>$intIdCliente,
-                                                                                                                                'intIdSucursal'=>$intidSucursal,
-                                                                                                                                'strDia'      =>date("d"),
-                                                                                                                                'strMes'      =>date("m"),
-                                                                                                                                'strAnio'     =>date("Y")));
+                                                                                                                                'intIdSucursal'=>$intidSucursal));
             if(isset($arrayCltEncuesta['error']) && !empty($arrayCltEncuesta['error']))
             {
                 $strStatus  = 404;
@@ -495,7 +492,7 @@ class ApiMovilController extends FOSRestController
             if(isset($arrayCltEncuesta['resultados']) && intval($arrayCltEncuesta['resultados'][0]['CANTIDAD']) >0 )
             {
                 $boolError = true;
-                throw new \Exception("Estimado, ud. ya cuenta con una encuesta llena, solo es permitido una encuesta por día.");
+                throw new \Exception("Estimado, ud. ya cuenta con una encuesta llena, solo es permitido una encuesta por día en el mismo restaurante.");
             }
             $objController   = new DefaultController();
             $objParametro    = $this->getDoctrine()->getRepository('AppBundle:AdmiParametro')->findOneBy(array('ESTADO'      => 'ACTIVO',
@@ -850,6 +847,7 @@ class ApiMovilController extends FOSRestController
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
         $arrayRespuesta     = array();
+        $strEstadoPendiente = 'PENDIENTE';
         $strMensajeError    = '';
         $strStatus          = 400;
         $objResponse        = new Response;
@@ -888,7 +886,7 @@ class ApiMovilController extends FOSRestController
             $entityCltEncuesta->setCLIENTEID($objCliente);
             $entityCltEncuesta->setSUCURSALID($objSucursal);
             $entityCltEncuesta->setENCUESTAID($objEncuesta);
-            $entityCltEncuesta->setESTADO(strtoupper($strEstado));
+            $entityCltEncuesta->setESTADO(strtoupper($strEstadoPendiente));
             $entityCltEncuesta->setCONTENIDOID($objContenido);
             $entityCltEncuesta->setUSRCREACION($strUsuarioCreacion);
             $entityCltEncuesta->setFECREACION($strDatetimeActual);

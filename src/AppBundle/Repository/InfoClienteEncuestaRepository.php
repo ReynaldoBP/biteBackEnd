@@ -262,10 +262,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
     public function getVigenciaEncuesta($arrayParametros)
     {
         $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
-        $strDia             = $arrayParametros['strDia'] ? $arrayParametros['strDia']:'';
         $intIdSucursal      = $arrayParametros['intidSucursal'] ? $arrayParametros['intidSucursal']:'';
-        $strMes             = $arrayParametros['strMes'] ? $arrayParametros['strMes']:'';
-        $strAnio            = $arrayParametros['strAnio'] ? $arrayParametros['strAnio']:'';
         $arrayCltEncuesta   = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -274,9 +271,7 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
         {
             $strSelect      = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE ";
-            $strWhere       = " WHERE EXTRACT(DAY FROM ICE.FE_CREACION)     = :DIA 
-                                    AND EXTRACT(MONTH FROM ICE.FE_CREACION) = :MES
-                                    AND EXTRACT(YEAR FROM ICE.FE_CREACION)  = :ANIO 
+            $strWhere       = " WHERE TIMESTAMPDIFF(HOUR,ICE.FE_CREACION,SYSDATE()) < 24 
                                     AND ICE.CLIENTE_ID                      = :CLIENTE_ID ";
             $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
             $objQuery->setParameter("DIA",$strDia);
