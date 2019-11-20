@@ -262,21 +262,21 @@ class InfoClienteEncuestaRepository extends \Doctrine\ORM\EntityRepository
     public function getVigenciaEncuesta($arrayParametros)
     {
         $intIdCliente       = $arrayParametros['intIdCliente'] ? $arrayParametros['intIdCliente']:'';
-        $intIdSucursal      = $arrayParametros['intidSucursal'] ? $arrayParametros['intidSucursal']:'';
+        $intIdSucursal      = $arrayParametros['intIdSucursal'] ? $arrayParametros['intIdSucursal']:'';
         $arrayCltEncuesta   = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
         $objQuery           = $this->_em->createNativeQuery(null, $objRsmBuilder);
+        $date               = date('Y-m-d H:i:s');
         try
         {
             $strSelect      = "SELECT COUNT(*) AS CANTIDAD ";
             $strFrom        = " FROM INFO_CLIENTE_ENCUESTA ICE ";
-            $strWhere       = " WHERE TIMESTAMPDIFF(HOUR,ICE.FE_CREACION,SYSDATE()) < 24 
-                                    AND ICE.CLIENTE_ID                      = :CLIENTE_ID ";
+            $strWhere       = " WHERE TIMESTAMPDIFF(HOUR,ICE.FE_CREACION,'".$date."') < 24 
+                                    AND ICE.CLIENTE_ID  = :CLIENTE_ID
+                                    AND ICE.SUCURSAL_ID = :SUCURSAL_ID ";
             $objQuery->setParameter("CLIENTE_ID",$intIdCliente);
-            $objQuery->setParameter("DIA",$strDia);
-            $objQuery->setParameter("MES",$strMes);
-            $objQuery->setParameter("ANIO",$strAnio);
+            $objQuery->setParameter("SUCURSAL_ID",$intIdSucursal);
 
             $objRsmBuilder->addScalarResult('CANTIDAD', 'CANTIDAD', 'string');
             $strSql       = $strSelect.$strFrom.$strWhere;
