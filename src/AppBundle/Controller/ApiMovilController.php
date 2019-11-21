@@ -847,7 +847,7 @@ class ApiMovilController extends FOSRestController
         $strUsuarioCreacion = $arrayData['usuarioCreacion'] ? $arrayData['usuarioCreacion']:'';
         $strDatetimeActual  = new \DateTime('now');
         $arrayRespuesta     = array();
-        $strEstadoPendiente = 'PENDIENTE';
+        $strEstadoPendiente = 'ACTIVO';//CAMBIO
         $strMensajeError    = '';
         $strStatus          = 400;
         $objResponse        = new Response;

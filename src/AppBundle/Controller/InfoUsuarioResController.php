@@ -61,7 +61,7 @@ class InfoUsuarioResController extends Controller
                 throw new \Exception('Relación ya existente.');
             }
             $strNombreRestaurante = $objRestaurante->getNOMBRECOMERCIAL();
-            $strNombreUsuario     = $objUsuario->getAPELLIDOS() .' '.$objUsuario->getNOMBRES();
+            $strNombreUsuario     = $objUsuario->getNOMBRES() .' '.$objUsuario->getAPELLIDOS();
             $strAsunto            = 'Bienvenido '.$strNombreRestaurante.'. ';
             $strMensajeCorreo = '<div class="">Bienvenido '.$strNombreRestaurante.'.</div>
             <div class="">&nbsp;</div>
