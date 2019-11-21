@@ -638,7 +638,7 @@ class ApiMovilController extends FOSRestController
         $arrayResultado = array();
         foreach($arrayRestaurante['resultados'] as &$arrayItemRestaurante)
         {
-            if($intContadorRes == $objParametro->getVALOR1())
+            /*if($intContadorRes == $objParametro->getVALOR1())
             {
                 $arrayPublicidad = (array) $this->getDoctrine()->getRepository('AppBundle:InfoPublicidad')->getPublicidadCriterioMovil(array('GENERO' => 'TODOS'));
                 if(empty($arrayPublicidad))
@@ -664,8 +664,8 @@ class ApiMovilController extends FOSRestController
                         $em->flush();
                     }
                 }
-            }
-            $intContadorRes ++;
+            }*/
+            //$intContadorRes ++;
             $arrayResultado ['resultados'] []= array('ID_RESTAURANTE'          =>   $arrayItemRestaurante['ID_RESTAURANTE'],
                                                      'TIPO_IDENTIFICACION'     =>   $arrayItemRestaurante['TIPO_IDENTIFICACION'],
                                                      'IDENTIFICACION'          =>   $arrayItemRestaurante['IDENTIFICACION'],
