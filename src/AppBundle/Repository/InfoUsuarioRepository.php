@@ -33,6 +33,7 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
         $strNombres         = $arrayParametros['strNombres'] ? $arrayParametros['strNombres']:'';
         $strApellidos       = $arrayParametros['strApellidos'] ? $arrayParametros['strApellidos']:'';
         $strEstado          = $arrayParametros['strEstado'] ? $arrayParametros['strEstado']:array('ACTIVO','INACTIVO','ELIMINADO');
+        $strTipoRolRes      = $arrayParametros['strTipoRolRes'] ? $arrayParametros['strTipoRolRes']:'';
         $arrayUsuarios      = array();
         $strMensajeError    = '';
         $objRsmBuilder      = new ResultSetMappingBuilder($this->_em);
@@ -87,6 +88,14 @@ class InfoUsuarioRepository extends \Doctrine\ORM\EntityRepository
                 $objQuery->setParameter("ID_TIPO_ROL", $strTipoRol);
                 $objQueryCount->setParameter("ID_TIPO_ROL", $strTipoRol);
             }
+            if(!empty($strTipoRolRes) && $strTipoRolRes=='RESTAURANTE')
+            {
+                $strSelect .= " ,IRES.NOMBRE_COMERCIAL ";
+                $strFrom   .= " JOIN INFO_USUARIO_RES IURES ON IURES.USUARIO_ID = IU.ID_USUARIO 
+                                JOIN INFO_RESTAURANTE IRES ON IURES.RESTAURANTE_ID = IRES.ID_RESTAURANTE ";
+                $objRsmBuilder->addScalarResult('NOMBRE_COMERCIAL', 'NOMBRE_COMERCIAL', 'string');
+            }
+
             $objRsmBuilder->addScalarResult('ID_USUARIO', 'ID_USUARIO', 'string');
             $objRsmBuilder->addScalarResult('NOMBRES', 'NOMBRES', 'string');
             $objRsmBuilder->addScalarResult('APELLIDOS', 'APELLIDOS', 'string');
