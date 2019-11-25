@@ -37,6 +37,7 @@ class UsuarioController extends Controller
         $strNombres             = $request->query->get("nombres") ? $request->query->get("nombres"):'';
         $strApellidos           = $request->query->get("apellidos") ? $request->query->get("apellidos"):'';
         $strEstado              = $request->query->get("estado") ? $request->query->get("estado"):'';
+        $strBandRes              = $request->query->get("strBandRes") ? $request->query->get("strBandRes"):'N';
         $arrayUsuarios          = array();
         $strMensajeError        = '';
         $strStatus              = 400;
@@ -49,8 +50,30 @@ class UsuarioController extends Controller
                                     'intIdRestaurante'  => $intIdRestaurante,
                                     'strNombres'        => $strNombres,
                                     'strApellidos'      => $strApellidos,
-                                    'strEstado'         => $strEstado
-                                    );
+                                    'strEstado'         => $strEstado);
+            if(!empty($strBandRes) && $strBandRes =='S')
+            {
+                if(!empty($strTipoRol))
+                {
+                    $arrayParametrosRol = array('ESTADO' => 'ACTIVO',
+                                                'id'     => $strTipoRol);
+                    $objTipoRol         = $this->getDoctrine()->getRepository('AppBundle:AdmiTipoRol')->findOneBy($intIdUsuario);
+                    if(!is_object($objTipoRol) || empty($objTipoRol))
+                    {
+                        throw new \Exception('No existe rol con la descripción enviada por parámetro.');
+                    }
+                }
+                else
+                {
+                    $objUsuario = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->find($intIdUsuario);
+                    if(!is_object($objUsuario) || empty($objUsuario))
+                    {
+                        throw new \Exception('No existe rol con la descripción enviada por parámetro.');
+                    }
+                }
+                $arrayParametros['strTipoRolRes'] = $objUsuario->getTIPOROLID()->getDESCRIPCION_TIPO_ROL();
+            }
+
             $arrayUsuarios   = $this->getDoctrine()->getRepository('AppBundle:InfoUsuario')->getUsuariosCriterio($arrayParametros);
             if(isset($arrayUsuarios['error']) && !empty($arrayUsuarios['error']))
             {
@@ -66,7 +89,8 @@ class UsuarioController extends Controller
         $objResponse->setContent(json_encode(array(
                                             'status'    => $strStatus,
                                             'resultado' => $arrayUsuarios,
-                                            'succes'    => true
+                                            'succes'    => true,
+                                            'ROL'=>$intIdUsuario
                                             )
                                         ));
         $objResponse->headers->set('Access-Control-Allow-Origin', '*');
